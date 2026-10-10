@@ -21,7 +21,7 @@ export const Route = createFileRoute("/student/")({
 function StudentPicker() {
   const { students } = useAppState();
   return (
-    <Layout>
+    <Layout allow={["faculty", "admin"]}>
       <h1 className="mb-1 font-display text-2xl font-bold">Student Dashboard</h1>
       <SectionTitle sub="Demo mode: choose which fictional student to sign in as">Select a student</SectionTitle>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

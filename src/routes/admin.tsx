@@ -69,7 +69,7 @@ function Admin() {
   const fmt = (v: number | null, suffix = "") => (v === null ? "—" : v.toFixed(1) + suffix);
 
   return (
-    <Layout>
+    <Layout allow={["admin"]}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold">Administrator Dashboard</h1>
         <select value={branch} onChange={(e) => setBranch(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">

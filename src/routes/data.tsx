@@ -81,7 +81,7 @@ function DataPage() {
   };
 
   return (
-    <Layout>
+    <Layout allow={["admin"]}>
       <h1 className="mb-4 font-display text-2xl font-bold">Data Integration & Quality</h1>
       <p className="mb-4 text-sm text-muted-foreground">Demo mode: all data is fictional and stored in this browser. No live university system is connected.</p>
 

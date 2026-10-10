@@ -49,7 +49,7 @@ function Faculty() {
   const compareStudents = compare.map((id) => students.find((s) => s.id === id)!).filter(Boolean);
 
   return (
-    <Layout>
+    <Layout allow={["faculty", "admin"]}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold">Faculty / Mentor Dashboard</h1>
         <select value={mentor} onChange={(e) => setMentor(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">
