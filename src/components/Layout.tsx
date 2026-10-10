@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { GraduationCap, LayoutDashboard, Users, UserRound, Database, Presentation, RotateCcw } from "lucide-react";
 import { resetDemo } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 
 const NAV = [
   { to: "/", label: "Home", icon: GraduationCap },
@@ -36,7 +37,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </nav>
-          <button
+          <Button
+            variant="outline"
             onClick={() => {
               resetDemo();
               location.reload();
@@ -45,7 +47,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             title="Reset all demo data"
           >
             <RotateCcw className="h-4 w-4" /> Reset demo
-          </button>
+          </Button>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-4 pb-2 md:hidden">
           {NAV.map((n) => (
@@ -55,6 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
       </header>
+      <div className="border-b bg-warning/10 px-4 py-2 text-center text-xs text-warning">Fictional demo workspace · Changes stay in this browser · <Link to="/portal" className="underline">Open your private account</Link></div>
       <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
       <footer className="border-t py-4 text-center text-xs text-muted-foreground">
         BIB InsightIQ — TEAM BIB (Biryani Intelligence Bureau) · HacXLerate Smart Campus Analytics · Fictional demo data
