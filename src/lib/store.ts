@@ -81,6 +81,11 @@ export function reviewComplaint(id: string, reviewer: string) {
   setState({ complaints: state.complaints.map((c) => (c.id === id ? { ...c, reviewed: true, reviewedBy: reviewer } : c)) });
 }
 
+export function addComplaint(from: string, text: string) {
+  const id = `CMP-${String(state.complaints.length + 1).padStart(3, "0")}`;
+  setState({ complaints: [...state.complaints, { id, from, text, date: new Date().toISOString().slice(0, 10), reviewed: false }] });
+}
+
 export function resetDemo() {
   state = seedState();
   persist();
