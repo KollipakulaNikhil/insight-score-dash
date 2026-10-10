@@ -6,6 +6,7 @@
 - [x] Phase 1 foundation: professional public website, benefits, solution, privacy, contact, sign-in UI and secure role profiles. Account end-to-end verification remains pending a signed-up account.
 - [ ] Phase 2: secure record portal, manual registration/editing, CSV/Excel validation and audited saving; keep demo distinct.
 - [ ] Phase 3: separate academic/placement risk, evidence-driven segments and transparent scoring.
+- [ ] Dual risk flags: config-driven points table (src/lib/risk-flags.ts), Academic Risk + Placement Risk badges with sorted drivers on student profile, filterable faculty columns, admin flag counts + branch × flag heatmap; High flag blocks On Track band.
 - [ ] Phase 4: detailed academics, attendance and six-unit LMS editing/workflows.
 - [ ] Phase 5: practice attempts, engagement evidence review, placement/resume and confidential feedback workflows.
 - [ ] Phase 6: notifications and persisted interventions with outcomes.
