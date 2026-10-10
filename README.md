@@ -1,274 +1,334 @@
 # BIB InsightIQ — Student Success Intelligence Platform
 
-Built by **TEAM BIB (Biryani Intelligence Bureau)** for the **HacXLerate Smart Campus Analytics** challenge.
+Developed by **TEAM BIB (Biryani Intelligence Bureau)** for the **HacXLerate Smart Campus Analytics** challenge.
 
-A prototype that brings seven student data sources — academics, attendance, LMS, skills, engagement, placement and feedback — together under one student ID. It works out an explainable **Student Success Score**, points out who needs help and why, and lets mentors record and track interventions.
+## Overview
 
-- [What is in the project](#what-is-in-the-project)
-- [Tech stack](#tech-stack)
-- [Run it on your computer](#run-it-on-your-computer)
-- [Environment variables](#environment-variables)
-- [Roles and workspaces](#roles-and-workspaces)
-- [Deploy to Vercel, step by step](#deploy-to-vercel-step-by-step)
-- [Security notes](#security-notes)
-- [Scoring rules](#scoring-rules)
-- [Project structure](#project-structure)
-- [Scripts](#scripts)
-- [Known limits](#known-limits)
+BIB InsightIQ consolidates seven student data sources — academics, attendance, learning management system (LMS) activity, skills, engagement, placement readiness and feedback — under a single student identifier. From these sources it computes an explainable **Student Success Score**, identifies students who may require support together with the reasons, and enables mentors to record and track interventions.
 
-## What is in the project
+The platform addresses three questions for every student:
 
-| Part                                                                   | Where                                              | Data                                                                 |
-| ---------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
-| **Public website** (home, solution, benefits, privacy, contact, login) | `/`                                                | none                                                                 |
-| **Fictional demo dashboards** (student, faculty, campus, data import)  | `/demo`, `/student`, `/faculty`, `/admin`, `/data` | Made-up data kept in your browser. Use **Reset demo** to restore it. |
-| **Private workspaces** for real accounts                               | `/portal`                                          | Real data in PostgreSQL                                              |
-| **Website assistant** (chat bubble)                                    | every public page                                  | Product help only. It cannot see any private record.                 |
+1. Who requires support?
+2. Why do they require it?
+3. What action should the faculty member take next?
 
-The demo and the private workspaces are kept completely separate. Choosing a demo role never gives access to real data.
+## Contents
 
-## Tech stack
+1. [Features](#features)
+2. [Architecture and technology](#architecture-and-technology)
+3. [Getting started](#getting-started)
+4. [Configuration](#configuration)
+5. [Roles and workspaces](#roles-and-workspaces)
+6. [Deployment on Vercel](#deployment-on-vercel)
+7. [Security](#security)
+8. [Scoring methodology](#scoring-methodology)
+9. [Testing](#testing)
+10. [Project structure](#project-structure)
+11. [Command reference](#command-reference)
+12. [Roadmap](#roadmap)
 
-- **App:** TanStack Start (React 19 + file-based routing), Vite, Tailwind CSS, shadcn/ui, Recharts. Plain JavaScript.
-- **Database:** PostgreSQL through `node-postgres` (`pg`). SQL migrations in `db/migrations`.
-- **Accounts:** email and password. Passwords are hashed with **bcrypt**; sign-in gives a signed **JWT** in an httpOnly cookie.
-- **Assistant:** any OpenAI-compatible API through the Vercel AI SDK. The default is Google Gemini's free tier.
-- **Hosting:** built with Nitro, so it deploys to Vercel with no extra configuration (or runs as a plain Node server).
+## Features
 
-## Run it on your computer
+| Area                     | Description                                                                                                                                        | Route                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Public website           | Introduction, solution, benefits, privacy statement, contact and sign-in pages.                                                                    | `/`                                                |
+| Demonstration dashboards | Student, faculty, campus and data-import dashboards populated with fictional data held in the browser. A reset control restores the original data. | `/demo`, `/student`, `/faculty`, `/admin`, `/data` |
+| Role-based workspaces    | Separate student, teacher and administrator workspaces backed by a PostgreSQL database.                                                            | `/portal`                                          |
+| Website assistant        | A conversational guide to the platform. It has no access to private student records.                                                               | All public pages                                   |
 
-You need **Node.js 22.9 or newer** and a PostgreSQL database. The easiest are Docker (local) or a free [Neon](https://neon.tech) project.
+The demonstration dashboards and the role-based workspaces are fully separate. Selecting a demonstration role never grants access to real data.
+
+## Architecture and technology
+
+| Layer                 | Technology                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Application framework | TanStack Start (React 19, file-based routing), Vite 8                                                                   |
+| User interface        | Tailwind CSS, shadcn/ui components, Recharts                                                                            |
+| Language              | JavaScript                                                                                                              |
+| Database              | PostgreSQL through `node-postgres`; versioned SQL migrations in `db/migrations`                                         |
+| Authentication        | Email and password; passwords hashed with bcrypt; sessions issued as signed JSON Web Tokens (JWT) in an httpOnly cookie |
+| Assistant             | Vercel AI SDK with any OpenAI-compatible provider (Google Gemini by default)                                            |
+| Build and hosting     | Nitro; deployable to Vercel without additional configuration, or runnable as a Node.js server                           |
+
+Authorization is enforced on the server for every request. Navigation shown in the interface is a convenience only and is never relied upon for access control.
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 22.9 or later
+- A PostgreSQL database: a local instance (Docker Compose configuration provided) or a hosted service such as [Neon](https://neon.tech)
+
+### Installation
 
 ```bash
 git clone https://github.com/Ramcharan0600/insight-score-dash.git
 cd insight-score-dash
 git checkout bib
-
 npm install
-cp .env.example .env          # on Windows PowerShell: Copy-Item .env.example .env
 ```
 
-Fill in `.env` (see the table below), then:
+Create the environment file and complete it as described in [Configuration](#configuration):
 
 ```bash
-# local database, only if you use Docker (skip this if you use Neon)
-docker compose up -d
-
-npm run db:migrate            # creates the tables
-npm run db:check              # should print "Schema OK"
-npm run dev                   # prints the address, usually http://localhost:5173
+cp .env.example .env          # Windows PowerShell: Copy-Item .env.example .env
 ```
 
-The first account you sign up with is a student. To make yourself an administrator:
+### Database setup
 
 ```bash
-npm run db:set-role -- you@example.com admin
+docker compose up -d          # optional: starts a local PostgreSQL instance
+npm run db:migrate            # applies the schema
+npm run db:check              # verifies the connection; expected output: "Schema OK"
 ```
 
-Refresh the portal and you will see the administrator workspace.
+### Running the application
 
-## Environment variables
+```bash
+npm run dev                   # development server; the address is printed in the terminal
+```
 
-Copy `.env.example` to `.env`. Never commit `.env` (it is git-ignored).
+### Creating the first administrator
 
-| Variable            | Required          | What it is                                                                                                                                                                            |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`      | yes               | PostgreSQL connection string. For Neon, copy the **pooled** string (the host contains `-pooler`).                                                                                     |
-| `JWT_SECRET`        | yes               | Random text, 32+ characters, used to sign logins. Generate one with `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`. Changing it signs everyone out. |
-| `LLM_API_KEY`       | for the assistant | Free key from [Google AI Studio](https://aistudio.google.com/apikey). Without it the assistant says it is not configured; everything else still works.                                |
-| `LLM_MODEL`         | no                | Default `gemini-2.5-flash`.                                                                                                                                                           |
-| `LLM_BASE_URL`      | no                | Default `https://generativelanguage.googleapis.com/v1beta/openai/`. Any OpenAI-compatible provider works, for example OpenRouter.                                                     |
-| `DATABASE_SSL`      | no                | SSL is automatic for any non-local host. Set `false` to turn it off.                                                                                                                  |
-| `DATABASE_POOL_MAX` | no                | Connections per server instance. Default 3 on Vercel, 10 elsewhere.                                                                                                                   |
+New accounts are created with student access. Register through the sign-in page, then grant administrator access:
 
-## Roles and workspaces
+```bash
+npm run db:set-role -- user@example.com admin
+```
 
-Everyone who signs up starts as a **student**. Administrators give **teacher** or **administrator** access under _People & roles_. Each role gets its own menu and pages under `/portal`.
+On the next page load, the administrator workspace is available. Teacher access is granted from **People & roles**, and students are connected to teachers from **Assign students**.
 
-**Student**
-Home · Profile (editable) · Dashboard · Learning path · Attendance · LMS · Skills · Placement · Engagement · Feedback
+## Configuration
 
-- Students can edit their own name, phone, address, bio, LinkedIn and GitHub links, and the roles they are aiming for. Marks, attendance, branch, semester and mentor are set by staff.
-- Pages show only what is recorded. Anything missing says "not recorded yet". Nothing is invented and missing data is never counted as zero.
+Environment variables are read from `.env` for local use. The file is excluded from version control and must not be committed. On a hosting platform, define the same variables in its environment settings.
 
-**Teacher**
-Home · My students · Interventions · Attendance & risk · Profile
+| Variable            | Required          | Description                                                                                                   |
+| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`      | Yes               | PostgreSQL connection string. For Neon, use the pooled connection string (the host name contains `-pooler`).  |
+| `JWT_SECRET`        | Yes               | Secret used to sign sessions. A random value of at least 32 characters. Changing it ends all active sessions. |
+| `LLM_API_KEY`       | For the assistant | API key for the language-model provider. The default provider is Google AI Studio.                            |
+| `LLM_MODEL`         | No                | Model identifier. Default: `gemini-2.5-flash`.                                                                |
+| `LLM_BASE_URL`      | No                | OpenAI-compatible endpoint. Default: `https://generativelanguage.googleapis.com/v1beta/openai/`.              |
+| `DATABASE_SSL`      | No                | TLS is enabled automatically for non-local hosts. Set to `false` to disable.                                  |
+| `DATABASE_POOL_MAX` | No                | Maximum connections per server instance. Default: 3 on Vercel, 10 elsewhere.                                  |
 
-- Sees only the students assigned to them. Can open a student's full profile, write feedback, and create and update interventions.
-
-**Administrator**
-Home · All students · Teachers · Assign students · People & roles · Student records · Interventions · Attendance & risk · Messages · Audit log · Profile
-
-- _Assign students_: choose a teacher and tick students, or pick a teacher on a student's own row. Students without a record get a blank one, so they appear for the teacher immediately.
-- _Student records_: add marks, attendance and skills with a form, or import many students as JSON.
-- _Messages_: contact-form messages and concerns. _Audit log_: who changed what, and when.
-
-Permissions are enforced on the server for every request. Hiding a page in the menu is only a convenience.
-
-## Deploy to Vercel, step by step
-
-You need free accounts on **GitHub**, **Vercel** and **Neon**, plus a Google account for the AI key. The code must be pushed to GitHub (branch `bib`).
-
-### 1. Create the database (Neon)
-
-1. Sign in at [neon.tech](https://neon.tech) and click **Create project**. Pick the region closest to your users. For Vercel's default region, **AWS US East (N. Virginia)** is a good choice.
-2. On the project page click **Connect**. Turn **Connection pooling** on and copy the connection string. The host should contain `-pooler`.
-
-### 2. Create the tables
-
-On your computer, in the project folder:
-
-1. Open `.env` and set `DATABASE_URL` to the string you copied.
-2. Run `npm run db:migrate`, then `npm run db:check`. You should see **Schema OK**.
-
-You do this once, and again whenever a new file appears in `db/migrations`.
-
-### 3. Get the free AI key
-
-Open [aistudio.google.com/apikey](https://aistudio.google.com/apikey), create a key and keep it. No card is needed. Free limits are small, so under heavy use the assistant may say it is busy.
-
-### 4. Make a login secret
+A suitable `JWT_SECRET` can be generated with:
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Keep the output.
+## Roles and workspaces
 
-### 5. Import the project into Vercel
+Each role has its own navigation and pages under `/portal`.
 
-1. Go to [vercel.com/new](https://vercel.com/new) and choose **Import** next to `insight-score-dash`. If it is not listed, click _Adjust GitHub App Permissions_ and allow the repository.
-2. Leave **Framework Preset** as detected (Nitro) or _Other_, **Build Command** `npm run build`, and **Install Command** `npm install`. Do not change the output directory: the build writes Vercel's own output format.
-3. Open **Environment Variables** and add these (apply them to Production, Preview and Development):
+### Student
 
-   | Name           | Value                      |
-   | -------------- | -------------------------- |
-   | `DATABASE_URL` | the pooled Neon string     |
-   | `JWT_SECRET`   | the secret from step 4     |
-   | `LLM_API_KEY`  | the Google key from step 3 |
+Home · Profile · Dashboard · Learning path · Attendance · LMS · Skills · Placement · Engagement · Feedback
 
-   Vercel does not read your `.env` file, so type them in here.
+- **Home** summarizes the score, key indicators, alerts, mentor and upcoming deadlines.
+- **Profile** presents account and academic details. Students may update their name, contact details, biography, professional links and target roles. Marks, attendance, branch, semester and mentor are maintained by staff.
+- **Dashboard** presents academic status: success score, contributing factors, risk signals, recommended next steps, CGPA trend and subject performance.
+- **Learning path** lists the courses of the current semester with unit progress and the next recommended step for each.
+- Remaining pages present attendance planning, LMS progress, skill assessments, placement readiness, engagement activities and feedback.
 
-4. Do not click Deploy yet if you want to deploy the `bib` branch. Continue to step 6.
+Every page presents only recorded data. Where data has not yet been recorded, the page states this explicitly, and missing data is never treated as zero.
 
-### 6. Choose which branch goes live
+### Teacher
 
-Vercel's production branch is `main` by default. Pick one:
+Home · My students · Interventions · Attendance & risk · Profile
 
-- **Use `bib` as production:** after importing, go to **Settings → Git → Production Branch**, enter `bib`, and save. Then redeploy.
-- **Or merge `bib` into `main`:** open a pull request from `bib` to `main` on GitHub and merge it. Vercel deploys `main` automatically.
+- Access is limited to students assigned to the teacher.
+- Teachers review each student's complete profile, record feedback, and create and update interventions.
+- **Attendance & risk** lists students with low attendance, academic concerns, LMS delays and missing data.
 
-Any other branch you push gets its own **Preview** URL, which uses the same environment variables.
+### Administrator
 
-### 7. Deploy
+Home · All students · Teachers · Assign students · People & roles · Student records · Interventions · Attendance & risk · Messages · Audit log · Profile
 
-Click **Deploy** (or push a commit). The build takes a minute or two. When it finishes, open the URL Vercel shows.
+- **Home** provides a campus overview: student counts, average score, distribution by status, branch summary and outstanding set-up tasks.
+- **Assign students** connects students to teachers individually or in bulk.
+- **People & roles** grants and revokes teacher and administrator access.
+- **Student records** captures marks, attendance and skills through a form or a JSON import.
+- **Messages** and **Audit log** provide the contact-form inbox and a record of changes to student records.
 
-### 8. Check that it works
+## Deployment on Vercel
 
-1. Open the site. The home page and **/demo** should load with no sign-in.
-2. Go to **/auth**, create an account, and confirm you land on the student **Home**.
-3. Click the chat bubble and ask "What are the score bands?".
+### Requirements
 
-### 9. Make yourself administrator
+Accounts with GitHub, Vercel and a PostgreSQL provider (Neon is used below), and an API key for the language-model provider. The repository must be available on GitHub.
 
-Accounts start as students. On your computer, with `DATABASE_URL` in `.env` pointing at the same Neon database:
+### Procedure
+
+**1. Provision the database**
+
+1. Create a project in Neon in the region nearest the intended users (for Vercel's default region, AWS US East, N. Virginia).
+2. Select **Connect**, enable **Connection pooling**, and copy the connection string. Its host name contains `-pooler`.
+
+**2. Create the schema**
+
+1. Set `DATABASE_URL` in the local `.env` file to the copied string.
+2. Run `npm run db:migrate`, followed by `npm run db:check`. The expected result is `Schema OK`.
+
+This step is repeated whenever a new file is added to `db/migrations`.
+
+**3. Obtain the API key**
+
+Create a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey). Usage is subject to the provider's rate limits.
+
+**4. Generate the session secret**
+
+Run the command shown in [Configuration](#configuration) and retain the output as `JWT_SECRET`.
+
+**5. Import the project into Vercel**
+
+1. Open [vercel.com/new](https://vercel.com/new) and import the `insight-score-dash` repository.
+2. Apply the following settings:
+
+   | Setting          | Value                    |
+   | ---------------- | ------------------------ |
+   | Framework preset | TanStack Start, or Other |
+   | Root directory   | `./`                     |
+   | Build command    | `npm run build`          |
+   | Install command  | `npm install`            |
+   | Output directory | Leave unchanged          |
+   | Node.js version  | 22.x or later            |
+
+3. Under **Environment Variables**, add the following for the Production, Preview and Development environments:
+
+   | Name           | Value                        |
+   | -------------- | ---------------------------- |
+   | `DATABASE_URL` | The pooled connection string |
+   | `JWT_SECRET`   | The session secret           |
+   | `LLM_API_KEY`  | The provider API key         |
+
+   Vercel does not read the local `.env` file; the values must be entered in the project settings.
+
+**6. Select the production branch**
+
+The production branch defaults to `main`. Either set **Settings → Git → Production Branch** to `bib`, or merge `bib` into `main` through a pull request. Pushes to any other branch produce a Preview deployment.
+
+**7. Deploy**
+
+Select **Deploy**, or push a commit to the production branch. When the build completes, open the deployment URL.
+
+**8. Verify the deployment**
+
+1. The home page and `/demo` load without signing in.
+2. An account can be registered at `/auth`, after which the student **Home** page is displayed.
+3. The assistant answers a question such as "What are the score bands?".
+
+**9. Grant administrator access**
+
+With `DATABASE_URL` in the local `.env` pointing to the production database, run:
 
 ```bash
-npm run db:set-role -- you@example.com admin
+npm run db:set-role -- user@example.com admin
 ```
 
-Refresh `/portal` and you will see the administrator menu. Then use **People & roles** to make teachers and **Assign students** to connect students to them.
+### Maintenance
 
-### 10. Later changes
+| Task                  | Procedure                                                          |
+| --------------------- | ------------------------------------------------------------------ |
+| Release an update     | Push to the production branch; Vercel redeploys automatically.     |
+| Apply a schema change | Run `npm run db:migrate` against the production database.          |
+| Change a variable     | Edit it under **Settings → Environment Variables**, then redeploy. |
+| Add a custom domain   | **Settings → Domains → Add**.                                      |
+| Review logs           | **Deployments →** select a deployment **→ Logs**.                  |
 
-- **Update the site:** push to the production branch and Vercel redeploys.
-- **New migrations:** run `npm run db:migrate` against the production database when a new file appears in `db/migrations`.
-- **Change a variable:** edit it in **Settings → Environment Variables**, then redeploy (variables apply to new deployments only).
-- **Custom domain:** **Settings → Domains → Add**.
-- **Logs:** **Deployments →** your deployment **→ Logs** (build output and runtime errors).
+### Troubleshooting
 
-### If something goes wrong
+| Symptom                                                  | Likely cause and resolution                                                                                                              |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| The build fails                                          | Review the build log and confirm the Node.js version is 22 or later.                                                                     |
+| `DATABASE_URL is not set`                                | The variable is missing, or was added after the deployment. Add it and redeploy.                                                         |
+| `JWT_SECRET must be set…`                                | The secret is missing or shorter than 32 characters.                                                                                     |
+| Registration or sign-in fails                            | Run `npm run db:check` with the same `DATABASE_URL`. Confirm that migrations were applied and that the pooled connection string is used. |
+| Too many connections                                     | Use the pooled connection string, or reduce `DATABASE_POOL_MAX`.                                                                         |
+| The assistant reports it is not configured               | `LLM_API_KEY` is not set.                                                                                                                |
+| The assistant reports an error or delay                  | The provider's rate limit may have been reached. Retry later, or configure a different provider with `LLM_BASE_URL` and `LLM_MODEL`.     |
+| The first request after a period of inactivity is slower | The database and serverless function resume on demand. Subsequent requests are not affected.                                             |
 
-| Symptom                                                  | Likely cause and fix                                                                                                                |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Build fails                                              | Open the build log. Make sure the Node.js version in **Settings → General** is 22 or newer.                                         |
-| "DATABASE_URL is not set"                                | The variable is missing or was added after the deploy. Add it, then redeploy.                                                       |
-| "JWT_SECRET must be set…"                                | The secret is missing or shorter than 32 characters.                                                                                |
-| Sign-up or sign-in errors, or pages show a generic error | Run `npm run db:check` with the same `DATABASE_URL`. Most often the migration was not applied, or the string is not the pooled one. |
-| "Too many connections"                                   | Use the pooled Neon string, or lower `DATABASE_POOL_MAX`.                                                                           |
-| Assistant says it is not configured                      | `LLM_API_KEY` is missing.                                                                                                           |
-| Assistant says it is busy or errors                      | Google's free limits are reached. Wait, or set `LLM_BASE_URL` and `LLM_MODEL` for another provider.                                 |
-| First page after a quiet period is slow                  | Free Neon databases and serverless functions wake up on demand. This is normal.                                                     |
+## Security
 
-## Security notes
+- Passwords are hashed with bcrypt (cost factor 12). Sessions are signed JWTs (HS256, seven-day lifetime) stored in an httpOnly, SameSite=Lax cookie, marked Secure in production. No token is stored in browser storage.
+- Roles are read from the database on every request and are not taken from the token. A change to a user's role takes effect immediately.
+- Server functions are protected against cross-site request forgery. The assistant accepts requests only from the site's own origin.
+- Sign-in, registration, assistant requests and feedback submissions are rate limited per IP address. These limits are held in server memory; on a serverless host, platform-level rate limiting (for example, Vercel Firewall) is recommended for stronger protection.
+- Credentials (`DATABASE_URL`, `JWT_SECRET`, `LLM_API_KEY`) must be kept in the hosting environment's settings and never committed to the repository.
 
-- Passwords are hashed with bcrypt (cost 12). The login cookie is httpOnly and SameSite=Lax, and Secure in production. No token is kept in browser storage.
-- Roles are re-read from the database on every request, never trusted from the token. Removing a role takes effect immediately.
-- Server functions are protected against cross-site requests, and the assistant only accepts requests from the site itself.
-- Sign-in, sign-up, chat and feedback are rate limited per IP **in memory**. On Vercel each request may reach a different instance, so these limits are only a light safeguard. For real abuse protection, turn on Vercel's firewall rate limiting.
-- Keep `DATABASE_URL`, `JWT_SECRET` and `LLM_API_KEY` in your host's environment settings, never in the repository.
+## Scoring methodology
 
-## Scoring rules
+The following rules apply to the prototype and do not constitute institutional policy. The weights are defined in `src/lib/types.js`.
 
-Prototype rules, not official university policy. The weights are in `src/lib/types.js`.
+| Component                             | Weight |
+| ------------------------------------- | ------ |
+| Academics (CGPA × 10)                 | 30%    |
+| Attendance                            | 20%    |
+| LMS completion                        | 15%    |
+| Engagement (verified activities only) | 10%    |
+| Skills (average)                      | 10%    |
+| Placement readiness                   | 15%    |
 
-| Component                  | Weight |
-| -------------------------- | ------ |
-| Academics (CGPA × 10)      | 30%    |
-| Attendance %               | 20%    |
-| LMS completion             | 15%    |
-| Engagement (verified only) | 10%    |
-| Skills average             | 10%    |
-| Placement readiness        | 15%    |
+**Status bands:** 80 and above, On Track · 65 to 79, Monitor · 50 to 64, Needs Attention · below 50, High Priority.
 
-Risk bands: **80+ On Track · 65–79 Monitor · 50–64 Needs Attention · below 50 High Priority**.
+**Missing data** is never treated as zero. Components without data are excluded and the remaining weights are rescaled, with a visible indication of completeness.
 
-**Missing data is never treated as zero.** Missing components are left out and the remaining weights are rescaled, with a visible completeness warning.
+**Attendance marks:** 90% or more, 5 · 85% to below 90%, 4 · 80% to below 85%, 3 · 75% to below 80%, 2 · below 75%, 0. The attendance page also reports the number of classes required to reach 75%, 80%, 85% and 90%, and the number that may still be missed.
 
-Attendance marks: 90%+ → 5 · 85–90 → 4 · 80–85 → 3 · 75–80 → 2 · below 75 → 0. The attendance page also shows how many classes are needed to reach 75, 80, 85 and 90%, and how many can still be missed.
+**Placement eligibility** evaluates each criterion as Pass, Fail or Unknown. A student is not reported as eligible while any required criterion is Unknown.
 
-Placement eligibility shows Pass, Fail or **Unknown** for each rule. A student is never marked eligible while a required rule is unknown.
+## Testing
+
+```bash
+npm test
+```
+
+The automated test suite covers attendance band boundaries, classes-required calculations, status band boundaries, missing-data handling, eligibility rules, CSV validation, risk flags, the derivation of per-student and campus summaries, and the alert and deadline logic of the student workspace.
 
 ## Project structure
 
 ```
-db/migrations/        SQL schema (run with npm run db:migrate)
-scripts/              db:migrate, db:check, db:set-role
-src/backend/          server-only code: database pool, JWT sessions, rate limiting
+db/migrations/          SQL schema, applied with npm run db:migrate
+scripts/                Database utilities: migrate, check, set-role
+src/backend/            Server-only modules: connection pool, sessions, rate limiting
 src/lib/
-  auth.functions.js     sign up / in / out, change password, contact form
-  campus.functions.js   records, assignments, interventions, feedback, profile, audit
-  campus-derive.js      scores, bands and summaries for the lists and home pages
-  live-profile.js       alerts and deadlines from real recorded data
-  scoring.js            score, attendance and eligibility rules
-  chat.server.js        website assistant
+  auth.functions.js       Registration, sign-in, sign-out, password change, contact form
+  campus.functions.js     Records, assignments, interventions, feedback, profile, audit
+  campus-derive.js        Scores, status bands and summaries
+  live-profile.js         Alerts and deadlines derived from recorded data
+  scoring.js              Score, attendance and eligibility rules
+  chat.server.js          Website assistant
 src/components/
-  portal/               sidebar shell, role-based pages, interventions, tables
-  student-profile/      the student dashboard tabs
-  AdminTools.jsx        assign students, roles, records, messages
-src/routes/             pages (file-based routing; /portal/* are the private workspaces)
-src/test/               unit tests
+  portal/                 Workspace shell, role-specific pages, interventions, tables
+  student-profile/        Student dashboard components
+  AdminTools.jsx          Assignment, roles, records and messages
+src/routes/             Application pages; /portal/* are the role-based workspaces
+src/test/               Automated tests
 ```
 
-`src/routeTree.gen.ts` is generated by TanStack Router and is the only TypeScript file. Do not edit it.
+`src/routeTree.gen.ts` is generated by TanStack Router and should not be edited manually.
 
-## Scripts
+## Command reference
 
-| Command                             | What it does                                                          |
-| ----------------------------------- | --------------------------------------------------------------------- |
-| `npm run dev`                       | Development server                                                    |
-| `npm run build`                     | Production build (on Vercel this produces Vercel's output format)     |
-| `npm start`                         | Run a built app as a Node server (loads `.env`)                       |
-| `npm test`                          | Unit tests                                                            |
-| `npm run lint`                      | ESLint                                                                |
-| `npm run db:migrate`                | Apply new SQL migrations                                              |
-| `npm run db:check`                  | Check the database connection and tables                              |
-| `npm run db:set-role -- email role` | Give or remove a role (`student`, `faculty`, `admin`; add `--revoke`) |
+| Command                                 | Purpose                                                                     |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| `npm run dev`                           | Start the development server                                                |
+| `npm run build`                         | Create a production build (Vercel output format when built on Vercel)       |
+| `npm start`                             | Run a production build as a Node.js server, loading `.env`                  |
+| `npm test`                              | Run the automated tests                                                     |
+| `npm run lint`                          | Run the linter                                                              |
+| `npm run db:migrate`                    | Apply pending database migrations                                           |
+| `npm run db:check`                      | Verify the database connection and schema                                   |
+| `npm run db:set-role -- <email> <role>` | Grant a role (`student`, `faculty` or `admin`); add `--revoke` to remove it |
 
-## Known limits
+## Roadmap
 
-- **No email.** There is no self-service password reset or email confirmation. Signed-in users can change their password at `/reset-password`. Add an email provider before opening sign-up to the public.
-- **No Google sign-in.** Only email and password.
-- **Data entry is manual.** Marks, attendance and skills are entered by staff (form or JSON). A live import from campus systems is not built; see `roadmap.md`.
-- **Free tiers are small.** Gemini's free quota and a free Neon database suit a prototype or demo, not a full campus.
+Planned enhancements:
+
+- Email-based address verification and self-service password recovery
+- Integration with campus systems for automated data import
+- Configurable scoring weights and thresholds
+- Notification delivery to students and mentors
+- Evidence review and approval workflows for engagement activities
+- Peer comparison with fairness safeguards
