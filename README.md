@@ -8,7 +8,13 @@ A prototype that unifies seven student data sources — academics, attendance, L
 
 ## Demo mode
 
-The app runs in **synthetic demo mode**: all data is fictional and persisted in the browser (localStorage). No live university system is connected, and no secrets are used. Use **Reset demo** in the header to restore seed data. If Lovable Cloud is enabled later, the same screens can be backed by a real database with row-level security (students see their own records, faculty see assigned students, admins see administrative data).
+Public dashboards run in **synthetic demo mode**: all their data is fictional and persisted in the browser (localStorage). Use **Reset demo** in the dashboard header to restore seed data. No live university system is connected.
+
+The public website adds a campus introduction, solution, role benefits, privacy, contact, and sign-in pages. The separate `/portal` uses Cloud authentication and database-enforced permissions. New accounts receive only student access; an authorized operator must assign staff roles in `user_roles` and link records to student owners and assigned faculty. Workspace selection at login never grants authority. Administrators can save validated records; authorized mentors can create support actions and record outcomes. Contact messages require sign-in and are stored, not emailed.
+
+The website assistant provides product guidance and clickable navigation links, with one visit-only conversation and no private record access. Its gateway key remains server-side.
+
+The complete PDF feature set is **not yet implemented**. Detailed editable learning workflows, live import, fair peer comparisons, evidence approval, configurable scoring controls, and notifications remain tracked in `roadmap.md`. Successful account registration, email confirmation, password recovery, and authenticated role flows require further end-to-end verification with an account.
 
 ## Setup
 
@@ -59,4 +65,4 @@ Open **Hackathon Demo** in the nav for the repeatable 8-step walkthrough (studen
 
 ## Deployment
 
-Publish from the Lovable editor (Publish button). No environment variables are required in demo mode.
+Publish from the Lovable editor (Publish button). Public fictional dashboards do not need credentials. Cloud account features use the managed Supabase integration; the guide uses `LOVABLE_API_KEY` server-side. Verify authentication redirects and provider configuration before production deployment.
