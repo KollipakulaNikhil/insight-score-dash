@@ -60,6 +60,27 @@ function Admin() {
     ).toFixed(2),
   }));
 
+  const flagStats = useMemo(() => {
+    const levels: FlagLevel[] = ["Low", "Medium", "High"];
+    const count = (fn: (s: (typeof filtered)[number]) => FlagLevel) =>
+      levels.map((l) => ({ level: l, count: filtered.filter((s) => fn(s) === l).length }));
+    const academic = count((s) => academicRisk(s).level);
+    const placement = count((s) => placementRisk(s).level);
+    const heatmap = branches.map((b) => {
+      const ss = students.filter((s) => s.branch === b);
+      const cell = (fn: (s: (typeof ss)[number]) => FlagLevel, l: FlagLevel) => ss.filter((s) => fn(s) === l).length;
+      return {
+        branch: b,
+        acadHigh: cell((s) => academicRisk(s).level, "High"),
+        acadMed: cell((s) => academicRisk(s).level, "Medium"),
+        placeHigh: cell((s) => placementRisk(s).level, "High"),
+        placeMed: cell((s) => placementRisk(s).level, "Medium"),
+        total: ss.length,
+      };
+    });
+    return { academic, placement, heatmap };
+  }, [filtered, branches, students]);
+
   const quality = useMemo(() => {
     let missing = 0;
     const fields = filtered.flatMap((s) => Object.values(componentScores(s)));
