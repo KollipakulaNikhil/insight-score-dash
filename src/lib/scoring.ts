@@ -68,24 +68,53 @@ export function pendingAssignments(s: Student) {
   );
 }
 
+// LMS split into lesson-completion % and assignment-completion % (official rule set)
+export function lmsParts(s: Student): { lessonsPct: number | null; assignmentPct: number | null } {
+  let lessonsTotal = 0, lessonsDone = 0, assignTotal = 0, assignDone = 0;
+  for (const sub of s.lms) {
+    for (const u of sub.units) {
+      for (const l of u.lessons) {
+        lessonsTotal++;
+        if (l.completed) lessonsDone++;
+      }
+      assignTotal++;
+      if (u.assignment.submitted) assignDone++;
+    }
+  }
+  return {
+    lessonsPct: lessonsTotal === 0 ? null : (lessonsDone / lessonsTotal) * 100,
+    assignmentPct: assignTotal === 0 ? null : (assignDone / assignTotal) * 100,
+  };
+}
+
 // ---------- Component scores (each 0-100, null when data missing) ----------
+// Formulas mirror the dataset's official scoring.py so the app reproduces the answer key.
 export function componentScores(s: Student) {
   const academics = s.cgpa > 0 ? s.cgpa * 10 : null;
   const attendance = studentAttendancePct(s);
-  const lms = lmsCompletion(s);
-  const verified = s.engagement.filter((e) => e.verified).length;
-  const engagement = s.engagement.length === 0 ? null : Math.min(100, verified * 20);
+  const { lessonsPct, assignmentPct } = lmsParts(s);
+  const lmsPartsPresent = [lessonsPct, assignmentPct].filter((v): v is number => v !== null);
+  const lms = lmsPartsPresent.length === 0 ? null : lmsPartsPresent.reduce((a, b) => a + b, 0) / lmsPartsPresent.length;
+  const engCount = (t: string) => s.engagement.filter((e) => e.type === t).length;
+  const engagement = s.engagement.length === 0
+    ? null
+    : Math.min(100, engCount("club") * 8 + engCount("event") * 4 + engCount("hackathon") * 12 + engCount("certification") * 10);
   const sk = s.skills;
-  const skillsVals = [sk.coding, sk.aptitude, sk.analytical, sk.verbal, sk.communication];
-  const skills = skillsVals.every((v) => v >= 0)
-    ? skillsVals.reduce((a, b) => a + b, 0) / skillsVals.length
-    : null;
+  const skillsVals = [sk.coding, sk.aptitude, sk.verbal, sk.communication].filter((v) => v >= 0);
+  const skills = skillsVals.length === 0 ? null : skillsVals.reduce((a, b) => a + b, 0) / skillsVals.length;
   const assessmentPct =
     s.assessmentsRequired > 0 ? (s.assessmentsCompleted / s.assessmentsRequired) * 100 : null;
-  const placement =
-    s.resumeCompleteness >= 0 && assessmentPct !== null
-      ? s.resumeCompleteness * 0.5 + assessmentPct * 0.5
-      : null;
+  const mockPct =
+    s.mockInterviews !== undefined && s.mockInterviews >= 0 ? Math.min(100, (s.mockInterviews / 3) * 100) : null;
+  const plcParts: [number | null, number][] = [
+    [s.resumeCompleteness >= 0 ? s.resumeCompleteness : null, 0.4],
+    [assessmentPct, 0.3],
+    [mockPct, 0.3],
+  ];
+  const plcPresent = plcParts.filter((p): p is [number, number] => p[0] !== null);
+  const placement = plcPresent.length === 0
+    ? null
+    : plcPresent.reduce((a, [v, w]) => a + v * w, 0) / plcPresent.reduce((a, [, w]) => a + w, 0);
   return { academics, attendance, lms, engagement, skills, placement };
 }
 
