@@ -17,7 +17,7 @@ export function parseStudentCsv(text: string, existingIds: Set<string>): { resul
   const seen = new Set(existingIds);
 
   for (let i = 1; i < lines.length; i++) {
-    const vals = lines[i].split(",").map((v) => v.trim());
+    const vals = (lines[i] ?? "").split(",").map((v) => v.trim());
     const rec: Record<string, string> = {};
     headers.forEach((h, j) => (rec[h] = vals[j] ?? ""));
     const errors: string[] = [];
