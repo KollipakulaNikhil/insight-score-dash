@@ -53,7 +53,7 @@ export function parseStudentCsv(text: string, existingIds: Set<string>): { resul
         subjects: attPct === null ? [] : [{ subject: "Imported aggregate", marks: 0, classesHeld: held, classesAttended: attended }],
         lms: [],
         skills: { coding: num("coding"), aptitude: num("aptitude"), analytical: num("analytical"), verbal: num("verbal"), communication: num("communication") },
-        engagement: [], resumeCompleteness: num("resume_completeness"), targetRoles: [],
+        engagement: [], hasEngagementData: false, resumeCompleteness: num("resume_completeness"), targetRoles: [],
         assessmentsCompleted: 0, assessmentsRequired: 0, facultyFeedback: [], studentFeedback: [],
       };
     }

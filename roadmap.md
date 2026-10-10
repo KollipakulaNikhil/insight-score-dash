@@ -7,6 +7,7 @@
 - [ ] Phase 2: secure record portal, manual registration/editing, CSV/Excel validation and audited saving; keep demo distinct.
 - [ ] Phase 3: separate academic/placement risk, evidence-driven segments and transparent scoring.
 - [x] Dual risk flags: config-driven points table (src/lib/risk-flags.ts), Academic Risk + Placement Risk badges with sorted drivers on student profile, filterable faculty columns, admin flag counts + branch × flag heatmap; High flag blocks On Track band. 6 new tests pass; pages verified in preview.
+- [x] Load the uploaded 300-student BIB dataset as the app seed; scoring, dual risk flags, bands and segments aligned to the dataset's official scoring.py; verified 0 mismatches against the reference answer key (src/test/dataset.test.ts).
 - [ ] Publish the app so the public shareable link works for friends (user requested).
 - [ ] Phase 4: detailed academics, attendance and six-unit LMS editing/workflows.
 - [ ] Phase 5: practice attempts, engagement evidence review, placement/resume and confidential feedback workflows.
