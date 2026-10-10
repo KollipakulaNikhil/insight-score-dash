@@ -71,7 +71,12 @@ function StudentProfile() {
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{isStudent ? "Welcome back" : "Student profile"}</p>
           <h1 className="font-display text-2xl font-bold">{s.name}</h1>
           <p className="text-sm text-muted-foreground">{s.id} · {s.branch} · Semester {s.semester} · Graduating {s.gradYear}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-2"><BandBadge score={r.score} /><span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">Segment: {seg.name}</span></div>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {band === r.band ? <BandBadge score={r.score} /> : <span className="rounded-full bg-warning/15 px-2 py-0.5 text-xs font-medium text-warning">{band} (lowered by High risk flag)</span>}
+            <FlagBadge label="Academic risk" flag={acad} />
+            <FlagBadge label="Placement risk" flag={place} />
+            <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">Segment: {seg.name}</span>
+          </div>
         </div>
         <div className="ml-auto grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="CGPA" value={s.cgpa.toFixed(2)} />
@@ -100,6 +105,29 @@ function StudentProfile() {
         {tab === "Feedback" && <Feedback s={s} canFile={isStudent || !session} />}
       </div>
     </Layout>
+  );
+}
+
+function FlagBadge({ label, flag }: { label: string; flag: RiskFlagResult }) {
+  const cls = flag.level === "High" ? "bg-destructive/15 text-destructive" : flag.level === "Medium" ? "bg-warning/15 text-warning" : "bg-success/15 text-success";
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label}: {flag.level} ({flag.points} pts)</span>;
+}
+
+function FlagDrivers({ title, flag }: { title: string; flag: RiskFlagResult }) {
+  return (
+    <div>
+      <p className="mb-1 font-medium">{title} — <FlagBadge label="" flag={flag} /></p>
+      {flag.drivers.length === 0 && <p className="text-sm text-muted-foreground">No signals triggered.</p>}
+      <ul className="space-y-1 text-sm">
+        {flag.drivers.map((d) => (
+          <li key={d.signal} className="flex justify-between gap-2 border-b border-border/50 pb-1">
+            <span>{d.signal} <span className="text-muted-foreground">({d.value}; {d.threshold})</span></span>
+            <span className="font-medium text-destructive">+{d.points}</span>
+          </li>
+        ))}
+      </ul>
+      {flag.insufficient.length > 0 && <p className="mt-1 text-xs text-muted-foreground">Insufficient data: {flag.insufficient.join(", ")}</p>}
+    </div>
   );
 }
 
