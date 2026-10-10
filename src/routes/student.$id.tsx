@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { addComplaint, useAppState } from "@/lib/store";
 import { successScore, studentAttendancePct, lmsCompletion, checkEligibility, recommendations, crossSourceInsights } from "@/lib/scoring";
+import { academicRisk, placementRisk, effectiveBand, type RiskFlagResult } from "@/lib/risk-flags";
 import { SEED_DRIVES } from "@/lib/seed";
 import { DEFAULT_WEIGHTS, type Student } from "@/lib/types";
 import { useDemoSession } from "@/lib/demo-session";
@@ -57,6 +58,9 @@ function StudentProfile() {
   const notes = notifications(s);
   const seg = segmentOf(s);
   const isStudent = session?.role === "student";
+  const acad = academicRisk(s);
+  const place = placementRisk(s);
+  const band = effectiveBand(r.score, r.band, acad, place);
 
   return (
     <Layout allow={["student", "faculty", "admin"]}>
