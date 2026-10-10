@@ -32,8 +32,8 @@ describe("risk bands", () => {
     expect(riskBand(79.9)).toBe("Monitor");
     expect(riskBand(65)).toBe("Monitor");
     expect(riskBand(64.9)).toBe("Needs Attention");
-    expect(riskBand(40)).toBe("Needs Attention");
-    expect(riskBand(39.9)).toBe("High Priority");
+    expect(riskBand(50)).toBe("Needs Attention");
+    expect(riskBand(49.9)).toBe("High Priority");
   });
 });
 
