@@ -32,7 +32,7 @@ describe("risk flags", () => {
     expect(a.level).toBe("High"); // 30 + 25 + 20 = 75
     expect(a.points).toBe(75);
     expect(a.drivers.map((d) => d.points)).toEqual([30, 25, 20]);
-    expect(a.drivers[0].signal).toBe("CGPA below 6.5");
+    expect(a.drivers[0]!.signal).toBe("CGPA below 6.5");
   });
 
   it("missing inputs add no points and are reported as insufficient data", () => {
@@ -47,7 +47,8 @@ describe("risk flags", () => {
   it("placement flag fires on weak resume and pending assessments", () => {
     const s = baseStudent({ resumeCompleteness: 50, assessmentsCompleted: 1, assessmentsRequired: 4 });
     const p = placementRisk(s);
-    expect(p.points).toBe(40); // 20 + 20
+    // weak resume 20 + pending assessments 20 + low readiness (37.5%) 30
+    expect(p.points).toBe(70);
     expect(p.level).toBe("High");
   });
 
