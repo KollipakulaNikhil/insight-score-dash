@@ -26,7 +26,8 @@ const seedState = (): AppState => ({
   importLog: [],
 });
 
-let state: AppState = seedState();
+const serverState: AppState = seedState();
+let state: AppState = serverState;
 const listeners = new Set<() => void>();
 
 function load() {
@@ -59,7 +60,7 @@ export function useAppState(): AppState {
       return () => listeners.delete(cb);
     },
     () => state,
-    () => state,
+    () => serverState,
   );
 }
 
