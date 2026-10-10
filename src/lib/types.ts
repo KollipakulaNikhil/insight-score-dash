@@ -55,6 +55,8 @@ export interface Student {
   semesterGrades: number[]; // SGPA history
   backlogs: number;
   subjects: SubjectMark[];
+  subjectsBelow75?: number | null; // count from the attendance source; null = unknown
+  hasEngagementData?: boolean; // false = engagement source missing (not zero)
   lms: LmsSubject[];
   skills: Skills;
   engagement: EngagementItem[];

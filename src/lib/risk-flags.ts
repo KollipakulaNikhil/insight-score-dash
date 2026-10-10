@@ -33,8 +33,11 @@ export interface RiskFlagResult {
   insufficient: string[]; // signals with missing data
 }
 
-const subjectsBelow75 = (s: Student) =>
-  s.subjects.filter((x) => x.classesHeld > 0 && x.classesAttended / x.classesHeld < 0.75).length;
+const subjectsBelow75 = (s: Student): number | null => {
+  if (s.subjectsBelow75 !== undefined && s.subjectsBelow75 !== null) return s.subjectsBelow75;
+  if (s.subjects.length === 0) return null;
+  return s.subjects.filter((x) => x.classesHeld > 0 && x.classesAttended / x.classesHeld < 0.75).length;
+};
 
 const sgpaDrop = (s: Student): number | null => {
   if (s.semesterGrades.length < 2) return null;
