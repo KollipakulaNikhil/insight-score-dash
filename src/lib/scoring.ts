@@ -199,7 +199,9 @@ export function crossSourceInsights(students: Student[]): Insight[] {
     const lms = lmsCompletion(s);
     const c = componentScores(s);
     const grades = s.semesterGrades;
-    const declining = grades.length >= 2 && grades[grades.length - 1] < grades[0] - 0.5;
+    const firstG = grades[0] ?? 0;
+    const lastG = grades[grades.length - 1] ?? 0;
+    const declining = grades.length >= 2 && lastG < firstG - 0.5;
     let riskCount = 0;
 
     if (s.cgpa >= 8 && att !== null && att < 75) {
@@ -208,7 +210,7 @@ export function crossSourceInsights(students: Student[]): Insight[] {
     }
     if (att !== null && att >= 90 && declining) {
       riskCount++;
-      out.push({ studentId: s.id, studentName: s.name, type: "High attendance, declining academics", detail: `Attendance ${att.toFixed(0)}% but SGPA fell from ${grades[0].toFixed(1)} to ${grades[grades.length - 1].toFixed(1)}.`, severity: "warning" });
+      out.push({ studentId: s.id, studentName: s.name, type: "High attendance, declining academics", detail: `Attendance ${att.toFixed(0)}% but SGPA fell from ${firstG.toFixed(1)} to ${lastG.toFixed(1)}.`, severity: "warning" });
     }
     if (s.cgpa >= 7.5 && lms !== null && lms < 60) {
       riskCount++;

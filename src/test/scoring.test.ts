@@ -54,7 +54,7 @@ describe("eligibility", () => {
     expect(r.criteria.some((c) => c.result === "Unknown")).toBe(true);
   });
   it("eligible when all pass", () => {
-    expect(checkEligibility(SEED_STUDENTS[0], SEED_DRIVES[0]).eligible).toBe(true);
+    expect(checkEligibility(SEED_STUDENTS[0]!, SEED_DRIVES[0]!).eligible).toBe(true);
   });
 });
 
@@ -62,8 +62,8 @@ describe("csv import", () => {
   it("flags duplicates and missing fields", () => {
     const csv = `student_id,name,branch,semester,grad_year,cgpa\nBIB-2026-001,X,CSE,6,2027,8\nBIB-2026-050,,CSE,6,2027,8\nBIB-2026-051,Y,CSE,6,2027,11`;
     const { results } = parseStudentCsv(csv, new Set(["BIB-2026-001"]));
-    expect(results[0].isDuplicate).toBe(true);
-    expect(results[1].missing).toContain("name");
-    expect(results[2].errors).toContain("cgpa must be 0–10");
+    expect(results[0]!.isDuplicate).toBe(true);
+    expect(results[1]!.missing).toContain("name");
+    expect(results[2]!.errors).toContain("cgpa must be 0–10");
   });
 });
