@@ -25,7 +25,27 @@ import { Route as StudentRouteImport } from './routes/student'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as StudentIdRouteImport } from './routes/student.$id'
+import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as AuthenticatedPortalAssignRouteImport } from './routes/_authenticated/portal.assign'
+import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
+import { Route as AuthenticatedPortalAuditRouteImport } from './routes/_authenticated/portal.audit'
+import { Route as AuthenticatedPortalDashboardRouteImport } from './routes/_authenticated/portal.dashboard'
+import { Route as AuthenticatedPortalEngagementRouteImport } from './routes/_authenticated/portal.engagement'
+import { Route as AuthenticatedPortalFeedbackRouteImport } from './routes/_authenticated/portal.feedback'
+import { Route as AuthenticatedPortalInterventionsRouteImport } from './routes/_authenticated/portal.interventions'
+import { Route as AuthenticatedPortalLearningRouteImport } from './routes/_authenticated/portal.learning'
+import { Route as AuthenticatedPortalLmsRouteImport } from './routes/_authenticated/portal.lms'
+import { Route as AuthenticatedPortalMessagesRouteImport } from './routes/_authenticated/portal.messages'
+import { Route as AuthenticatedPortalMonitorRouteImport } from './routes/_authenticated/portal.monitor'
+import { Route as AuthenticatedPortalPeopleRouteImport } from './routes/_authenticated/portal.people'
+import { Route as AuthenticatedPortalPlacementRouteImport } from './routes/_authenticated/portal.placement'
+import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalRecordsRouteImport } from './routes/_authenticated/portal.records'
+import { Route as AuthenticatedPortalSkillsRouteImport } from './routes/_authenticated/portal.skills'
+import { Route as AuthenticatedPortalTeachersRouteImport } from './routes/_authenticated/portal.teachers'
 import { Route as ApiPublicChatRouteImport } from './routes/api.public.chat'
+import { Route as AuthenticatedPortalStudentsIndexRouteImport } from './routes/_authenticated/portal.students.index'
+import { Route as AuthenticatedPortalStudentsIdRouteImport } from './routes/_authenticated/portal.students.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -106,11 +126,130 @@ const StudentIdRoute = StudentIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => StudentRoute,
 } as any)
+const AuthenticatedPortalIndexRoute =
+  AuthenticatedPortalIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalAssignRoute =
+  AuthenticatedPortalAssignRouteImport.update({
+    id: '/assign',
+    path: '/assign',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalAttendanceRoute =
+  AuthenticatedPortalAttendanceRouteImport.update({
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalAuditRoute =
+  AuthenticatedPortalAuditRouteImport.update({
+    id: '/audit',
+    path: '/audit',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalDashboardRoute =
+  AuthenticatedPortalDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalEngagementRoute =
+  AuthenticatedPortalEngagementRouteImport.update({
+    id: '/engagement',
+    path: '/engagement',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalFeedbackRoute =
+  AuthenticatedPortalFeedbackRouteImport.update({
+    id: '/feedback',
+    path: '/feedback',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalInterventionsRoute =
+  AuthenticatedPortalInterventionsRouteImport.update({
+    id: '/interventions',
+    path: '/interventions',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalLearningRoute =
+  AuthenticatedPortalLearningRouteImport.update({
+    id: '/learning',
+    path: '/learning',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalLmsRoute = AuthenticatedPortalLmsRouteImport.update({
+  id: '/lms',
+  path: '/lms',
+  getParentRoute: () => AuthenticatedPortalRoute,
+} as any)
+const AuthenticatedPortalMessagesRoute =
+  AuthenticatedPortalMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalMonitorRoute =
+  AuthenticatedPortalMonitorRouteImport.update({
+    id: '/monitor',
+    path: '/monitor',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalPeopleRoute =
+  AuthenticatedPortalPeopleRouteImport.update({
+    id: '/people',
+    path: '/people',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalPlacementRoute =
+  AuthenticatedPortalPlacementRouteImport.update({
+    id: '/placement',
+    path: '/placement',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalProfileRoute =
+  AuthenticatedPortalProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalRecordsRoute =
+  AuthenticatedPortalRecordsRouteImport.update({
+    id: '/records',
+    path: '/records',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalSkillsRoute =
+  AuthenticatedPortalSkillsRouteImport.update({
+    id: '/skills',
+    path: '/skills',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalTeachersRoute =
+  AuthenticatedPortalTeachersRouteImport.update({
+    id: '/teachers',
+    path: '/teachers',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const ApiPublicChatRoute = ApiPublicChatRouteImport.update({
   id: '/api/public/chat',
   path: '/api/public/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPortalStudentsIndexRoute =
+  AuthenticatedPortalStudentsIndexRouteImport.update({
+    id: '/students/',
+    path: '/students/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalStudentsIdRoute =
+  AuthenticatedPortalStudentsIdRouteImport.update({
+    id: '/students/$id',
+    path: '/students/$id',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -125,10 +264,30 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
   '/student': typeof StudentRouteWithChildren
-  '/portal': typeof AuthenticatedPortalRoute
+  '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/student/$id': typeof StudentIdRoute
   '/student/': typeof StudentIndexRoute
+  '/portal/assign': typeof AuthenticatedPortalAssignRoute
+  '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
+  '/portal/audit': typeof AuthenticatedPortalAuditRoute
+  '/portal/dashboard': typeof AuthenticatedPortalDashboardRoute
+  '/portal/engagement': typeof AuthenticatedPortalEngagementRoute
+  '/portal/feedback': typeof AuthenticatedPortalFeedbackRoute
+  '/portal/interventions': typeof AuthenticatedPortalInterventionsRoute
+  '/portal/learning': typeof AuthenticatedPortalLearningRoute
+  '/portal/lms': typeof AuthenticatedPortalLmsRoute
+  '/portal/messages': typeof AuthenticatedPortalMessagesRoute
+  '/portal/monitor': typeof AuthenticatedPortalMonitorRoute
+  '/portal/people': typeof AuthenticatedPortalPeopleRoute
+  '/portal/placement': typeof AuthenticatedPortalPlacementRoute
+  '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/records': typeof AuthenticatedPortalRecordsRoute
+  '/portal/skills': typeof AuthenticatedPortalSkillsRoute
+  '/portal/teachers': typeof AuthenticatedPortalTeachersRoute
   '/api/public/chat': typeof ApiPublicChatRoute
+  '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/students/$id': typeof AuthenticatedPortalStudentsIdRoute
+  '/portal/students/': typeof AuthenticatedPortalStudentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,10 +301,29 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
-  '/portal': typeof AuthenticatedPortalRoute
   '/student/$id': typeof StudentIdRoute
   '/student': typeof StudentIndexRoute
+  '/portal/assign': typeof AuthenticatedPortalAssignRoute
+  '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
+  '/portal/audit': typeof AuthenticatedPortalAuditRoute
+  '/portal/dashboard': typeof AuthenticatedPortalDashboardRoute
+  '/portal/engagement': typeof AuthenticatedPortalEngagementRoute
+  '/portal/feedback': typeof AuthenticatedPortalFeedbackRoute
+  '/portal/interventions': typeof AuthenticatedPortalInterventionsRoute
+  '/portal/learning': typeof AuthenticatedPortalLearningRoute
+  '/portal/lms': typeof AuthenticatedPortalLmsRoute
+  '/portal/messages': typeof AuthenticatedPortalMessagesRoute
+  '/portal/monitor': typeof AuthenticatedPortalMonitorRoute
+  '/portal/people': typeof AuthenticatedPortalPeopleRoute
+  '/portal/placement': typeof AuthenticatedPortalPlacementRoute
+  '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/records': typeof AuthenticatedPortalRecordsRoute
+  '/portal/skills': typeof AuthenticatedPortalSkillsRoute
+  '/portal/teachers': typeof AuthenticatedPortalTeachersRoute
   '/api/public/chat': typeof ApiPublicChatRoute
+  '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/students/$id': typeof AuthenticatedPortalStudentsIdRoute
+  '/portal/students': typeof AuthenticatedPortalStudentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -162,10 +340,30 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
   '/student': typeof StudentRouteWithChildren
-  '/_authenticated/portal': typeof AuthenticatedPortalRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/student/$id': typeof StudentIdRoute
   '/student/': typeof StudentIndexRoute
+  '/_authenticated/portal/assign': typeof AuthenticatedPortalAssignRoute
+  '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
+  '/_authenticated/portal/audit': typeof AuthenticatedPortalAuditRoute
+  '/_authenticated/portal/dashboard': typeof AuthenticatedPortalDashboardRoute
+  '/_authenticated/portal/engagement': typeof AuthenticatedPortalEngagementRoute
+  '/_authenticated/portal/feedback': typeof AuthenticatedPortalFeedbackRoute
+  '/_authenticated/portal/interventions': typeof AuthenticatedPortalInterventionsRoute
+  '/_authenticated/portal/learning': typeof AuthenticatedPortalLearningRoute
+  '/_authenticated/portal/lms': typeof AuthenticatedPortalLmsRoute
+  '/_authenticated/portal/messages': typeof AuthenticatedPortalMessagesRoute
+  '/_authenticated/portal/monitor': typeof AuthenticatedPortalMonitorRoute
+  '/_authenticated/portal/people': typeof AuthenticatedPortalPeopleRoute
+  '/_authenticated/portal/placement': typeof AuthenticatedPortalPlacementRoute
+  '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/_authenticated/portal/records': typeof AuthenticatedPortalRecordsRoute
+  '/_authenticated/portal/skills': typeof AuthenticatedPortalSkillsRoute
+  '/_authenticated/portal/teachers': typeof AuthenticatedPortalTeachersRoute
   '/api/public/chat': typeof ApiPublicChatRoute
+  '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/students/$id': typeof AuthenticatedPortalStudentsIdRoute
+  '/_authenticated/portal/students/': typeof AuthenticatedPortalStudentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -185,7 +383,27 @@ export interface FileRouteTypes {
     | '/portal'
     | '/student/$id'
     | '/student/'
+    | '/portal/assign'
+    | '/portal/attendance'
+    | '/portal/audit'
+    | '/portal/dashboard'
+    | '/portal/engagement'
+    | '/portal/feedback'
+    | '/portal/interventions'
+    | '/portal/learning'
+    | '/portal/lms'
+    | '/portal/messages'
+    | '/portal/monitor'
+    | '/portal/people'
+    | '/portal/placement'
+    | '/portal/profile'
+    | '/portal/records'
+    | '/portal/skills'
+    | '/portal/teachers'
     | '/api/public/chat'
+    | '/portal/'
+    | '/portal/students/$id'
+    | '/portal/students/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,10 +417,29 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/solution'
-    | '/portal'
     | '/student/$id'
     | '/student'
+    | '/portal/assign'
+    | '/portal/attendance'
+    | '/portal/audit'
+    | '/portal/dashboard'
+    | '/portal/engagement'
+    | '/portal/feedback'
+    | '/portal/interventions'
+    | '/portal/learning'
+    | '/portal/lms'
+    | '/portal/messages'
+    | '/portal/monitor'
+    | '/portal/people'
+    | '/portal/placement'
+    | '/portal/profile'
+    | '/portal/records'
+    | '/portal/skills'
+    | '/portal/teachers'
     | '/api/public/chat'
+    | '/portal'
+    | '/portal/students/$id'
+    | '/portal/students'
   id:
     | '__root__'
     | '/'
@@ -221,7 +458,27 @@ export interface FileRouteTypes {
     | '/_authenticated/portal'
     | '/student/$id'
     | '/student/'
+    | '/_authenticated/portal/assign'
+    | '/_authenticated/portal/attendance'
+    | '/_authenticated/portal/audit'
+    | '/_authenticated/portal/dashboard'
+    | '/_authenticated/portal/engagement'
+    | '/_authenticated/portal/feedback'
+    | '/_authenticated/portal/interventions'
+    | '/_authenticated/portal/learning'
+    | '/_authenticated/portal/lms'
+    | '/_authenticated/portal/messages'
+    | '/_authenticated/portal/monitor'
+    | '/_authenticated/portal/people'
+    | '/_authenticated/portal/placement'
+    | '/_authenticated/portal/profile'
+    | '/_authenticated/portal/records'
+    | '/_authenticated/portal/skills'
+    | '/_authenticated/portal/teachers'
     | '/api/public/chat'
+    | '/_authenticated/portal/'
+    | '/_authenticated/portal/students/$id'
+    | '/_authenticated/portal/students/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -355,6 +612,132 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentIdRouteImport
       parentRoute: typeof StudentRoute
     }
+    '/_authenticated/portal/': {
+      id: '/_authenticated/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/assign': {
+      id: '/_authenticated/portal/assign'
+      path: '/assign'
+      fullPath: '/portal/assign'
+      preLoaderRoute: typeof AuthenticatedPortalAssignRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/attendance': {
+      id: '/_authenticated/portal/attendance'
+      path: '/attendance'
+      fullPath: '/portal/attendance'
+      preLoaderRoute: typeof AuthenticatedPortalAttendanceRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/audit': {
+      id: '/_authenticated/portal/audit'
+      path: '/audit'
+      fullPath: '/portal/audit'
+      preLoaderRoute: typeof AuthenticatedPortalAuditRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/dashboard': {
+      id: '/_authenticated/portal/dashboard'
+      path: '/dashboard'
+      fullPath: '/portal/dashboard'
+      preLoaderRoute: typeof AuthenticatedPortalDashboardRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/engagement': {
+      id: '/_authenticated/portal/engagement'
+      path: '/engagement'
+      fullPath: '/portal/engagement'
+      preLoaderRoute: typeof AuthenticatedPortalEngagementRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/feedback': {
+      id: '/_authenticated/portal/feedback'
+      path: '/feedback'
+      fullPath: '/portal/feedback'
+      preLoaderRoute: typeof AuthenticatedPortalFeedbackRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/interventions': {
+      id: '/_authenticated/portal/interventions'
+      path: '/interventions'
+      fullPath: '/portal/interventions'
+      preLoaderRoute: typeof AuthenticatedPortalInterventionsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/learning': {
+      id: '/_authenticated/portal/learning'
+      path: '/learning'
+      fullPath: '/portal/learning'
+      preLoaderRoute: typeof AuthenticatedPortalLearningRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/lms': {
+      id: '/_authenticated/portal/lms'
+      path: '/lms'
+      fullPath: '/portal/lms'
+      preLoaderRoute: typeof AuthenticatedPortalLmsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/messages': {
+      id: '/_authenticated/portal/messages'
+      path: '/messages'
+      fullPath: '/portal/messages'
+      preLoaderRoute: typeof AuthenticatedPortalMessagesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/monitor': {
+      id: '/_authenticated/portal/monitor'
+      path: '/monitor'
+      fullPath: '/portal/monitor'
+      preLoaderRoute: typeof AuthenticatedPortalMonitorRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/people': {
+      id: '/_authenticated/portal/people'
+      path: '/people'
+      fullPath: '/portal/people'
+      preLoaderRoute: typeof AuthenticatedPortalPeopleRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/placement': {
+      id: '/_authenticated/portal/placement'
+      path: '/placement'
+      fullPath: '/portal/placement'
+      preLoaderRoute: typeof AuthenticatedPortalPlacementRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/profile': {
+      id: '/_authenticated/portal/profile'
+      path: '/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/records': {
+      id: '/_authenticated/portal/records'
+      path: '/records'
+      fullPath: '/portal/records'
+      preLoaderRoute: typeof AuthenticatedPortalRecordsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/skills': {
+      id: '/_authenticated/portal/skills'
+      path: '/skills'
+      fullPath: '/portal/skills'
+      preLoaderRoute: typeof AuthenticatedPortalSkillsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/teachers': {
+      id: '/_authenticated/portal/teachers'
+      path: '/teachers'
+      fullPath: '/portal/teachers'
+      preLoaderRoute: typeof AuthenticatedPortalTeachersRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/api/public/chat': {
       id: '/api/public/chat'
       path: '/api/public/chat'
@@ -362,15 +745,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/portal/students/': {
+      id: '/_authenticated/portal/students/'
+      path: '/students'
+      fullPath: '/portal/students/'
+      preLoaderRoute: typeof AuthenticatedPortalStudentsIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/students/$id': {
+      id: '/_authenticated/portal/students/$id'
+      path: '/students/$id'
+      fullPath: '/portal/students/$id'
+      preLoaderRoute: typeof AuthenticatedPortalStudentsIdRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
   }
 }
 
+interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalAssignRoute: typeof AuthenticatedPortalAssignRoute
+  AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
+  AuthenticatedPortalAuditRoute: typeof AuthenticatedPortalAuditRoute
+  AuthenticatedPortalDashboardRoute: typeof AuthenticatedPortalDashboardRoute
+  AuthenticatedPortalEngagementRoute: typeof AuthenticatedPortalEngagementRoute
+  AuthenticatedPortalFeedbackRoute: typeof AuthenticatedPortalFeedbackRoute
+  AuthenticatedPortalInterventionsRoute: typeof AuthenticatedPortalInterventionsRoute
+  AuthenticatedPortalLearningRoute: typeof AuthenticatedPortalLearningRoute
+  AuthenticatedPortalLmsRoute: typeof AuthenticatedPortalLmsRoute
+  AuthenticatedPortalMessagesRoute: typeof AuthenticatedPortalMessagesRoute
+  AuthenticatedPortalMonitorRoute: typeof AuthenticatedPortalMonitorRoute
+  AuthenticatedPortalPeopleRoute: typeof AuthenticatedPortalPeopleRoute
+  AuthenticatedPortalPlacementRoute: typeof AuthenticatedPortalPlacementRoute
+  AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
+  AuthenticatedPortalRecordsRoute: typeof AuthenticatedPortalRecordsRoute
+  AuthenticatedPortalSkillsRoute: typeof AuthenticatedPortalSkillsRoute
+  AuthenticatedPortalTeachersRoute: typeof AuthenticatedPortalTeachersRoute
+  AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedPortalStudentsIdRoute: typeof AuthenticatedPortalStudentsIdRoute
+  AuthenticatedPortalStudentsIndexRoute: typeof AuthenticatedPortalStudentsIndexRoute
+}
+
+const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalAssignRoute: AuthenticatedPortalAssignRoute,
+  AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
+  AuthenticatedPortalAuditRoute: AuthenticatedPortalAuditRoute,
+  AuthenticatedPortalDashboardRoute: AuthenticatedPortalDashboardRoute,
+  AuthenticatedPortalEngagementRoute: AuthenticatedPortalEngagementRoute,
+  AuthenticatedPortalFeedbackRoute: AuthenticatedPortalFeedbackRoute,
+  AuthenticatedPortalInterventionsRoute: AuthenticatedPortalInterventionsRoute,
+  AuthenticatedPortalLearningRoute: AuthenticatedPortalLearningRoute,
+  AuthenticatedPortalLmsRoute: AuthenticatedPortalLmsRoute,
+  AuthenticatedPortalMessagesRoute: AuthenticatedPortalMessagesRoute,
+  AuthenticatedPortalMonitorRoute: AuthenticatedPortalMonitorRoute,
+  AuthenticatedPortalPeopleRoute: AuthenticatedPortalPeopleRoute,
+  AuthenticatedPortalPlacementRoute: AuthenticatedPortalPlacementRoute,
+  AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
+  AuthenticatedPortalRecordsRoute: AuthenticatedPortalRecordsRoute,
+  AuthenticatedPortalSkillsRoute: AuthenticatedPortalSkillsRoute,
+  AuthenticatedPortalTeachersRoute: AuthenticatedPortalTeachersRoute,
+  AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedPortalStudentsIdRoute: AuthenticatedPortalStudentsIdRoute,
+  AuthenticatedPortalStudentsIndexRoute: AuthenticatedPortalStudentsIndexRoute,
+}
+
+const AuthenticatedPortalRouteWithChildren =
+  AuthenticatedPortalRoute._addFileChildren(AuthenticatedPortalRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedPortalRoute: AuthenticatedPortalRoute,
+  AuthenticatedPortalRoute: AuthenticatedPortalRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -409,8 +855,8 @@ export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
+import type { getRouter } from './router.jsx'
+import type { startInstance } from './start.js'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
