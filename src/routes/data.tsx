@@ -75,7 +75,7 @@ function DataPage() {
     if (!p.success) return setManualErr(p.error.issues.map((i) => `${i.path[0]}: ${i.message}`));
     if (students.some((s) => s.id === p.data.id)) return setManualErr(["id: duplicate student ID"]);
     setManualErr([]);
-    addStudents([{ ...p.data, mentorId: "FAC-01", semesterGrades: [p.data.cgpa], backlogs: 0, subjects: [], lms: [], skills: { coding: 0, aptitude: 0, analytical: 0, verbal: 0, communication: 0 }, engagement: [], resumeCompleteness: 0, targetRoles: [], assessmentsCompleted: 0, assessmentsRequired: 0, facultyFeedback: [], studentFeedback: [] }], { date: new Date().toISOString().slice(0, 16).replace("T", " "), added: 1, duplicates: 0, errors: 0 });
+    addStudents([{ ...p.data, mentorId: "FAC-01", semesterGrades: [p.data.cgpa], backlogs: 0, subjects: [], lms: [], skills: { coding: 0, aptitude: 0, analytical: 0, verbal: 0, communication: 0 }, engagement: [], hasEngagementData: false, resumeCompleteness: 0, targetRoles: [], assessmentsCompleted: 0, assessmentsRequired: 0, facultyFeedback: [], studentFeedback: [] }], { date: new Date().toISOString().slice(0, 16).replace("T", " "), added: 1, duplicates: 0, errors: 0 });
     setManual({ ...manual, id: "", name: "", cgpa: "" });
     setMsg(`Added ${p.data.name}.`);
   };

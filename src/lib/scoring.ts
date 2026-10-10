@@ -97,7 +97,8 @@ export function componentScores(s: Student) {
   const lmsPartsPresent = [lessonsPct, assignmentPct].filter((v): v is number => v !== null);
   const lms = lmsPartsPresent.length === 0 ? null : lmsPartsPresent.reduce((a, b) => a + b, 0) / lmsPartsPresent.length;
   const engCount = (t: string) => s.engagement.filter((e) => e.type === t).length;
-  const engagement = s.engagement.length === 0 || s.hasEngagementData === false
+  // null only when the engagement source is missing; a real zero stays zero
+  const engagement = s.hasEngagementData === false || (s.hasEngagementData === undefined && s.engagement.length === 0)
     ? null
     : Math.min(100, engCount("club") * 8 + engCount("event") * 4 + engCount("hackathon") * 12 + engCount("certification") * 10);
   const sk = s.skills;
