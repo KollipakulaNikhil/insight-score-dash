@@ -89,9 +89,9 @@ function Faculty() {
         {visible.length === 0 ? <EmptyState title="No students match" hint="Adjust the search or filters." /> : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-muted-foreground"><th></th><th className="py-1">Student</th><th>CGPA</th><th>Attendance</th><th>Score</th><th>Band</th><th>vs class avg</th><th></th></tr></thead>
+<thead><tr className="text-left text-muted-foreground"><th></th><th className="py-1">Student</th><th>CGPA</th><th>Attendance</th><th>Score</th><th>Band</th><th>Academic risk</th><th>Placement risk</th><th>vs class avg</th><th></th></tr></thead>
               <tbody>
-                {visible.map(({ s, r }) => {
+                {visible.map(({ s, r, acad, place }) => {
                   const att = studentAttendancePct(s);
                   const diff = classAvg !== null && r.score !== null ? r.score - classAvg : null;
                   return (
@@ -104,6 +104,8 @@ function Faculty() {
                       <td>{att === null ? "—" : att.toFixed(1) + "%"}</td>
                       <td className="font-semibold">{r.score ?? "—"}</td>
                       <td><BandBadge score={r.score} /></td>
+                      <td><FlagPill flag={acad} /></td>
+                      <td><FlagPill flag={place} /></td>
                       <td className={diff !== null && diff < 0 ? "text-destructive" : "text-success"}>{diff === null ? "—" : (diff > 0 ? "+" : "") + diff.toFixed(1)}</td>
                       <td><button onClick={() => setForm({ studentId: s.id, reason: "", action: "", priority: "medium", followUpDate: "2026-10-20" })} className="rounded-md border px-2 py-1 text-xs hover:bg-accent/60">Intervene</button></td>
                     </tr>
