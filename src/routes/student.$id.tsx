@@ -110,7 +110,7 @@ function StudentProfile() {
 
 function FlagBadge({ label, flag }: { label: string; flag: RiskFlagResult }) {
   const cls = flag.level === "High" ? "bg-destructive/15 text-destructive" : flag.level === "Medium" ? "bg-warning/15 text-warning" : "bg-success/15 text-success";
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label}: {flag.level} ({flag.points} pts)</span>;
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label ? `${label}: ` : ""}{flag.level} ({flag.points} pts)</span>;
 }
 
 function FlagDrivers({ title, flag }: { title: string; flag: RiskFlagResult }) {
