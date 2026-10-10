@@ -1,86 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Layout } from "@/components/Layout";
-import { StatCard, SectionTitle } from "@/components/widgets";
-import { useAppState } from "@/lib/store";
-import { successScore, crossSourceInsights } from "@/lib/scoring";
-import { ArrowRight, Database, Gauge, LayoutDashboard, ShieldCheck } from "lucide-react";
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "BIB InsightIQ — Student Success Intelligence Platform" },
-      { name: "description", content: "Unified student data, success scoring, and risk insights for smart campuses. HacXLerate demo by TEAM BIB." },
-      { property: "og:title", content: "BIB InsightIQ — Student Success Intelligence Platform" },
-      { property: "og:description", content: "Unified student data, success scoring, and risk insights for smart campuses." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Home,
-});
-
-function Home() {
-  const { students } = useAppState();
-  const scores = students.map((s) => successScore(s).score).filter((x): x is number => x !== null);
-  const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : "—";
-  const insights = crossSourceInsights(students);
-
-  return (
-    <Layout>
-      <section className="rounded-2xl border bg-gradient-to-br from-card to-accent/30 p-8 md:p-12">
-        <p className="text-sm font-medium text-primary">HacXLerate · Smart Campus Analytics · TEAM BIB (Biryani Intelligence Bureau)</p>
-        <h1 className="mt-2 max-w-2xl font-display text-3xl font-bold md:text-5xl">
-          Student Success Intelligence, unified in one platform
-        </h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">
-          Academics, attendance, LMS, skills, engagement, and placement data connected by a single student ID — scored, explained, and turned into action.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link to="/demo" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90">
-            Run the hackathon demo <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link to="/admin" className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm hover:bg-accent/60">
-            Admin dashboard
-          </Link>
-        </div>
-      </section>
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Students tracked" value={String(students.length)} sub="fictional demo cohort" />
-        <StatCard label="Avg success score" value={avg} sub="out of 100" />
-        <StatCard label="Active cross-source insights" value={String(insights.length)} tone={insights.length ? "warning" : "success"} />
-        <StatCard label="Data sources unified" value="7" sub="academics → feedback" />
-      </div>
-
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { icon: Database, t: "Unified data", d: "One student ID connects academics, attendance, LMS, skills, engagement, placement, and feedback." },
-          { icon: Gauge, t: "Success Score", d: "Configurable 100-point score with risk bands and explainable contributing factors." },
-          { icon: LayoutDashboard, t: "Three dashboards", d: "Student, faculty, and administrator views — all derived from the same dataset." },
-          { icon: ShieldCheck, t: "Responsible by design", d: "Missing data is never zero, unverified claims earn no points, complaints need human review." },
-        ].map((f) => (
-          <div key={f.t} className="rounded-xl border bg-card p-5">
-            <f.icon className="h-6 w-6 text-primary" />
-            <h3 className="mt-3 font-display font-semibold">{f.t}</h3>
-            <p className="mt-1 text-sm text-muted-foreground">{f.d}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-8">
-        <SectionTitle sub="Live signals from the current demo dataset">Recent cross-source insights</SectionTitle>
-        <div className="space-y-2">
-          {insights.slice(0, 5).map((i, k) => (
-            <div key={k} className="flex items-start gap-3 rounded-lg border bg-card p-3 text-sm">
-              <span className={`mt-0.5 h-2 w-2 shrink-0 rounded-full ${i.severity === "critical" ? "bg-destructive" : i.severity === "warning" ? "bg-warning" : "bg-info"}`} />
-              <div>
-                <span className="font-medium">{i.studentName}</span> — {i.type}
-                <p className="text-muted-foreground">{i.detail}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Layout>
-  );
-}
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { PublicLayout } from '@/components/PublicLayout';
+import { Button } from '@/components/ui/button';
+import { pageHead } from '@/lib/metadata';
+import { ArrowRight, ArrowUpRight, Play, CircleCheck, Users, ScanLine, ClipboardCheck, ShieldCheck } from 'lucide-react';
+import campus from '@/assets/campus.jpg';
+import { SOURCES } from './solution';
+export const Route = createFileRoute('/')({head:()=>pageHead('Student Success Intelligence Platform','Turning campus data into student success. Discover seven connected data sources, explainable risk insights and timely mentor support with BIB InsightIQ.'),component:Home});
+function Home(){return <PublicLayout><main><section className="campus-hero flex items-center"><img src={campus} alt="Illustrative modern university campus with students walking between academic buildings" width={1920} height={1024} fetchPriority="high" className="absolute inset-0 -z-10 size-full object-cover object-center"/><div className="mx-auto w-full max-w-7xl px-5 py-16 lg:px-8"><p className="mb-6 flex items-center gap-2 text-xs font-semibold text-hero-foreground"><span className="size-2 rounded-full bg-primary"/>SMART CAMPUS. STRONGER FUTURES.</p><h1 className="hero-heading max-w-3xl text-hero-foreground">BIB InsightIQ</h1><p className="mt-5 max-w-xl font-display text-2xl leading-snug text-hero-foreground sm:text-3xl">Turning campus data<br />into student success.</p><p className="mt-6 max-w-lg text-base leading-relaxed text-hero-muted">See the whole student story. Understand who needs help, why they are at risk, and what to do next — before a small gap becomes a bigger challenge.</p><div className="mt-8 flex flex-wrap gap-3"><Button asChild size="lg"><Link to="/demo"><Play className="size-4"/>Explore the demo</Link></Button><Button asChild size="lg" variant="secondary"><Link to="/auth">Access your workspace <ArrowUpRight/></Link></Button></div><p className="mt-6 flex items-center gap-2 text-xs text-hero-muted"><ShieldCheck className="size-4"/>Explainable insights. Human-led support. Fictional demo data.</p></div></section><section className="border-b bg-card"><div className="mx-auto grid max-w-7xl gap-6 px-5 py-7 sm:grid-cols-3 lg:px-8">{[{n:'07',t:'Connected data sources',d:'One shared student identity'},{n:'03',t:'Connected perspectives',d:'Student · Faculty · Administrator'},{n:'100',t:'Point Success Score',d:'Transparent, advisory, actionable'}].map(x=><div key={x.n} className="flex items-center gap-5"><span className="font-display text-4xl font-semibold text-primary">{x.n}</span><div><p className="text-sm font-semibold">{x.t}</p><p className="mt-1 text-xs text-muted-foreground">{x.d}</p></div></div>)}</div></section><section className="mx-auto max-w-7xl px-5 py-16 lg:px-8"><div className="flex flex-wrap items-end justify-between gap-5"><div><p className="eyebrow">LESS GUESSWORK. MORE MEANINGFUL SUPPORT.</p><h2 className="mt-4 font-display text-3xl font-semibold sm:text-4xl">Three questions. A clearer next step.</h2></div><Button asChild variant="link"><Link to="/solution">Why InsightIQ <ArrowRight/></Link></Button></div><div className="mt-10 grid gap-8 md:grid-cols-3">{[{icon:Users,q:'Who needs help?',d:'Find students who need attention with evidence-led risk signals and a complete view of their progress.',n:'01'},{icon:ScanLine,q:'Why are they at risk?',d:'Connect grades, attendance, learning activity and placement readiness to reveal gaps a single system can miss.',n:'02'},{icon:ClipboardCheck,q:'What should faculty do next?',d:'Turn the insight into a practical mentor action, with an owner, a follow-up date and visible progress.',n:'03'}].map(x=><article key={x.n} className="border-t pt-6"><div className="flex items-center justify-between"><x.icon className="motion-icon size-7 text-primary"/><span className="text-xs text-muted-foreground">{x.n}</span></div><h3 className="mt-6 text-xl font-semibold">{x.q}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{x.d}</p></article>)}</div></section><section className="overflow-hidden border-y bg-muted/50 py-10"><p className="eyebrow mb-7 text-center">THE WHOLE STORY, NOT ANOTHER SILO</p><div className="source-ticker overflow-hidden"><div className="flex w-max gap-12 px-6">{[...SOURCES,...SOURCES].map((s,i)=><div key={`${s.name}-${i}`} className="flex shrink-0 items-center gap-3"><s.icon className="size-6 text-primary"/><span className="font-display text-lg font-medium">{s.name}</span></div>)}</div></div></section><section className="mx-auto grid max-w-7xl gap-12 px-5 py-16 md:grid-cols-2 lg:px-8"><div><p className="eyebrow">CONNECT THE SIGNALS</p><h2 className="mt-4 text-3xl font-semibold">Strong grades do not<br />always tell the whole story.</h2><p className="mt-5 text-muted-foreground">A fictional student with a strong CGPA but low attendance needs a different plan from a strong coder with weak aptitude. InsightIQ connects the evidence so support is specific, not generic.</p><Button asChild variant="outline" className="mt-6"><Link to="/faculty">Explore faculty demo <ArrowRight/></Link></Button></div><div className="border-y py-7"><p className="text-xs font-semibold text-muted-foreground">ILLUSTRATIVE CROSS-SOURCE INSIGHT</p><h3 className="mt-5 text-xl font-semibold">Strong coding. An aptitude gap.</h3><div className="mt-6 space-y-4"><div className="flex items-center justify-between"><span className="text-sm">Coding</span><span className="font-semibold text-success">85 / 100</span></div><div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full w-[85%] bg-success"/></div><div className="flex items-center justify-between"><span className="text-sm">Aptitude</span><span className="font-semibold text-warning">45 / 100</span></div><div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full w-[45%] bg-warning"/></div></div><p className="mt-6 flex gap-3 text-sm"><CircleCheck className="size-5 shrink-0 text-primary"/>Next step: targeted aptitude practice and a mentor follow-up, rather than more generic coding work.</p><p className="mt-4 text-xs text-muted-foreground">Illustrative example, not a live student record or selection prediction.</p></div></section><section className="border-t bg-accent/40"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-8 px-5 py-12 lg:px-8"><div><p className="eyebrow">A BETTER PICTURE. A BETTER CONVERSATION.</p><h2 className="mt-3 text-3xl font-semibold">See your campus through InsightIQ.</h2><p className="mt-3 text-muted-foreground">Explore the experience, or connect with the people behind it.</p></div><div className="flex flex-wrap gap-3"><Button asChild><Link to="/benefits">Find your perspective <ArrowRight/></Link></Button><Button asChild variant="outline"><Link to="/contact">Connect with us</Link></Button></div></div></section></main></PublicLayout>;}
