@@ -43,7 +43,7 @@ function Faculty() {
     const v = scored.map((x) => x.r.score).filter((x): x is number => x !== null).sort((a, b) => a - b);
     return v.length ? v[Math.floor(v.length / 2)] : null;
   })();
-  const declining = assigned.filter((s) => s.semesterGrades.length >= 2 && s.semesterGrades.at(-1)! < s.semesterGrades[0] - 0.5);
+  const declining = assigned.filter((s) => s.semesterGrades.length >= 2 && s.semesterGrades.at(-1)! < (s.semesterGrades[0] ?? 0) - 0.5);
   const insights = crossSourceInsights(assigned);
   const myInterventions = interventions.filter((i) => assigned.some((s) => s.id === i.studentId));
   const compareStudents = compare.map((id) => students.find((s) => s.id === id)!).filter(Boolean);

@@ -34,7 +34,7 @@ function Admin() {
       return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
     };
     const bands: Record<string, number> = { "On Track": 0, Monitor: 0, "Needs Attention": 0, "High Priority": 0 };
-    scored.forEach(({ r }) => r.score !== null && bands[riskBand(r.score)]++);
+    scored.forEach(({ r }) => { if (r.score !== null) bands[riskBand(r.score)] = (bands[riskBand(r.score)] ?? 0) + 1; });
     return {
       avgScore: avg(scored.map((x) => x.r.score)),
       avgCgpa: avg(filtered.map((s) => (s.cgpa > 0 ? s.cgpa : null))),
@@ -54,7 +54,7 @@ function Admin() {
   const trendData = [1, 2, 3, 4, 5].map((sem) => ({
     sem: `Sem ${sem}`,
     avgSgpa: +(
-      filtered.filter((s) => s.semesterGrades.length >= sem).reduce((a, s) => a + s.semesterGrades[sem - 1], 0) /
+      filtered.filter((s) => s.semesterGrades.length >= sem).reduce((a, s) => a + (s.semesterGrades[sem - 1] ?? 0), 0) /
       Math.max(1, filtered.filter((s) => s.semesterGrades.length >= sem).length)
     ).toFixed(2),
   }));

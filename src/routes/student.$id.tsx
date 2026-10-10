@@ -181,7 +181,7 @@ function StudentProfile() {
                         <div key={u.unit} className="rounded-lg border p-3 text-sm">
                           <p className="font-medium">Unit {u.unit}: {u.title.split(": ")[1]}</p>
                           {u.lessons.map((l) => <p key={l.title} className={l.completed ? "text-success" : "text-muted-foreground"}>{l.completed ? "✓" : "○"} {l.title}</p>)}
-                          <p className="mt-1 text-xs text-muted-foreground">{u.lessons[0].resource}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">{u.lessons[0]?.resource ?? "Sample resource (demo)"}</p>
                           <p className="mt-2 text-xs">{u.assignment.title} · due {u.assignment.deadline} · {u.assignment.submitted ? `submitted (${u.assignment.marks}/20)` : "pending"}</p>
                         </div>
                       ))}

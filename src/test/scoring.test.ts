@@ -48,8 +48,8 @@ describe("success score", () => {
 
 describe("eligibility", () => {
   it("unknown criteria are never eligible", () => {
-    const s = { ...SEED_STUDENTS[0], assessmentsRequired: 0 };
-    const r = checkEligibility(s, SEED_DRIVES[0]);
+    const s = { ...SEED_STUDENTS[0]!, assessmentsRequired: 0 };
+    const r = checkEligibility(s, SEED_DRIVES[0]!);
     expect(r.eligible).toBe(false);
     expect(r.criteria.some((c) => c.result === "Unknown")).toBe(true);
   });
