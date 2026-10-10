@@ -145,6 +145,8 @@ function NoticeRow({ n }: { n: Notice }) {
 function Overview({ s, notes }: { s: Student; notes: Notice[] }) {
   const r = successScore(s);
   const seg = segmentOf(s);
+  const acad = academicRisk(s);
+  const place = placementRisk(s);
   const ranked = Object.entries(r.components).filter(([, v]) => v !== null).map(([k, v]) => ({ k, v: v as number, impact: ((v as number) * DEFAULT_WEIGHTS[k as keyof typeof DEFAULT_WEIGHTS]) / 100 })).sort((a, b) => b.impact - a.impact);
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -164,7 +166,14 @@ function Overview({ s, notes }: { s: Student; notes: Notice[] }) {
         </div>
         <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <div><p className="mb-1 font-medium text-success">Helping you</p>{r.positives.map((p) => <p key={p}>+ {p}</p>)}</div>
-          <div><p className="mb-1 font-medium text-destructive">Why you are flagged</p>{r.negatives.length ? r.negatives.map((p) => <p key={p}>− {p}</p>) : <p className="text-muted-foreground">No risk flags</p>}</div>
+          <div><p className="mb-1 font-medium text-destructive">Working against you</p>{r.negatives.length ? r.negatives.map((p) => <p key={p}>− {p}</p>) : <p className="text-muted-foreground">No negatives</p>}</div>
+        </div>
+      </div>
+      <div className={`${card} lg:col-span-2`}>
+        <SectionTitle sub="Points-based signals from the shared rule config — sorted by impact">Why you are flagged</SectionTitle>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <FlagDrivers title="Academic Risk" flag={acad} />
+          <FlagDrivers title="Placement Risk" flag={place} />
         </div>
       </div>
       <div className={card}>
