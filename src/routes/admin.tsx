@@ -166,6 +166,47 @@ function Admin() {
         </div>
       </div>
 
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border bg-card p-4">
+          <SectionTitle sub="Points-based flags from the shared rule config">Risk flag levels</SectionTitle>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {([["Academic Risk", flagStats.academic], ["Placement Risk", flagStats.placement]] as const).map(([title, rows]) => (
+              <div key={title}>
+                <p className="mb-2 text-sm font-medium">{title}</p>
+                <div className="flex gap-2">
+                  {rows.map((r) => (
+                    <div key={r.level} className={`flex-1 rounded-lg border p-2 text-center ${r.level === "High" ? "border-destructive/40" : r.level === "Medium" ? "border-warning/40" : "border-success/40"}`}>
+                      <p className={`text-lg font-bold ${r.level === "High" ? "text-destructive" : r.level === "Medium" ? "text-warning" : "text-success"}`}>{r.count}</p>
+                      <p className="text-xs text-muted-foreground">{r.level}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <SectionTitle sub="Students per branch at Medium/High on each flag">Branch × flag heatmap</SectionTitle>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-muted-foreground"><th className="py-1">Branch</th><th>Acad High</th><th>Acad Med</th><th>Place High</th><th>Place Med</th></tr></thead>
+              <tbody>
+                {flagStats.heatmap.map((h) => (
+                  <tr key={h.branch} className="border-t">
+                    <td className="py-2 font-medium">{h.branch}</td>
+                    {[h.acadHigh, h.acadMed, h.placeHigh, h.placeMed].map((v, i) => {
+                      const ratio = h.total ? v / h.total : 0;
+                      const bg = ratio === 0 ? "" : ratio < 0.25 ? "bg-warning/10" : ratio < 0.5 ? "bg-warning/25" : "bg-destructive/25";
+                      return <td key={i} className={`${bg} px-2 py-2 text-center font-medium`}>{v}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-6 rounded-xl border bg-card p-4">
         <SectionTitle sub="Same dataset as student and faculty views">Students ({filtered.length})</SectionTitle>
         {filtered.length === 0 ? <EmptyState title="No students in this filter" /> : (
