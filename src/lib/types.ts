@@ -58,7 +58,8 @@ export interface Student {
   lms: LmsSubject[];
   skills: Skills;
   engagement: EngagementItem[];
-  resumeCompleteness: number; // 0-100
+  resumeCompleteness: number; // 0-100, -1 = missing
+  mockInterviews?: number; // count, -1/undefined = missing
   targetRoles: string[];
   assessmentsCompleted: number;
   assessmentsRequired: number;
@@ -110,6 +111,6 @@ export type RiskBand = "On Track" | "Monitor" | "Needs Attention" | "High Priori
 export function riskBand(score: number): RiskBand {
   if (score >= 80) return "On Track";
   if (score >= 65) return "Monitor";
-  if (score >= 40) return "Needs Attention";
+  if (score >= 50) return "Needs Attention";
   return "High Priority";
 }
