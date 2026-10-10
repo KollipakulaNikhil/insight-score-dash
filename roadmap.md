@@ -1,6 +1,6 @@
 # BIB InsightIQ continuation
 
-- [ ] Add student, teacher and admin fictional test access on the login page without creating real accounts or granting private permissions.
+- [x] Add student, teacher and admin fictional test access on the login page without creating real accounts or granting private permissions; all three destinations and private-account protection verified.
 
 - [x] Phase 1 foundation: professional public website, benefits, solution, privacy, contact, sign-in UI and secure role profiles. Account end-to-end verification remains pending a signed-up account.
 - [ ] Phase 2: secure record portal, manual registration/editing, CSV/Excel validation and audited saving; keep demo distinct.

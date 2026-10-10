@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 - Keep public fictional dashboards separate from the authenticated campus portal so browser demo state can never become an authorization source.
+- Expose test workspaces through explicit password-free demo links, not hardcoded credential checks, so demo identities never authorize private access.
 - Store permissions in protected user_roles and link live student records to profile owners and assigned faculty; enforce record access through database policies and authenticated server functions.
 - Keep website navigation shared in PublicLayout and account state in one root AccountProvider so sign-in affordances reflect the current session without duplicate listeners.
 - Compose the website assistant from AI Elements with the AI SDK UI-message stream, keeping prompts, full conversation transport and provider calls server-side.
