@@ -36,7 +36,7 @@ function Demo() {
   ];
 
   return (
-    <Layout>
+    <Layout allow={["admin"]}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold">Hackathon Demo</h1>
         <button onClick={() => { resetDemo(); location.reload(); }} className="rounded-md border px-3 py-1.5 text-sm hover:bg-accent/60">Reset demo data</button>

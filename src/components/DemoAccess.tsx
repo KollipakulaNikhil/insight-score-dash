@@ -1,15 +1,30 @@
-import { Link } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { GraduationCap, Users, Building2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DEMO_STUDENT_ID, setDemoSession, type DemoRole } from '@/lib/demo-session';
+
+const OPTIONS: { role: DemoRole; label: string; email: string; name: string; icon: typeof Users }[] = [
+  { role: 'student', label: 'Student demo', email: 'student@test.com', name: 'Aarav Sharma', icon: GraduationCap },
+  { role: 'faculty', label: 'Teacher demo', email: 'faculty@test.com', name: 'Dr. Rao', icon: Users },
+  { role: 'admin', label: 'Admin demo', email: 'admin@test.com', name: 'Campus Admin', icon: Building2 },
+];
 
 export function DemoAccess() {
+  const navigate = useNavigate();
+  const open = (o: (typeof OPTIONS)[number]) => {
+    if (o.role === 'student') {
+      setDemoSession({ role: 'student', studentId: DEMO_STUDENT_ID, name: o.name });
+      navigate({ to: '/student/$id', params: { id: DEMO_STUDENT_ID } });
+    } else {
+      setDemoSession({ role: o.role, name: o.name });
+      navigate({ to: o.role === 'faculty' ? '/faculty' : '/admin' });
+    }
+  };
   return <section aria-label="Test demo access" className="mx-auto mt-8 max-w-xl border-y py-6">
     <h2 className="text-center text-xl font-semibold">Try a test workspace</h2>
-    <p className="mt-2 text-center text-sm text-muted-foreground">Fictional records only · No password needed · No access to private accounts</p>
+    <p className="mt-2 text-center text-sm text-muted-foreground">Fictional records only · No password needed · Each role sees only its own pages</p>
     <div className="mt-5 grid gap-3">
-      <Button asChild variant="outline" className="h-auto justify-between py-3"><Link to="/student"><span className="flex items-center gap-3"><GraduationCap /><span className="text-left">Student demo<span className="block text-xs text-muted-foreground">student@test.com · Demo identity only</span></span></span><ArrowRight /></Link></Button>
-      <Button asChild variant="outline" className="h-auto justify-between py-3"><Link to="/faculty"><span className="flex items-center gap-3"><Users /><span className="text-left">Teacher demo<span className="block text-xs text-muted-foreground">faculty@test.com · Demo identity only</span></span></span><ArrowRight /></Link></Button>
-      <Button asChild variant="outline" className="h-auto justify-between py-3"><Link to="/admin"><span className="flex items-center gap-3"><Building2 /><span className="text-left">Admin demo<span className="block text-xs text-muted-foreground">admin@test.com · Demo identity only</span></span></span><ArrowRight /></Link></Button>
+      {OPTIONS.map((o) => <Button key={o.role} variant="outline" className="h-auto justify-between py-3" onClick={() => open(o)}><span className="flex items-center gap-3"><o.icon /><span className="text-left">{o.label}<span className="block text-xs text-muted-foreground">{o.email} · Demo identity only</span></span></span><ArrowRight /></Button>)}
     </div>
   </section>;
 }
