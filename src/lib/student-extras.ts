@@ -1,5 +1,6 @@
 import type { Student } from "./types";
 import { successScore, attendancePct, classesNeededForTarget, maxMissableClasses, attendanceMarks, pendingAssignments } from "./scoring";
+import { riskBand } from "./types";
 
 /** Fixed demo "today" so server and browser render identical fictional data. */
 export const DEMO_TODAY = "2026-10-10";

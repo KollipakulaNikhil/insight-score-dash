@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DEMO_STUDENT_ID, setDemoSession, type DemoRole } from '@/lib/demo-session';
 
 const OPTIONS: { role: DemoRole; label: string; email: string; name: string; icon: typeof Users }[] = [
-  { role: 'student', label: 'Student demo', email: 'student@test.com', name: 'Aarav Sharma', icon: GraduationCap },
+  { role: 'student', label: 'Student demo', email: 'student@test.com', name: 'Dev Reddy', icon: GraduationCap },
   { role: 'faculty', label: 'Teacher demo', email: 'faculty@test.com', name: 'Dr. Rao', icon: Users },
   { role: 'admin', label: 'Admin demo', email: 'admin@test.com', name: 'Campus Admin', icon: Building2 },
 ];
