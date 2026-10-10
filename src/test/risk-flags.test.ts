@@ -39,7 +39,7 @@ describe("risk flags (official rule table)", () => {
   it("missing inputs add no points; fully missing flag is Insufficient data", () => {
     const s = baseStudent({ cgpa: 0, subjects: [], semesterGrades: [], lms: [] });
     const a = academicRisk(s);
-    expect(a.points).toBe(3); // only backlogs (known, fired? no — 0 backlogs) … only known non-firing signals
+    expect(a.points).toBe(0); // backlogs known but not fired; everything else missing
     expect(a.insufficient).toContain("CGPA");
     expect(a.insufficient).toContain("Overall attendance %");
     const empty = academicRisk({ ...s, backlogs: 0 });

@@ -81,8 +81,8 @@ export const ACADEMIC_SIGNALS: RiskSignal[] = [
     label: "Subjects under 75% attendance",
     threshold: "≥ 1 subject (1 pt each, max 3)",
     evaluate: (s) => {
-      if (s.subjects.length === 0) return null;
       const n = subjectsBelow75(s);
+      if (n === null) return null;
       return { fired: n >= 1, value: String(n), points: Math.min(n, 3) };
     },
   },
@@ -163,7 +163,7 @@ export const PLACEMENT_SIGNALS: RiskSignal[] = [
     label: "Certifications + hackathons",
     threshold: "0 total",
     evaluate: (s) => {
-      if (s.engagement.length === 0) return null;
+      if (s.hasEngagementData === false) return null;
       const n = s.engagement.filter((e) => e.type === "certification" || e.type === "hackathon").length;
       return { fired: n === 0, value: String(n), points: 1 };
     },
