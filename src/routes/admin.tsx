@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout";
 import { StatCard, SectionTitle, BandBadge, EmptyState } from "@/components/widgets";
 import { useAppState } from "@/lib/store";
 import { successScore, studentAttendancePct, lmsCompletion, componentScores } from "@/lib/scoring";
+import { academicRisk, placementRisk, type FlagLevel } from "@/lib/risk-flags";
 import { riskBand } from "@/lib/types";
 import { useMemo, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from "recharts";

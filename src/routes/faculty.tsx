@@ -21,6 +21,11 @@ export const Route = createFileRoute("/faculty")({
   component: Faculty,
 });
 
+function FlagPill({ flag }: { flag: { level: FlagLevel; points: number } }) {
+  const cls = flag.level === "High" ? "bg-destructive/15 text-destructive" : flag.level === "Medium" ? "bg-warning/15 text-warning" : "bg-success/15 text-success";
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{flag.level} · {flag.points}</span>;
+}
+
 function Faculty() {
   const { students, interventions } = useAppState();
   const [mentor, setMentor] = useState("FAC-01");
