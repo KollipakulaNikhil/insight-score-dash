@@ -32,10 +32,12 @@ function Faculty() {
   const [form, setForm] = useState<{ studentId: string; reason: string; action: string; priority: "low" | "medium" | "high"; followUpDate: string } | null>(null);
 
   const assigned = students.filter((s) => s.mentorId === mentor);
-  const scored = useMemo(() => assigned.map((s) => ({ s, r: successScore(s) })), [assigned]);
-  const visible = scored.filter(({ s, r }) => {
+  const scored = useMemo(() => assigned.map((s) => ({ s, r: successScore(s), acad: academicRisk(s), place: placementRisk(s) })), [assigned]);
+  const visible = scored.filter(({ s, r, acad, place }) => {
     if (query && !`${s.name} ${s.id}`.toLowerCase().includes(query.toLowerCase())) return false;
     if (bandFilter !== "all" && r.band !== bandFilter) return false;
+    if (acadFilter !== "all" && acad.level !== acadFilter) return false;
+    if (placeFilter !== "all" && place.level !== placeFilter) return false;
     return true;
   });
   const classAvg = (() => {
@@ -74,6 +76,14 @@ function Faculty() {
           <select value={bandFilter} onChange={(e) => setBandFilter(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">
             <option value="all">All bands</option>
             {["On Track", "Monitor", "Needs Attention", "High Priority"].map((b) => <option key={b}>{b}</option>)}
+          </select>
+          <select value={acadFilter} onChange={(e) => setAcadFilter(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">
+            <option value="all">Academic risk: all</option>
+            {["Low", "Medium", "High"].map((l) => <option key={l}>{l}</option>)}
+          </select>
+          <select value={placeFilter} onChange={(e) => setPlaceFilter(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">
+            <option value="all">Placement risk: all</option>
+            {["Low", "Medium", "High"].map((l) => <option key={l}>{l}</option>)}
           </select>
         </div>
         {visible.length === 0 ? <EmptyState title="No students match" hint="Adjust the search or filters." /> : (
