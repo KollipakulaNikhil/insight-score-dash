@@ -2,7 +2,7 @@ import type { Student } from "./types";
 
 export interface CsvRowResult {
   row: number;
-  student?: Student;
+  student?: Student | undefined;
   errors: string[];
   isDuplicate: boolean;
   missing: string[];
@@ -24,18 +24,19 @@ export function parseStudentCsv(text: string, existingIds: Set<string>): { resul
     const missing: string[] = [];
 
     for (const f of REQUIRED) if (!rec[f]) missing.push(f);
-    const cgpa = parseFloat(rec.cgpa);
-    if (rec.cgpa && (isNaN(cgpa) || cgpa < 0 || cgpa > 10)) errors.push("cgpa must be 0–10");
-    const sem = parseInt(rec.semester);
-    if (rec.semester && (isNaN(sem) || sem < 1 || sem > 8)) errors.push("semester must be 1–8");
-    const gy = parseInt(rec.grad_year);
-    if (rec.grad_year && (isNaN(gy) || gy < 2020 || gy > 2035)) errors.push("grad_year invalid");
-    const att = parseFloat(rec.attendance_pct);
-    if (rec.attendance_pct && (isNaN(att) || att < 0 || att > 100)) errors.push("attendance_pct must be 0–100");
+    const cgpa = parseFloat(rec["cgpa"] ?? "");
+    if (rec["cgpa"] && (isNaN(cgpa) || cgpa < 0 || cgpa > 10)) errors.push("cgpa must be 0–10");
+    const sem = parseInt(rec["semester"] ?? "");
+    if (rec["semester"] && (isNaN(sem) || sem < 1 || sem > 8)) errors.push("semester must be 1–8");
+    const gy = parseInt(rec["grad_year"] ?? "");
+    if (rec["grad_year"] && (isNaN(gy) || gy < 2020 || gy > 2035)) errors.push("grad_year invalid");
+    const att = parseFloat(rec["attendance_pct"] ?? "");
+    if (rec["attendance_pct"] && (isNaN(att) || att < 0 || att > 100)) errors.push("attendance_pct must be 0–100");
 
-    const isDuplicate = rec.student_id ? seen.has(rec.student_id) : false;
+    const sid = rec["student_id"] ?? "";
+    const isDuplicate = sid ? seen.has(sid) : false;
     if (isDuplicate) errors.push("duplicate student_id");
-    if (rec.student_id) seen.add(rec.student_id);
+    if (sid) seen.add(sid);
 
     let student: Student | undefined;
     if (errors.length === 0 && missing.length === 0) {
@@ -47,8 +48,8 @@ export function parseStudentCsv(text: string, existingIds: Set<string>): { resul
       const held = 40;
       const attended = attPct === null ? 0 : Math.round((attPct / 100) * held);
       student = {
-        id: rec.student_id, name: rec.name, branch: rec.branch, semester: sem, gradYear: gy,
-        mentorId: "FAC-01", cgpa, semesterGrades: [cgpa], backlogs: parseInt(rec.backlogs) || 0,
+        id: sid, name: rec["name"] ?? "", branch: rec["branch"] ?? "", semester: sem, gradYear: gy,
+        mentorId: "FAC-01", cgpa, semesterGrades: [cgpa], backlogs: parseInt(rec["backlogs"] ?? "") || 0,
         subjects: attPct === null ? [] : [{ subject: "Imported aggregate", marks: 0, classesHeld: held, classesAttended: attended }],
         lms: [],
         skills: { coding: num("coding"), aptitude: num("aptitude"), analytical: num("analytical"), verbal: num("verbal"), communication: num("communication") },
