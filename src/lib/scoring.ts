@@ -77,6 +77,7 @@ export function lmsParts(s: Student): { lessonsPct: number | null; assignmentPct
         lessonsTotal++;
         if (l.completed) lessonsDone++;
       }
+      if (u.assignment.title === "—") continue; // placeholder on lesson-only units
       assignTotal++;
       if (u.assignment.submitted) assignDone++;
     }
