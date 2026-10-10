@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791630169281,
+      "tag": "0000_campus_accounts_and_private_records",
+      "breakpoints": true
+    }
+  ]
 }
