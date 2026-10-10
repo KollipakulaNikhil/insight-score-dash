@@ -170,16 +170,23 @@ export function feedbackRounds(s: Student) {
 }
 
 // ---------- Segmentation & notifications ----------
+// Rule-based segments — first match wins, mirroring the dataset's official scoring.py.
 export function segmentOf(s: Student): { name: string; action: string } {
   const c = successScore(s).components;
-  const placement = c.placement ?? 0;
-  const att = c.attendance ?? 0;
-  if (s.cgpa >= 8 && placement < 65) return { name: "High academics, low placement readiness", action: "Resume clinic + mock interviews + aptitude practice." };
-  if (s.cgpa < 6.5 && s.backlogs > 0) return { name: "Academic recovery needed", action: "Backlog clearance plan and weekly mentoring." };
-  if (att < 75) return { name: "Attendance-driven risk", action: "Attendance contract and class-wise reminders." };
-  if (s.skills.coding >= 80 && s.skills.aptitude < 60) return { name: "Strong coder, weak aptitude", action: "Daily aptitude practice sets." };
-  if (s.engagement.length === 0) return { name: "Low campus engagement", action: "Join one club and one event this month." };
-  return { name: "Well-rounded performer", action: "Stretch goals: hackathons, research, leadership." };
+  const academics = c.academics ?? -1;
+  const placement = c.placement ?? -1;
+  const att = c.attendance ?? -1;
+  const lms = c.lms ?? -1;
+  const eng = c.engagement ?? -1;
+  const drop = s.semesterGrades.length >= 2 ? (s.semesterGrades[0] ?? 0) - (s.semesterGrades.at(-1) ?? 0) : 0;
+  const score = successScore(s).score ?? -1;
+  if (academics >= 75 && placement >= 0 && placement < 60) return { name: "High academics, low placement readiness", action: "Resume clinic + mock interviews + aptitude practice." };
+  if (academics >= 70 && att >= 0 && att < 75) return { name: "Strong grades, poor attendance", action: "Attendance contract and class-wise reminders." };
+  if (att >= 85 && drop >= 1.0) return { name: "Good attendance, declining academics", action: "Doubt sessions and a revision plan for the weakest units." };
+  if (s.skills.coding >= 75 && s.skills.aptitude >= 0 && s.skills.aptitude < 50) return { name: "Strong coder, aptitude gap", action: "Daily aptitude practice sets." };
+  if (score >= 0 && score < 65 && lms >= 0 && lms < 60 && eng >= 0 && eng < 25) return { name: "Disengaged, multiple risks", action: "Weekly mentoring plus one club or event this month." };
+  if (riskBand(score) === "On Track") return { name: "On track", action: "Stretch goals: hackathons, research, leadership." };
+  return { name: "Steady, no standout pattern", action: "Maintain current performance and complete pending LMS work." };
 }
 
 export interface Notice { tone: "danger" | "warning" | "info" | "success"; area: string; text: string; tip: string }
