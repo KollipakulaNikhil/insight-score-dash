@@ -12,7 +12,7 @@ const REQUIRED = ["student_id", "name", "branch", "semester", "grad_year", "cgpa
 
 export function parseStudentCsv(text: string, existingIds: Set<string>): { results: CsvRowResult[]; headers: string[] } {
   const lines = text.trim().split(/\r?\n/);
-  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const headers = (lines[0] ?? "").split(",").map((h) => h.trim().toLowerCase());
   const results: CsvRowResult[] = [];
   const seen = new Set(existingIds);
 
@@ -41,7 +41,7 @@ export function parseStudentCsv(text: string, existingIds: Set<string>): { resul
     let student: Student | undefined;
     if (errors.length === 0 && missing.length === 0) {
       const num = (k: string, d = 0) => {
-        const v = parseFloat(rec[k]);
+        const v = parseFloat(rec[k] ?? "");
         return isNaN(v) ? d : v;
       };
       const attPct = isNaN(att) ? null : att;
