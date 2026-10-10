@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout";
 import { StatCard, SectionTitle, BandBadge, EmptyState } from "@/components/widgets";
 import { useAppState, addIntervention, updateInterventionStatus } from "@/lib/store";
 import { successScore, studentAttendancePct, crossSourceInsights } from "@/lib/scoring";
+import { academicRisk, placementRisk, type FlagLevel } from "@/lib/risk-flags";
 import { MENTORS } from "@/lib/seed";
 import { useMemo, useState } from "react";
 
@@ -20,19 +21,28 @@ export const Route = createFileRoute("/faculty")({
   component: Faculty,
 });
 
+function FlagPill({ flag }: { flag: { level: FlagLevel; points: number } }) {
+  const cls = flag.level === "High" ? "bg-destructive/15 text-destructive" : flag.level === "Medium" ? "bg-warning/15 text-warning" : "bg-success/15 text-success";
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{flag.level} · {flag.points}</span>;
+}
+
 function Faculty() {
   const { students, interventions } = useAppState();
   const [mentor, setMentor] = useState("FAC-01");
   const [query, setQuery] = useState("");
   const [bandFilter, setBandFilter] = useState("all");
+  const [acadFilter, setAcadFilter] = useState("all");
+  const [placeFilter, setPlaceFilter] = useState("all");
   const [compare, setCompare] = useState<string[]>([]);
   const [form, setForm] = useState<{ studentId: string; reason: string; action: string; priority: "low" | "medium" | "high"; followUpDate: string } | null>(null);
 
   const assigned = students.filter((s) => s.mentorId === mentor);
-  const scored = useMemo(() => assigned.map((s) => ({ s, r: successScore(s) })), [assigned]);
-  const visible = scored.filter(({ s, r }) => {
+  const scored = useMemo(() => assigned.map((s) => ({ s, r: successScore(s), acad: academicRisk(s), place: placementRisk(s) })), [assigned]);
+  const visible = scored.filter(({ s, r, acad, place }) => {
     if (query && !`${s.name} ${s.id}`.toLowerCase().includes(query.toLowerCase())) return false;
     if (bandFilter !== "all" && r.band !== bandFilter) return false;
+    if (acadFilter !== "all" && acad.level !== acadFilter) return false;
+    if (placeFilter !== "all" && place.level !== placeFilter) return false;
     return true;
   });
   const classAvg = (() => {
@@ -72,13 +82,21 @@ function Faculty() {
             <option value="all">All bands</option>
             {["On Track", "Monitor", "Needs Attention", "High Priority"].map((b) => <option key={b}>{b}</option>)}
           </select>
+          <select value={acadFilter} onChange={(e) => setAcadFilter(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">
+            <option value="all">Academic risk: all</option>
+            {["Low", "Medium", "High"].map((l) => <option key={l}>{l}</option>)}
+          </select>
+          <select value={placeFilter} onChange={(e) => setPlaceFilter(e.target.value)} className="rounded-md border bg-card px-3 py-1.5 text-sm">
+            <option value="all">Placement risk: all</option>
+            {["Low", "Medium", "High"].map((l) => <option key={l}>{l}</option>)}
+          </select>
         </div>
         {visible.length === 0 ? <EmptyState title="No students match" hint="Adjust the search or filters." /> : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="text-left text-muted-foreground"><th></th><th className="py-1">Student</th><th>CGPA</th><th>Attendance</th><th>Score</th><th>Band</th><th>vs class avg</th><th></th></tr></thead>
+<thead><tr className="text-left text-muted-foreground"><th></th><th className="py-1">Student</th><th>CGPA</th><th>Attendance</th><th>Score</th><th>Band</th><th>Academic risk</th><th>Placement risk</th><th>vs class avg</th><th></th></tr></thead>
               <tbody>
-                {visible.map(({ s, r }) => {
+                {visible.map(({ s, r, acad, place }) => {
                   const att = studentAttendancePct(s);
                   const diff = classAvg !== null && r.score !== null ? r.score - classAvg : null;
                   return (
@@ -91,6 +109,8 @@ function Faculty() {
                       <td>{att === null ? "—" : att.toFixed(1) + "%"}</td>
                       <td className="font-semibold">{r.score ?? "—"}</td>
                       <td><BandBadge score={r.score} /></td>
+                      <td><FlagPill flag={acad} /></td>
+                      <td><FlagPill flag={place} /></td>
                       <td className={diff !== null && diff < 0 ? "text-destructive" : "text-success"}>{diff === null ? "—" : (diff > 0 ? "+" : "") + diff.toFixed(1)}</td>
                       <td><button onClick={() => setForm({ studentId: s.id, reason: "", action: "", priority: "medium", followUpDate: "2026-10-20" })} className="rounded-md border px-2 py-1 text-xs hover:bg-accent/60">Intervene</button></td>
                     </tr>

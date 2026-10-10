@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { addComplaint, useAppState } from "@/lib/store";
 import { successScore, studentAttendancePct, lmsCompletion, checkEligibility, recommendations, crossSourceInsights } from "@/lib/scoring";
+import { academicRisk, placementRisk, effectiveBand, type RiskFlagResult } from "@/lib/risk-flags";
 import { SEED_DRIVES } from "@/lib/seed";
 import { DEFAULT_WEIGHTS, type Student } from "@/lib/types";
 import { useDemoSession } from "@/lib/demo-session";
@@ -57,6 +58,9 @@ function StudentProfile() {
   const notes = notifications(s);
   const seg = segmentOf(s);
   const isStudent = session?.role === "student";
+  const acad = academicRisk(s);
+  const place = placementRisk(s);
+  const band = effectiveBand(r.score, r.band, acad, place);
 
   return (
     <Layout allow={["student", "faculty", "admin"]}>
@@ -67,7 +71,12 @@ function StudentProfile() {
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{isStudent ? "Welcome back" : "Student profile"}</p>
           <h1 className="font-display text-2xl font-bold">{s.name}</h1>
           <p className="text-sm text-muted-foreground">{s.id} · {s.branch} · Semester {s.semester} · Graduating {s.gradYear}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-2"><BandBadge score={r.score} /><span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">Segment: {seg.name}</span></div>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {band === r.band ? <BandBadge score={r.score} /> : <span className="rounded-full bg-warning/15 px-2 py-0.5 text-xs font-medium text-warning">{band} (lowered by High risk flag)</span>}
+            <FlagBadge label="Academic risk" flag={acad} />
+            <FlagBadge label="Placement risk" flag={place} />
+            <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">Segment: {seg.name}</span>
+          </div>
         </div>
         <div className="ml-auto grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="CGPA" value={s.cgpa.toFixed(2)} />
@@ -99,6 +108,29 @@ function StudentProfile() {
   );
 }
 
+function FlagBadge({ label, flag }: { label: string; flag: RiskFlagResult }) {
+  const cls = flag.level === "High" ? "bg-destructive/15 text-destructive" : flag.level === "Medium" ? "bg-warning/15 text-warning" : "bg-success/15 text-success";
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label ? `${label}: ` : ""}{flag.level} ({flag.points} pts)</span>;
+}
+
+function FlagDrivers({ title, flag }: { title: string; flag: RiskFlagResult }) {
+  return (
+    <div>
+      <p className="mb-1 font-medium">{title} — <FlagBadge label="" flag={flag} /></p>
+      {flag.drivers.length === 0 && <p className="text-sm text-muted-foreground">No signals triggered.</p>}
+      <ul className="space-y-1 text-sm">
+        {flag.drivers.map((d) => (
+          <li key={d.signal} className="flex justify-between gap-2 border-b border-border/50 pb-1">
+            <span>{d.signal} <span className="text-muted-foreground">({d.value}; {d.threshold})</span></span>
+            <span className="font-medium text-destructive">+{d.points}</span>
+          </li>
+        ))}
+      </ul>
+      {flag.insufficient.length > 0 && <p className="mt-1 text-xs text-muted-foreground">Insufficient data: {flag.insufficient.join(", ")}</p>}
+    </div>
+  );
+}
+
 function NoticeRow({ n }: { n: Notice }) {
   const Icon = n.tone === "danger" ? AlertTriangle : n.tone === "warning" ? Bell : n.tone === "success" ? CheckCircle2 : Info;
   const cls = n.tone === "danger" ? "border-destructive/40 bg-destructive/5 text-destructive" : n.tone === "warning" ? "border-warning/40 bg-warning/10 text-warning" : "border-primary/30 bg-primary/5 text-primary";
@@ -113,6 +145,8 @@ function NoticeRow({ n }: { n: Notice }) {
 function Overview({ s, notes }: { s: Student; notes: Notice[] }) {
   const r = successScore(s);
   const seg = segmentOf(s);
+  const acad = academicRisk(s);
+  const place = placementRisk(s);
   const ranked = Object.entries(r.components).filter(([, v]) => v !== null).map(([k, v]) => ({ k, v: v as number, impact: ((v as number) * DEFAULT_WEIGHTS[k as keyof typeof DEFAULT_WEIGHTS]) / 100 })).sort((a, b) => b.impact - a.impact);
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -132,7 +166,14 @@ function Overview({ s, notes }: { s: Student; notes: Notice[] }) {
         </div>
         <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <div><p className="mb-1 font-medium text-success">Helping you</p>{r.positives.map((p) => <p key={p}>+ {p}</p>)}</div>
-          <div><p className="mb-1 font-medium text-destructive">Why you are flagged</p>{r.negatives.length ? r.negatives.map((p) => <p key={p}>− {p}</p>) : <p className="text-muted-foreground">No risk flags</p>}</div>
+          <div><p className="mb-1 font-medium text-destructive">Working against you</p>{r.negatives.length ? r.negatives.map((p) => <p key={p}>− {p}</p>) : <p className="text-muted-foreground">No negatives</p>}</div>
+        </div>
+      </div>
+      <div className={`${card} lg:col-span-2`}>
+        <SectionTitle sub="Points-based signals from the shared rule config — sorted by impact">Why you are flagged</SectionTitle>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <FlagDrivers title="Academic Risk" flag={acad} />
+          <FlagDrivers title="Placement Risk" flag={place} />
         </div>
       </div>
       <div className={card}>

@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout";
 import { StatCard, SectionTitle, BandBadge, EmptyState } from "@/components/widgets";
 import { useAppState } from "@/lib/store";
 import { successScore, studentAttendancePct, lmsCompletion, componentScores } from "@/lib/scoring";
+import { academicRisk, placementRisk, type FlagLevel } from "@/lib/risk-flags";
 import { riskBand } from "@/lib/types";
 import { useMemo, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from "recharts";
@@ -58,6 +59,27 @@ function Admin() {
       Math.max(1, filtered.filter((s) => s.semesterGrades.length >= sem).length)
     ).toFixed(2),
   }));
+
+  const flagStats = useMemo(() => {
+    const levels: FlagLevel[] = ["Low", "Medium", "High"];
+    const count = (fn: (s: (typeof filtered)[number]) => FlagLevel) =>
+      levels.map((l) => ({ level: l, count: filtered.filter((s) => fn(s) === l).length }));
+    const academic = count((s) => academicRisk(s).level);
+    const placement = count((s) => placementRisk(s).level);
+    const heatmap = branches.map((b) => {
+      const ss = students.filter((s) => s.branch === b);
+      const cell = (fn: (s: (typeof ss)[number]) => FlagLevel, l: FlagLevel) => ss.filter((s) => fn(s) === l).length;
+      return {
+        branch: b,
+        acadHigh: cell((s) => academicRisk(s).level, "High"),
+        acadMed: cell((s) => academicRisk(s).level, "Medium"),
+        placeHigh: cell((s) => placementRisk(s).level, "High"),
+        placeMed: cell((s) => placementRisk(s).level, "Medium"),
+        total: ss.length,
+      };
+    });
+    return { academic, placement, heatmap };
+  }, [filtered, branches, students]);
 
   const quality = useMemo(() => {
     let missing = 0;
@@ -141,6 +163,47 @@ function Admin() {
               {importLog.map((l, i) => <li key={i}>{l.date}: +{l.added} added, {l.duplicates} duplicates, {l.errors} errors</li>)}
             </ul>
           )}
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border bg-card p-4">
+          <SectionTitle sub="Points-based flags from the shared rule config">Risk flag levels</SectionTitle>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {([["Academic Risk", flagStats.academic], ["Placement Risk", flagStats.placement]] as const).map(([title, rows]) => (
+              <div key={title}>
+                <p className="mb-2 text-sm font-medium">{title}</p>
+                <div className="flex gap-2">
+                  {rows.map((r) => (
+                    <div key={r.level} className={`flex-1 rounded-lg border p-2 text-center ${r.level === "High" ? "border-destructive/40" : r.level === "Medium" ? "border-warning/40" : "border-success/40"}`}>
+                      <p className={`text-lg font-bold ${r.level === "High" ? "text-destructive" : r.level === "Medium" ? "text-warning" : "text-success"}`}>{r.count}</p>
+                      <p className="text-xs text-muted-foreground">{r.level}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-xl border bg-card p-4">
+          <SectionTitle sub="Students per branch at Medium/High on each flag">Branch × flag heatmap</SectionTitle>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="text-left text-muted-foreground"><th className="py-1">Branch</th><th>Acad High</th><th>Acad Med</th><th>Place High</th><th>Place Med</th></tr></thead>
+              <tbody>
+                {flagStats.heatmap.map((h) => (
+                  <tr key={h.branch} className="border-t">
+                    <td className="py-2 font-medium">{h.branch}</td>
+                    {[h.acadHigh, h.acadMed, h.placeHigh, h.placeMed].map((v, i) => {
+                      const ratio = h.total ? v / h.total : 0;
+                      const bg = ratio === 0 ? "" : ratio < 0.25 ? "bg-warning/10" : ratio < 0.5 ? "bg-warning/25" : "bg-destructive/25";
+                      return <td key={i} className={`${bg} px-2 py-2 text-center font-medium`}>{v}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
