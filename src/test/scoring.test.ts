@@ -39,7 +39,7 @@ describe("risk bands", () => {
 
 describe("success score", () => {
   it("missing data is not treated as zero", () => {
-    const s = { ...SEED_STUDENTS[0], lms: [] };
+    const s = { ...SEED_STUDENTS[0]!, lms: [] };
     const r = successScore(s);
     expect(r.missing).toContain("lms");
     expect(r.score!).toBeGreaterThan(70);

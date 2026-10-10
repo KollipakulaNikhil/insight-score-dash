@@ -91,7 +91,7 @@ function StudentProfile() {
                 {Object.entries(r.components).map(([k, v]) => (
                   <div key={k}>
                     <div className="flex justify-between text-sm"><span>{LABELS[k]} <span className="text-muted-foreground">({DEFAULT_WEIGHTS[k as keyof typeof DEFAULT_WEIGHTS]}%)</span></span><span className="font-medium">{v === null ? "missing" : v.toFixed(0)}</span></div>
-                    <ProgressBar value={v ?? 0} tone={v === null ? "var(--muted)" : undefined} />
+                    <ProgressBar value={v ?? 0} {...(v === null ? { tone: "var(--muted)" } : {})} />
                   </div>
                 ))}
               </div>

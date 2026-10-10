@@ -32,7 +32,7 @@ function lms(subjects: string[], completion: number[], offset: number): LmsSubje
 const SUBJ = ["Data Structures", "DBMS", "Operating Systems", "Computer Networks"];
 
 function subj(marks: number[], held: number[], att: number[]) {
-  return SUBJ.map((s, i) => ({ subject: s, marks: marks[i], classesHeld: held[i], classesAttended: att[i] }));
+  return SUBJ.map((s, i) => ({ subject: s, marks: marks[i] ?? 0, classesHeld: held[i] ?? 0, classesAttended: att[i] ?? 0 }));
 }
 
 export const SEED_STUDENTS: Student[] = [
