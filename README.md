@@ -10,9 +10,9 @@ A prototype that unifies seven student data sources — academics, attendance, L
 
 Public dashboards run in **synthetic demo mode**: all their data is fictional and persisted in the browser (localStorage). Use **Reset demo** in the dashboard header to restore seed data. No live university system is connected.
 
-The public website adds a campus introduction, solution, role benefits, privacy, contact, and sign-in pages. The separate `/portal` uses Cloud authentication and database-enforced permissions. New accounts receive only student access; an authorized operator must assign staff roles in `user_roles` and link records to student owners and assigned faculty. Workspace selection at login never grants authority. Administrators can save validated records; authorized mentors can create support actions and record outcomes. Contact messages require sign-in and are stored, not emailed.
+The public website adds a campus introduction, solution, role benefits, privacy, contact, and sign-in pages. The separate `/portal` uses email/password accounts (bcrypt + JWT) with permissions enforced in PostgreSQL-backed server functions. New accounts receive only student access; an authorized operator must assign staff roles in `user_roles` and link records to student owners and assigned faculty. Workspace selection at login never grants authority. Administrators can save validated records; authorized mentors can create support actions and record outcomes. Contact messages require sign-in and are stored, not emailed.
 
-The website assistant provides product guidance and clickable navigation links, with one visit-only conversation and no private record access. Its gateway key remains server-side.
+The website assistant provides product guidance and clickable navigation links, with one visit-only conversation and no private record access. Its API key remains server-side.
 
 The complete PDF feature set is **not yet implemented**. Detailed editable learning workflows, live import, fair peer comparisons, evidence approval, configurable scoring controls, and notifications remain tracked in `roadmap.md`. Successful account registration, email confirmation, password recovery, and authenticated role flows require further end-to-end verification with an account.
 
@@ -29,16 +29,16 @@ bun run build
 
 Success Score (0–100), weights configurable in `src/lib/types.ts`:
 
-| Component | Weight |
-|---|---|
-| Academics (CGPA × 10) | 30% |
-| Attendance % | 20% |
-| LMS completion | 15% |
-| Engagement (verified only) | 10% |
-| Skills average | 10% |
-| Placement readiness | 15% |
+| Component                  | Weight |
+| -------------------------- | ------ |
+| Academics (CGPA × 10)      | 30%    |
+| Attendance %               | 20%    |
+| LMS completion             | 15%    |
+| Engagement (verified only) | 10%    |
+| Skills average             | 10%    |
+| Placement readiness        | 15%    |
 
-Risk bands: 80+ On Track · 65–79 Monitor · 40–64 Needs Attention · <40 High Priority.
+Risk bands: 80+ On Track · 65–79 Monitor · 50–64 Needs Attention · <50 High Priority.
 
 **Missing data is never treated as zero** — absent components are excluded and the remaining weights renormalized, with a visible completeness warning.
 
@@ -63,6 +63,22 @@ Open **Hackathon Demo** in the nav for the repeatable 8-step walkthrough (studen
 - `src/lib/store.ts` — localStorage-backed state (students, interventions, complaints, import log)
 - `src/routes/` — Home, Admin, Faculty, Student (list + profile), Data & Import, Hackathon Demo
 
-## Deployment
+## Accounts, database and AI assistant
 
-Publish from the Lovable editor (Publish button). Public fictional dashboards do not need credentials. Cloud account features use the managed Supabase integration; the guide uses `LOVABLE_API_KEY` server-side. Verify authentication redirects and provider configuration before production deployment.
+- **Database:** PostgreSQL. Locally: `docker compose up -d`, then `npm run db:migrate`. Check any database with `npm run db:check`. Hosted free options include Neon and Supabase's Postgres (only the connection string is used).
+- **Authentication:** passwords are hashed with bcrypt (cost 12). Login sets a signed JWT (HS256, 7 days) in an httpOnly, SameSite=Lax cookie; the browser never stores a token. Roles come from the `user_roles` table on every request. Sign-in and sign-up are rate limited per IP.
+- **Roles:** new accounts are students. Promote someone with `npm run db:set-role -- person@college.edu faculty` (or `admin`; add `--revoke` to remove). Assign records to owners and faculty from the admin form in the portal.
+- **Assistant:** uses any OpenAI-compatible API through `LLM_API_KEY`. The default is Google Gemini's free tier (`gemini-2.5-flash`; free limits are small, so the assistant may say it is busy at peak times). `LLM_MODEL` and `LLM_BASE_URL` switch providers, e.g. OpenRouter's `:free` models. The endpoint is same-origin only and limited to 20 messages per 10 minutes per IP.
+- **Password reset by email is not included**; signed-in users can change their password at `/reset-password`. Add an email provider before offering self-service resets.
+
+## Run it
+
+```bash
+cp .env.example .env        # set DATABASE_URL, JWT_SECRET, LLM_API_KEY
+npm install
+npm run db:migrate
+npm run dev                 # development
+npm run build && npm start  # production (Node server on $PORT, default 3000)
+```
+
+`.env` is read by the Node process (`node --env-file=.env`) in production; on a host, set the same variables in its environment settings. The app is plain JavaScript; `src/routeTree.gen.ts` is generated by TanStack Router.
