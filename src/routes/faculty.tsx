@@ -3,6 +3,7 @@ import { Layout } from "@/components/Layout";
 import { StatCard, SectionTitle, BandBadge, EmptyState } from "@/components/widgets";
 import { useAppState, addIntervention, updateInterventionStatus } from "@/lib/store";
 import { successScore, studentAttendancePct, crossSourceInsights } from "@/lib/scoring";
+import { academicRisk, placementRisk, type FlagLevel } from "@/lib/risk-flags";
 import { MENTORS } from "@/lib/seed";
 import { useMemo, useState } from "react";
 
@@ -25,6 +26,8 @@ function Faculty() {
   const [mentor, setMentor] = useState("FAC-01");
   const [query, setQuery] = useState("");
   const [bandFilter, setBandFilter] = useState("all");
+  const [acadFilter, setAcadFilter] = useState("all");
+  const [placeFilter, setPlaceFilter] = useState("all");
   const [compare, setCompare] = useState<string[]>([]);
   const [form, setForm] = useState<{ studentId: string; reason: string; action: string; priority: "low" | "medium" | "high"; followUpDate: string } | null>(null);
 
