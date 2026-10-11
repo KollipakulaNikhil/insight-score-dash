@@ -71,15 +71,12 @@ function Admin() {
       avgScore: sc.length ? +(sc.reduce((a, c) => a + c, 0) / sc.length).toFixed(1) : 0,
     };
   });
-  const trendData = [1, 2, 3, 4, 5].map((sem) => ({
-    sem: `Sem ${sem}`,
-    avgSgpa: +(
-      filtered
-        .filter((s) => s.semesterGrades.length >= sem)
-        .reduce((a, s) => a + (s.semesterGrades[sem - 1] ?? 0), 0) /
-      Math.max(1, filtered.filter((s) => s.semesterGrades.length >= sem).length)
-    ).toFixed(2),
-  }));
+  const trendData = [1, 2, 3, 4, 5].flatMap((sem) => {
+    const have = filtered.filter((s) => s.semesterGrades.length >= sem);
+    if (!have.length) return [];
+    const sum = have.reduce((a, s) => a + (s.semesterGrades[sem - 1] ?? 0), 0);
+    return [{ sem: `Sem ${sem}`, avgSgpa: +(sum / have.length).toFixed(2) }];
+  });
   const flagStats = useMemo(() => {
     const levels = ["Low", "Medium", "High"];
     const count = (fn) =>
@@ -371,7 +368,7 @@ function Admin() {
                       <td className="font-medium">{s.name}</td>
                       <td>{s.branch}</td>
                       <td>{s.semester}</td>
-                      <td>{s.cgpa.toFixed(2)}</td>
+                      <td>{s.cgpa > 0 ? s.cgpa.toFixed(2) : "—"}</td>
                       <td>{att === null ? "—" : att.toFixed(1) + "%"}</td>
                       <td className="font-semibold">{r.score ?? "—"}</td>
                       <td>

@@ -226,7 +226,7 @@ function Faculty() {
                           {s.id} · {s.branch} Sem {s.semester}
                         </div>
                       </td>
-                      <td>{s.cgpa.toFixed(2)}</td>
+                      <td>{s.cgpa > 0 ? s.cgpa.toFixed(2) : "—"}</td>
                       <td>{att === null ? "—" : att.toFixed(1) + "%"}</td>
                       <td className="font-semibold">{r.score ?? "—"}</td>
                       <td>
@@ -287,7 +287,7 @@ function Faculty() {
               <tbody>
                 {[
                   ["Score", (s) => successScore(s).score ?? "—"],
-                  ["CGPA", (s) => s.cgpa.toFixed(2)],
+                  ["CGPA", (s) => (s.cgpa > 0 ? s.cgpa.toFixed(2) : "—")],
                   [
                     "Attendance",
                     (s) => {

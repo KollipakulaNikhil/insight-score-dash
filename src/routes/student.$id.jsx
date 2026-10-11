@@ -169,7 +169,7 @@ function StudentProfile() {
           </div>
         </div>
         <div className="ml-auto grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="CGPA" value={s.cgpa.toFixed(2)} />
+          <StatCard label="CGPA" value={s.cgpa > 0 ? s.cgpa.toFixed(2) : "—"} />
           <StatCard
             label="Attendance"
             value={att === null ? "—" : att.toFixed(1) + "%"}
