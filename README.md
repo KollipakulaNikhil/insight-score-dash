@@ -1,84 +1,115 @@
 # BIB InsightIQ — Student Success Intelligence Platform
 
+> Turning campus data into student success — see **who needs help**, **why they are at risk**, and **what to do next**, before a small gap becomes a bigger challenge.
+
 Built by **TEAM BIB (Biryani Intelligence Bureau)** for the **HacXLerate Smart Campus Analytics** challenge.
 
-## What it is
+![BIB InsightIQ landing page](docs/screenshots/landing.png)
 
-A prototype that unifies seven student data sources — academics, attendance, LMS, skills, engagement, placement, and feedback — under a single student ID, computes an explainable Student Success Score, surfaces cross-source risk insights, and supports mentor interventions.
+---
 
-## Demo mode
+## 🎯 The Problem
 
-Public dashboards run in **synthetic demo mode**: all their data is fictional and persisted in the browser (localStorage). Use **Reset demo** in the dashboard header to restore seed data. No live university system is connected.
+Student data lives in silos — grades in one system, attendance in another, LMS activity, skill assessments, and placement records scattered everywhere. By the time anyone connects the dots, a struggling student has already fallen behind.
 
-The public website adds a campus introduction, solution, role benefits, privacy, contact, and sign-in pages. The separate `/portal` uses email/password accounts (bcrypt + JWT) with permissions enforced in PostgreSQL-backed server functions. New accounts receive only student access; an authorized operator must assign staff roles in `user_roles` and link records to student owners and assigned faculty. Workspace selection at login never grants authority. Administrators can save validated records; authorized mentors can create support actions and record outcomes. Contact messages require sign-in and are stored, not emailed.
+**BIB InsightIQ** unifies **seven campus data sources** under a single student identity and answers three questions instantly:
 
-The website assistant provides product guidance and clickable navigation links, with one visit-only conversation and no private record access. Its API key remains server-side.
+1. **Who needs help?** — an explainable 0–100 Success Score with clear risk bands
+2. **Why are they at risk?** — dual, points-based **Academic Risk** and **Placement Risk** flags, each with a sorted driver list (signal → value → threshold → points)
+3. **What should faculty do next?** — concrete next steps and mentor interventions with an owner and follow-up date
 
-The complete PDF feature set is **not yet implemented**. Detailed editable learning workflows, live import, fair peer comparisons, evidence approval, configurable scoring controls, and notifications remain tracked in `roadmap.md`. Successful account registration, email confirmation, password recovery, and authenticated role flows require further end-to-end verification with an account.
+---
 
-## Setup
+## 🖥️ How It Works
+
+### 1. Public website & guided entry
+
+A professional landing site explains the product, privacy stance, and benefits per role, with an "Ask IQ" assistant for guided navigation. Visitors can explore a **password-free demo** — no credentials needed.
+
+![Login and demo access](docs/screenshots/login.png)
+
+### 2. Student dashboard — the whole student story
+
+Each student gets an 8-tab workspace: **Overview, Academics, Attendance, LMS, Skills, Placement, Engagement, Feedback**.
+
+- **Explainable score** — every component shows its weight and exact point contribution
+- **Risk badges** — Academic and Placement risk levels with points, plus "Why you are flagged" drivers
+- **Actionable notifications** — e.g. *"attend the next 8 classes to reach 85%"*, assignment deadlines, drive eligibility
+- Attendance planner, unit-wise LMS content, weekly skill tests, resume check, mock interviews, and placement drive eligibility
+
+![Student dashboard](docs/screenshots/student.png)
+
+### 3. Faculty / Mentor dashboard — triage at a glance
+
+Mentors see their assigned cohort with **filterable Academic-risk and Placement-risk columns**, band filters, search, up-to-3-student comparison, and one-click **Intervene** actions that record owner, action, and follow-up date.
+
+![Faculty dashboard](docs/screenshots/faculty.png)
+
+### 4. Administrator dashboard — institution-level insight
+
+Campus-wide KPIs, risk-band distribution, academic trends, department comparison, **flag-level counts and a branch × flag heatmap**, plus a data-quality panel — missing data is flagged, never silently treated as zero.
+
+![Admin dashboard](docs/screenshots/admin.png)
+
+### 5. Data & Import
+
+CSV import with validation and a cleaning report, so messy real-world exports (duplicates, missing values, bad formats) become one unified, trustworthy student record.
+
+![Data import](docs/screenshots/data.png)
+
+---
+
+## 🧮 Scoring & Risk Model
+
+**Success Score (0–100)** — weighted, renormalized over available components (missing data never counts as zero):
+
+| Component | Weight |
+|---|---|
+| Academics (CGPA) | 30% |
+| Attendance | 20% |
+| Placement readiness | 15% |
+| LMS engagement | 15% |
+| Skills | 10% |
+| Engagement | 10% |
+
+**Bands:** ≥ 80 On Track · ≥ 65 Monitor · ≥ 50 Needs Attention · < 50 High Priority.
+If **any risk flag is High**, the band can never be "On Track".
+
+**Dual risk flags** — a points-based rule table in one config file (`src/lib/risk-flags.ts`): each rule is *signal, threshold, points*. Missing inputs add no points and appear as **"Insufficient data"**.
+
+- **Academic Risk** — backlogs, low CGPA, SGPA drop, low attendance, subjects below 75, low LMS lessons/assignments → High ≥ 5 pts, Medium ≥ 2
+- **Placement Risk** — low readiness, weak aptitude/coding, weak resume, no mock interviews, incomplete assessments, no certifications/hackathons → High ≥ 6 pts, Medium ≥ 3
+
+✅ **Verified:** all 300 students in the official dataset match the reference answer key — scores, flag points/levels, and bands — with **zero mismatches** (20 automated tests).
+
+---
+
+## 🏗️ Tech Stack
+
+- **Frontend:** React 19 + TanStack Start (SSR), Tailwind CSS v4, shadcn/ui, Recharts
+- **Backend:** Lovable Cloud (PostgreSQL, auth, server functions) — roles enforced server-side via `user_roles`
+- **Assistant:** AI Elements + AI SDK, provider calls kept server-side
+- **Testing:** Vitest — scoring, risk flags, bands, CSV validation, dataset answer-key parity
+
+## 🚀 Run Locally
 
 ```bash
 bun install
 bun run dev      # http://localhost:8080
-bun run test     # calculation & validation tests (vitest)
+bun run test     # calculation & validation tests
 bun run build
 ```
 
-## Scoring assumptions (prototype, not official policy)
+## 🔐 Privacy & Roles
 
-Success Score (0–100), weights configurable in `src/lib/types.ts`:
+- Public demo dashboards use **fictional data only**, stored in the browser — never an authorization source
+- The authenticated portal enforces permissions in the database on every request; new accounts get student access only, staff roles require authorized assignment
+- Demo workspaces are role-isolated: a student sees only their own dashboard
 
-| Component                  | Weight |
-| -------------------------- | ------ |
-| Academics (CGPA × 10)      | 30%    |
-| Attendance %               | 20%    |
-| LMS completion             | 15%    |
-| Engagement (verified only) | 10%    |
-| Skills average             | 10%    |
-| Placement readiness        | 15%    |
+## 🗺️ Roadmap
 
-Risk bands: 80+ On Track · 65–79 Monitor · 50–64 Needs Attention · <50 High Priority.
+Tracked in `roadmap.md` — live import of the 7 raw source CSVs with cleaning report, evidence approval queues, configurable scoring weights, notifications, and full authenticated end-to-end flows.
 
-**Missing data is never treated as zero** — absent components are excluded and the remaining weights renormalized, with a visible completeness warning.
+---
 
-Attendance marks bands: ≥90% → 5 · 85–90 → 4 · 80–85 → 3 · 75–80 → 2 · <75 → 0. The attendance tab also computes classes needed to reach 75/80/85/90% and how many more classes can be missed.
-
-Placement eligibility: every criterion shows Pass / Fail / **Unknown**; a student is never marked eligible while a required criterion is unknown.
-
-## Testing
-
-`src/test/scoring.test.ts` covers attendance band boundaries, classes-needed/missable math, risk band boundaries, missing-data handling, eligibility-unknown rules, and CSV duplicate/missing-field validation.
-
-## Demo script
-
-Open **Hackathon Demo** in the nav for the repeatable 8-step walkthrough (student profile → cross-source insight → score explanation → faculty view → intervention → admin aggregates) plus the pitch section and a demo reset.
-
-## Structure
-
-- `src/lib/types.ts` — data model, weights, risk bands
-- `src/lib/seed.ts` — fictional demo dataset
-- `src/lib/scoring.ts` — attendance/LMS math, success score, eligibility, insights, recommendations
-- `src/lib/csv.ts` — CSV parsing & validation
-- `src/lib/store.ts` — localStorage-backed state (students, interventions, complaints, import log)
-- `src/routes/` — Home, Admin, Faculty, Student (list + profile), Data & Import, Hackathon Demo
-
-## Accounts, database and AI assistant
-
-- **Database:** PostgreSQL. Locally: `docker compose up -d`, then `npm run db:migrate`. Check any database with `npm run db:check`. Hosted free options include Neon and Supabase's Postgres (only the connection string is used).
-- **Authentication:** passwords are hashed with bcrypt (cost 12). Login sets a signed JWT (HS256, 7 days) in an httpOnly, SameSite=Lax cookie; the browser never stores a token. Roles come from the `user_roles` table on every request. Sign-in and sign-up are rate limited per IP.
-- **Roles:** new accounts are students. Promote someone with `npm run db:set-role -- person@college.edu faculty` (or `admin`; add `--revoke` to remove). Assign records to owners and faculty from the admin form in the portal.
-- **Assistant:** uses any OpenAI-compatible API through `LLM_API_KEY`. The default is Google Gemini's free tier (`gemini-2.5-flash`; free limits are small, so the assistant may say it is busy at peak times). `LLM_MODEL` and `LLM_BASE_URL` switch providers, e.g. OpenRouter's `:free` models. The endpoint is same-origin only and limited to 20 messages per 10 minutes per IP.
-- **Password reset by email is not included**; signed-in users can change their password at `/reset-password`. Add an email provider before offering self-service resets.
-
-## Run it
-
-```bash
-cp .env.example .env        # set DATABASE_URL, JWT_SECRET, LLM_API_KEY
-npm install
-npm run db:migrate
-npm run dev                 # development
-npm run build && npm start  # production (Node server on $PORT, default 3000)
-```
-
-`.env` is read by the Node process (`node --env-file=.env`) in production; on a host, set the same variables in its environment settings. The app is plain JavaScript; `src/routeTree.gen.ts` is generated by TanStack Router.
+*Explainable insights. Human-led support. Fictional demo data.*
