@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { BandBadge, EmptyState, SectionTitle, StatCard } from "@/components/widg
 import { CampusInsights } from "@/components/portal/CampusInsights";
 import { PageTitle } from "@/components/portal/PortalShell";
 import { pct } from "@/components/portal/StudentTable";
-import { BAND_ORDER, byAttention, isAtRisk, lowAttendance } from "@/lib/campus-derive";
+import { BAND_ORDER, averages, byAttention, isAtRisk, lowAttendance } from "@/lib/campus-derive";
 import { liveAssignments, liveNotifications } from "@/lib/live-profile";
 import { useCampus } from "@/lib/use-campus";
 
@@ -22,6 +23,31 @@ export function HomePage() {
   if (role === "admin") return <AdminHome />;
   if (role === "faculty") return <FacultyHome />;
   return <StudentHome />;
+}
+
+/** The same academic indicators as the demonstration dashboards, for the rows in view. */
+function AcademicStats({ rows }) {
+  const a = averages(rows);
+  const f = (v, suffix = "") => (v === null ? "—" : v.toFixed(1) + suffix);
+  return (
+    <>
+      <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-5">
+        <StatCard label="Avg success score" value={f(a.avgScore)} sub="/100" />
+        <StatCard label="Avg CGPA" value={f(a.avgCgpa)} />
+        <StatCard
+          label="Avg attendance"
+          value={f(a.avgAtt, "%")}
+          tone={a.avgAtt !== null && a.avgAtt < 75 ? "danger" : "default"}
+        />
+        <StatCard label="LMS completion" value={f(a.avgLms, "%")} />
+        <StatCard label="Placement readiness" value={f(a.avgPlace, "%")} />
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Data coverage {a.coverage.toFixed(1)}% ({a.missing} of {a.cells} indicators not yet
+        recorded; missing values are never counted as zero).
+      </p>
+    </>
+  );
 }
 
 function QuickLinks({ items }) {
@@ -295,6 +321,7 @@ function FacultyHome() {
         />
         <StatCard label="No data yet" value={String(summary.noData)} sub="Marks not recorded" />
       </div>
+      <AcademicStats rows={rows} />
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <div className={card}>
           <SectionTitle sub="Most urgent first">Students who need attention</SectionTitle>
@@ -319,6 +346,9 @@ function FacultyHome() {
 // ---------------------------------------------------------------- admin
 function AdminHome() {
   const { profile, rows, summary } = useCampus();
+  const [branch, setBranch] = useState("");
+  const scopedRows = branch ? rows.filter((r) => r.branch === branch) : rows;
+  const branchNames = [...new Set(rows.map((r) => r.branch))].sort();
   const first = (profile.display_name || "there").split(" ")[0];
   const branches = [...new Set(rows.map((r) => r.branch))].sort().map((b) => {
     const list = rows.filter((r) => r.branch === b);
@@ -339,6 +369,26 @@ function AdminHome() {
   return (
     <div>
       <PageTitle title={`Welcome, ${first}`} sub="Home · campus overview" />
+      {branchNames.length > 1 && (
+        <div className="mb-3 flex items-center gap-2 text-sm">
+          <label htmlFor="home-branch" className="text-muted-foreground">
+            Averages and insights for
+          </label>
+          <select
+            id="home-branch"
+            value={branch}
+            onChange={(e) => setBranch(e.target.value)}
+            className="rounded-md border bg-card px-3 py-1.5 text-sm"
+          >
+            <option value="">All branches</option>
+            {branchNames.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <StatCard
           label="Students"
@@ -366,6 +416,8 @@ function AdminHome() {
           tone={summary.overdueFollowUps ? "danger" : "default"}
         />
       </div>
+
+      <AcademicStats rows={scopedRows} />
 
       {(summary.unassigned > 0 || summary.noData > 0) && (
         <div className="mt-4 rounded-xl border border-dashed p-4 text-sm">
@@ -475,7 +527,7 @@ function AdminHome() {
           )}
         </div>
       </div>
-      <CampusInsights rows={rows} />
+      <CampusInsights rows={scopedRows} />
       <div className="mt-6">
         <SectionTitle>Go to</SectionTitle>
         <QuickLinks

@@ -6,6 +6,19 @@ import { BAND_ORDER, byAttention, lowAttendance } from "@/lib/campus-derive";
 
 const selectClass = "rounded-md border bg-background p-2 text-sm";
 const LIMIT = 200;
+const LEVELS = ["Low", "Medium", "High"];
+const LEVEL_CLASS = {
+  High: "bg-destructive/15 text-destructive",
+  Medium: "bg-warning/15 text-warning",
+  Low: "bg-success/15 text-success",
+};
+function LevelPill({ level }) {
+  return (
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${LEVEL_CLASS[level]}`}>
+      {level}
+    </span>
+  );
+}
 export const pct = (v) => (v === null ? "—" : `${v.toFixed(v >= 99.95 ? 0 : 1)}%`);
 
 /** A searchable, filterable list of students. Click a row's name to open the student. */
@@ -15,6 +28,8 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
   const [branch, setBranch] = useState("");
   const [mentor, setMentor] = useState("");
   const [segment, setSegment] = useState("");
+  const [acad, setAcad] = useState("");
+  const [place, setPlace] = useState("");
   const branches = useMemo(() => [...new Set(rows.map((r) => r.branch))].sort(), [rows]);
   const segments = useMemo(() => [...new Set(rows.map((r) => r.segment))].sort(), [rows]);
   const mentors = useMemo(() => {
@@ -30,6 +45,8 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
           return false;
         if (branch && r.branch !== branch) return false;
         if (segment && r.segment !== segment) return false;
+        if (acad && r.academicRisk !== acad) return false;
+        if (place && r.placementRisk !== place) return false;
         if (mentor === "none" && r.mentorId) return false;
         if (mentor && mentor !== "none" && r.mentorId !== mentor) return false;
         if (band === "nodata") return r.score === null;
@@ -39,7 +56,11 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
         return true;
       }),
     );
-  }, [rows, q, band, branch, mentor, segment]);
+  }, [rows, q, band, branch, mentor, segment, acad, place]);
+  const classAvg = useMemo(() => {
+    const v = rows.map((r) => r.score).filter((x) => x !== null);
+    return v.length ? v.reduce((a, c) => a + c, 0) / v.length : null;
+  }, [rows]);
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -94,6 +115,32 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
             </option>
           ))}
         </select>
+        <select
+          value={acad}
+          onChange={(e) => setAcad(e.target.value)}
+          aria-label="Filter by academic risk"
+          className={selectClass}
+        >
+          <option value="">Academic risk: all</option>
+          {LEVELS.map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
+        <select
+          value={place}
+          onChange={(e) => setPlace(e.target.value)}
+          aria-label="Filter by placement risk"
+          className={selectClass}
+        >
+          <option value="">Placement risk: all</option>
+          {LEVELS.map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
         {showMentor && (
           <select
             value={mentor}
@@ -124,6 +171,9 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
               <th>CGPA</th>
               <th>Attendance</th>
               <th>LMS</th>
+              <th>Academic risk</th>
+              <th>Placement risk</th>
+              <th>vs class avg</th>
               <th>Alerts</th>
               <th>Segment</th>
               {showMentor && <th>Teacher</th>}
@@ -153,6 +203,23 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
                   {pct(r.attendance)}
                 </td>
                 <td>{pct(r.lms)}</td>
+                <td>
+                  <LevelPill level={r.academicRisk} />
+                </td>
+                <td>
+                  <LevelPill level={r.placementRisk} />
+                </td>
+                <td
+                  className={
+                    classAvg !== null && r.score !== null && r.score < classAvg
+                      ? "text-destructive"
+                      : "text-success"
+                  }
+                >
+                  {classAvg === null || r.score === null
+                    ? "—"
+                    : (r.score - classAvg > 0 ? "+" : "") + (r.score - classAvg).toFixed(1)}
+                </td>
                 <td className={r.urgent ? "font-medium text-destructive" : ""}>{r.alerts}</td>
                 <td className="text-xs">{r.segment}</td>
                 {showMentor && (
@@ -164,7 +231,10 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
             ))}
             {shown.length === 0 && (
               <tr>
-                <td colSpan={showMentor ? 9 : 8} className="p-6 text-center text-muted-foreground">
+                <td
+                  colSpan={showMentor ? 12 : 11}
+                  className="p-6 text-center text-muted-foreground"
+                >
                   No students match.
                 </td>
               </tr>
