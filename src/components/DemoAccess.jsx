@@ -30,10 +30,10 @@ export function DemoAccess() {
   const open = (o) => {
     if (o.role === "student") {
       setDemoSession({ role: "student", studentId: DEMO_STUDENT_ID, name: o.name });
-      navigate({ to: "/student/$id", params: { id: DEMO_STUDENT_ID } });
+      navigate({ to: "/demo-portal/$", params: { _splat: "" }, search: { role: "student" } });
     } else {
       setDemoSession({ role: o.role, name: o.name });
-      navigate({ to: o.role === "faculty" ? "/faculty" : "/admin" });
+      navigate({ to: "/demo-portal/$", params: { _splat: "" }, search: { role: o.role } });
     }
   };
   return (

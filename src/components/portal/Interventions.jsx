@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { PLink as Link, useAction } from "@/lib/portal-base";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,7 @@ const PRIORITY_CLASS = {
 
 export function InterventionCard({ item, studentName, canManage }) {
   const { refresh, today } = useCampus();
-  const change = useServerFn(changeCampusIntervention);
+  const change = useAction(changeCampusIntervention);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const overdue = item.status !== "resolved" && item.follow_up_date < today;
@@ -108,7 +107,7 @@ export function InterventionCard({ item, studentName, canManage }) {
 /** Creates a support action. Pass `fixedStudentId` to lock it to one student, or `choices` to pick. */
 export function InterventionForm({ fixedStudentId, choices = [] }) {
   const { refresh, profile } = useCampus();
-  const create = useServerFn(saveCampusIntervention);
+  const create = useAction(saveCampusIntervention);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   async function submit(e) {

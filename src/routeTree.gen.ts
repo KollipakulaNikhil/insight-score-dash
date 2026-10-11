@@ -23,6 +23,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SolutionRouteImport } from './routes/solution'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
+import { Route as DemoPortalSplatRouteImport } from './routes/demo-portal.$'
 import { Route as StudentIndexRouteImport } from './routes/student.index'
 import { Route as StudentIdRouteImport } from './routes/student.$id'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
@@ -115,6 +116,11 @@ const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
   id: '/portal',
   path: '/portal',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const DemoPortalSplatRoute = DemoPortalSplatRouteImport.update({
+  id: '/demo-portal/$',
+  path: '/demo-portal/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const StudentIndexRoute = StudentIndexRouteImport.update({
   id: '/',
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/solution': typeof SolutionRoute
   '/student': typeof StudentRouteWithChildren
   '/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/demo-portal/$': typeof DemoPortalSplatRoute
   '/student/$id': typeof StudentIdRoute
   '/student/': typeof StudentIndexRoute
   '/portal/assign': typeof AuthenticatedPortalAssignRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
+  '/demo-portal/$': typeof DemoPortalSplatRoute
   '/student/$id': typeof StudentIdRoute
   '/student': typeof StudentIndexRoute
   '/portal/assign': typeof AuthenticatedPortalAssignRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/solution': typeof SolutionRoute
   '/student': typeof StudentRouteWithChildren
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
+  '/demo-portal/$': typeof DemoPortalSplatRoute
   '/student/$id': typeof StudentIdRoute
   '/student/': typeof StudentIndexRoute
   '/_authenticated/portal/assign': typeof AuthenticatedPortalAssignRoute
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/solution'
     | '/student'
     | '/portal'
+    | '/demo-portal/$'
     | '/student/$id'
     | '/student/'
     | '/portal/assign'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/solution'
+    | '/demo-portal/$'
     | '/student/$id'
     | '/student'
     | '/portal/assign'
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/solution'
     | '/student'
     | '/_authenticated/portal'
+    | '/demo-portal/$'
     | '/student/$id'
     | '/student/'
     | '/_authenticated/portal/assign'
@@ -495,6 +507,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SolutionRoute: typeof SolutionRoute
   StudentRoute: typeof StudentRouteWithChildren
+  DemoPortalSplatRoute: typeof DemoPortalSplatRoute
   ApiPublicChatRoute: typeof ApiPublicChatRoute
 }
 
@@ -597,6 +610,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal'
       preLoaderRoute: typeof AuthenticatedPortalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/demo-portal/$': {
+      id: '/demo-portal/$'
+      path: '/demo-portal/$'
+      fullPath: '/demo-portal/$'
+      preLoaderRoute: typeof DemoPortalSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/student/': {
       id: '/student/'
@@ -849,6 +869,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SolutionRoute: SolutionRoute,
   StudentRoute: StudentRouteWithChildren,
+  DemoPortalSplatRoute: DemoPortalSplatRoute,
   ApiPublicChatRoute: ApiPublicChatRoute,
 }
 export const routeTree = rootRouteImport

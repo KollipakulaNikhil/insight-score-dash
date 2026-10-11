@@ -1,6 +1,6 @@
 # Demo Script (about 5 minutes)
 
-Use the demonstration dashboards, which need no sign-in and use the 300-student BIB dataset. Open `/demo` first.
+Use the demonstration workspaces, which need no sign-in and show the real workspace pages with the 300-student BIB dataset (read-only). Open `/demo` first, then switch between Student, Teacher and Administrator in the banner.
 
 ## Key figures from the dataset
 
@@ -19,11 +19,11 @@ These figures come from running the shipped scoring code over the seed data. Re-
 ## Flow
 
 1. **The problem (30 s).** Colleges hold attendance, marks, LMS, placement and feedback data in separate systems. Faculty learn about a struggling student late. InsightIQ answers: who needs support, why, and what to do next.
-2. **One student view (30 s).** `/student`: one record joins all seven sources under a single student ID.
+2. **One student view (30 s).** `/student` (Student view): one record joins all seven sources under a single student ID.
 3. **The score (60 s).** Open a student. Show the six weighted components, the band, and the completeness indicator. Point out that missing data is excluded, not scored as zero. The method is in `docs/success-score-note.md`.
 4. **Explainable risk (60 s).** Show the Academic and Placement Risk badges and the sorted drivers (for example backlogs, CGPA under 6.0, SGPA drop).
-5. **Faculty view (60 s).** `/faculty`: filter by band, risk level and **segment**. Select "High academics, low placement readiness" and show the suggested action. Select up to three students to compare.
-6. **Administrator view (60 s).** `/admin`: score distribution, SGPA trend, branch × flag heatmap and the **segment chart**. Say where the 42 placement-gap students sit and what targeted action fits them.
+5. **Faculty view (60 s).** `/faculty` (Teacher view): filter by band, risk level and **segment**. Select "High academics, low placement readiness" and show the suggested action. Select up to three students to compare.
+6. **Administrator view (60 s).** `/admin` (Administrator view): score distribution, SGPA trend, branch × flag heatmap and the **segment chart**. Say where the 42 placement-gap students sit and what targeted action fits them.
 7. **Real portal (30 s).** Sign in at `/auth`. Show that a teacher sees only assigned students, and record an intervention. It is saved to PostgreSQL, and the follow-up date shows on the teacher's home.
 8. **Close (15 s).** Roles are enforced on the server, the demo is separate from real data, and the roadmap covers campus-system import, notifications and configurable weights.
 

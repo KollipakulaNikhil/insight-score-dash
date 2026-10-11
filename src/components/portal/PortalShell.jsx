@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
@@ -26,6 +26,7 @@ import { PublicLayout } from "@/components/PublicLayout";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth.functions";
 import { useAccount } from "@/lib/account";
+import { PLink as Link, usePortalMode } from "@/lib/portal-base";
 import { useCampus } from "@/lib/use-campus";
 
 // What each kind of person needs is different, so each gets its own menu.
@@ -70,8 +71,13 @@ export function PortalShell({ children }) {
   const { refresh } = useAccount();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { demo } = usePortalMode();
   const items = NAV[role];
   async function logout() {
+    if (demo) {
+      await navigate({ to: "/demo" });
+      return;
+    }
     await qc.cancelQueries();
     qc.clear();
     await signOut();
@@ -107,7 +113,7 @@ export function PortalShell({ children }) {
             ))}
           </nav>
           <Button variant="ghost" size="sm" className="mt-3 w-full justify-start" onClick={logout}>
-            <LogOut /> Sign out
+            <LogOut /> {demo ? "Exit demo" : "Sign out"}
           </Button>
         </aside>
         <main className="min-w-0">{children}</main>

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { PLink as Link, useAction } from "@/lib/portal-base";
 import { Pencil, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +35,7 @@ function Fact({ label, value }) {
 export function ProfilePage() {
   const { profile, role, isAdmin, isFaculty, myRow, refresh } = useCampus();
   const account = useAccount();
-  const save = useServerFn(updateMyProfile);
+  const save = useAction(updateMyProfile);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");

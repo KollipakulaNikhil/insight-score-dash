@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { PLink as Link } from "@/lib/portal-base";
 import { Input } from "@/components/ui/input";
 import { BandBadge, SectionTitle } from "@/components/widgets";
 import { BAND_ORDER, byAttention, lowAttendance } from "@/lib/campus-derive";

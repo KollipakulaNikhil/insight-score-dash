@@ -31,9 +31,12 @@ Files named `*.server.js` and everything under `src/backend` run only on the ser
 
 ### Demo (browser)
 
-- `src/lib/seed.js` and `src/lib/seed-students.js` hold the fictional 300-student BIB dataset.
-- `src/lib/store.js` keeps demo state (students, interventions, complaints, import log) in `localStorage`, exposed through `useSyncExternalStore`. A stable seed snapshot is used for server rendering so hydration does not mismatch after a user has saved demo changes.
-- `src/lib/demo-session.js` records which fictional role the visitor picked, in `sessionStorage`. It only filters which demo pages are shown. It is never sent to the server and never grants access.
+- `src/lib/seed-students.js` holds the fictional 300-student BIB dataset.
+- `src/lib/demo-campus.js` shapes that data exactly like the signed-in campus query (`loadCampus`): the same `records` and `interventions` fields, scoped per role (a student gets one record, a teacher and an administrator get all 300).
+- `src/routes/demo-portal.$.jsx` renders the **same page components** as `/portal` (home, students, interventions, records and so on) inside the same `PortalShell`, under `/demo-portal/*`. A role switch (`?role=student|faculty|admin`) changes the data and the navigation.
+- `src/lib/portal-base.jsx` supplies a mode context. In the walkthrough, `PLink` keeps every link inside `/demo-portal`, `useCampus` reads the demo data, and `useAction` refuses every change with a read-only message. In the real portal the same components call the server as before.
+- `/student`, `/faculty` and `/admin` redirect to the matching role view. `/data` remains a separate import demonstration.
+- The walkthrough never calls an authenticated server function and is never an authorization source.
 
 ### Live (server)
 

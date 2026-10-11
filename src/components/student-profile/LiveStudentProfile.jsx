@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { PLink as Link, useAction } from "@/lib/portal-base";
 import {
   BookOpen,
   Brain,
@@ -408,7 +407,7 @@ export function LiveEngagement({ s }) {
 }
 
 function NoteForm({ kind, recordId, onChanged, placeholder, button, withAbout }) {
-  const add = useServerFn(addStudentNote);
+  const add = useAction(addStudentNote);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   async function submit(e) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { PLink as Link } from "@/lib/portal-base";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BandBadge, EmptyState, SectionTitle, StatCard } from "@/components/widgets";

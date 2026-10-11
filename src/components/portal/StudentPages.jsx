@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { PLink as Link } from "@/lib/portal-base";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/widgets";
 import { PageTitle, RoleGate } from "@/components/portal/PortalShell";

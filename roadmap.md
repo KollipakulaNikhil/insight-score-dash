@@ -7,7 +7,8 @@
 - [x] Role-isolated demo sessions and a detailed student dashboard
 - [x] 300-student BIB dataset as the seed; score, risk flags and bands verified against the reference answer key (`src/test/dataset.test.js`)
 - [x] Dual Academic and Placement Risk flags with sorted drivers; a High flag blocks On Track
-- [x] Student segmentation with suggested actions, shown on student profiles, the faculty and administrator demo dashboards, and the portal (home chart, table column and filter)
+- [x] Student segmentation with suggested actions, shown on student profiles and in the portal (home chart, table column and filter)
+- [x] Demonstration workspaces are the real portal pages with fictional read-only data (`/demo-portal`), with a Student, Teacher and Administrator switch
 - [x] Guided website assistant (server-side prompt and provider calls)
 - [x] Move to JavaScript, PostgreSQL, bcrypt and JWT auth with role-based portal workspaces
 - [x] Live student records, teacher assignment, feedback notes and persisted interventions with outcomes and audit log

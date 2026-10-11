@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { PLink as Link, usePortalMode } from "@/lib/portal-base";
+import { demoAccounts, demoAudit } from "@/lib/demo-campus";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -259,7 +260,11 @@ export function MonitorPage() {
 // ---------------------------------------------------------------- teachers (admin)
 export function TeachersPage() {
   const { rows, interventions } = useCampus();
-  const accounts = useQuery({ queryKey: ["accounts"], queryFn: () => listAccounts() });
+  const { demo } = usePortalMode();
+  const accounts = useQuery({
+    queryKey: [demo ? "demo-accounts" : "accounts"],
+    queryFn: demo ? demoAccounts : () => listAccounts(),
+  });
   const teachers = (accounts.data ?? []).filter((p) => p.roles.includes("faculty"));
   return (
     <RoleGate allow={["admin"]}>
@@ -365,7 +370,11 @@ const OPERATION = {
 };
 
 export function AuditPage() {
-  const audit = useQuery({ queryKey: ["audit"], queryFn: () => listAudit() });
+  const { demo } = usePortalMode();
+  const audit = useQuery({
+    queryKey: [demo ? "demo-audit" : "audit"],
+    queryFn: demo ? demoAudit : () => listAudit(),
+  });
   return (
     <RoleGate allow={["admin"]}>
       <PageTitle title="Audit log" sub="The latest 200 changes to student records" />

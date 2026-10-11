@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Link2, Plus, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,8 @@ import {
   saveCampusStudent,
   setAccountRole,
 } from "@/lib/campus.functions";
+import { demoAccounts, demoMessages } from "@/lib/demo-campus";
+import { useAction, usePortalMode } from "@/lib/portal-base";
 import { studentSchema } from "@/lib/student-validation";
 import { emptyStudent } from "@/lib/student-defaults";
 
@@ -34,14 +35,18 @@ const ALL_TABS = ["connect", "people", "student", "json", "messages"];
 
 export function AdminTools({ students, records, selectedId = "", onSaved, tabs = ALL_TABS }) {
   const qc = useQueryClient();
-  const accounts = useQuery({ queryKey: ["accounts"], queryFn: () => listAccounts() });
-  const grant = useServerFn(setAccountRole);
-  const save = useServerFn(saveCampusStudent);
-  const link = useServerFn(linkStudentsToTeacher);
+  const { demo } = usePortalMode();
+  const accounts = useQuery({
+    queryKey: [demo ? "demo-accounts" : "accounts"],
+    queryFn: demo ? demoAccounts : () => listAccounts(),
+  });
+  const grant = useAction(setAccountRole);
+  const save = useAction(saveCampusStudent);
+  const link = useAction(linkStudentsToTeacher);
   const [open, setOpen] = useState(tabs[0]);
   const messages = useQuery({
-    queryKey: ["contact-messages"],
-    queryFn: () => listContactMessages(),
+    queryKey: [demo ? "demo-messages" : "contact-messages"],
+    queryFn: demo ? demoMessages : () => listContactMessages(),
     enabled: open === "messages",
   });
   const [msg, setMsg] = useState("");
