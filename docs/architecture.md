@@ -2,16 +2,16 @@
 
 ## Stack
 
-| Layer          | Technology                                                                         |
-| -------------- | ---------------------------------------------------------------------------------- |
-| Framework      | TanStack Start (React 19, file-based routing, server functions), Vite 8            |
-| UI             | Tailwind CSS 4, shadcn/ui (Radix), Recharts, AI Elements for the assistant         |
-| Data fetching  | TanStack Query                                                                     |
-| Database       | PostgreSQL via `pg`; SQL migrations in `db/migrations`                             |
-| Auth           | bcrypt password hashes, HS256 JWT (`jose`) in an httpOnly cookie                   |
-| Validation     | Zod, on every server function input                                                |
-| Assistant      | Vercel AI SDK (`ai`, `@ai-sdk/openai-compatible`), any OpenAI-compatible provider  |
-| Build / host   | Nitro; Vercel or a plain Node.js server (`npm start`)                              |
+| Layer         | Technology                                                                        |
+| ------------- | --------------------------------------------------------------------------------- |
+| Framework     | TanStack Start (React 19, file-based routing, server functions), Vite 8           |
+| UI            | Tailwind CSS 4, shadcn/ui (Radix), Recharts, AI Elements for the assistant        |
+| Data fetching | TanStack Query                                                                    |
+| Database      | PostgreSQL via `pg`; SQL migrations in `db/migrations`                            |
+| Auth          | bcrypt password hashes, HS256 JWT (`jose`) in an httpOnly cookie                  |
+| Validation    | Zod, on every server function input                                               |
+| Assistant     | Vercel AI SDK (`ai`, `@ai-sdk/openai-compatible`), any OpenAI-compatible provider |
+| Build / host  | Nitro; Vercel or a plain Node.js server (`npm start`)                             |
 
 ## Code layout
 

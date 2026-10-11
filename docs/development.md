@@ -35,13 +35,13 @@ To add a portal page:
 
 ## Changing the scoring rules
 
-| Change                              | File                         |
-| ----------------------------------- | ---------------------------- |
-| Component weights, band thresholds  | `src/lib/types.js`           |
-| Score, attendance marks, eligibility | `src/lib/scoring.js`        |
-| Academic and Placement risk signals and points | `src/lib/risk-flags.js` |
-| Per-student and campus summaries    | `src/lib/campus-derive.js`   |
-| Portal alerts and deadlines         | `src/lib/live-profile.js`    |
+| Change                                         | File                       |
+| ---------------------------------------------- | -------------------------- |
+| Component weights, band thresholds             | `src/lib/types.js`         |
+| Score, attendance marks, eligibility           | `src/lib/scoring.js`       |
+| Academic and Placement risk signals and points | `src/lib/risk-flags.js`    |
+| Per-student and campus summaries               | `src/lib/campus-derive.js` |
+| Portal alerts and deadlines                    | `src/lib/live-profile.js`  |
 
 Scores are derived on read and never stored, so no migration is needed. Update the assistant's prompt in `src/lib/chat.server.js` and the tables in the README and [docs](README.md#scoring-in-one-table) so the description stays in step, then update the tests.
 
@@ -57,14 +57,14 @@ If a change affects the shape of the `record` JSON, update `studentSchema` and `
 
 `npm test` runs Vitest with jsdom and Testing Library (`vitest.config.js`, `src/test/setup.js`).
 
-| Suite                    | Covers                                                                      |
-| ------------------------ | --------------------------------------------------------------------------- |
-| `scoring.test.js`        | Attendance band boundaries, classes required, status bands, missing data, eligibility |
-| `risk-flags.test.js`     | Academic and Placement risk flags and band blocking                         |
-| `campus-derive.test.js`  | Per-student and campus summaries                                            |
-| `live-profile.test.js`   | Student workspace alerts and deadlines                                      |
-| `dataset.test.js`        | The 300-student dataset (`fixtures/students_unified_clean.csv`) against the reference scoring |
-| `app-routing.test.jsx`   | Public, demo and guarded route behavior                                     |
+| Suite                   | Covers                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------- |
+| `scoring.test.js`       | Attendance band boundaries, classes required, status bands, missing data, eligibility         |
+| `risk-flags.test.js`    | Academic and Placement risk flags and band blocking                                           |
+| `campus-derive.test.js` | Per-student and campus summaries                                                              |
+| `live-profile.test.js`  | Student workspace alerts and deadlines                                                        |
+| `dataset.test.js`       | The 300-student dataset (`fixtures/students_unified_clean.csv`) against the reference scoring |
+| `app-routing.test.jsx`  | Public, demo and guarded route behavior                                                       |
 
 The tests exercise derivation and routing. They do not run against a real database, so authorization SQL in `campus.functions.js` is verified manually: sign in as a student, a teacher and an administrator and confirm each sees only the records described in the [data model](data-model.md#who-may-read-or-write-what).
 

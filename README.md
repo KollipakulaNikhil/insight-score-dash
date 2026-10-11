@@ -27,6 +27,8 @@ The platform addresses three questions for every student:
 11. [Command reference](#command-reference)
 12. [Roadmap](#roadmap)
 
+Further documentation is in [`docs/`](docs/README.md): architecture, data model, server functions, the Success Score note and a demo script.
+
 ## Features
 
 | Area                     | Description                                                                                                                                        | Route                                              |

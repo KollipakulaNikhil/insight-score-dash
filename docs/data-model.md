@@ -20,14 +20,14 @@ campus_audit  → loose reference (record_id, actor_id), no foreign keys
 
 ### `users`
 
-| Column                                          | Type         | Notes                                              |
-| ----------------------------------------------- | ------------ | -------------------------------------------------- |
-| `id`                                            | uuid, PK     | `gen_random_uuid()`                                |
-| `email`                                         | citext, unique | Case-insensitive                                 |
-| `password_hash`                                 | text         | bcrypt                                             |
-| `display_name`                                  | text         | Default `''`                                       |
-| `phone`, `address`, `bio`, `linkedin_url`, `github_url` | text | Added in `0002`; user-editable profile fields     |
-| `created_at`                                    | timestamptz  |                                                    |
+| Column                                                  | Type           | Notes                                         |
+| ------------------------------------------------------- | -------------- | --------------------------------------------- |
+| `id`                                                    | uuid, PK       | `gen_random_uuid()`                           |
+| `email`                                                 | citext, unique | Case-insensitive                              |
+| `password_hash`                                         | text           | bcrypt                                        |
+| `display_name`                                          | text           | Default `''`                                  |
+| `phone`, `address`, `bio`, `linkedin_url`, `github_url` | text           | Added in `0002`; user-editable profile fields |
+| `created_at`                                            | timestamptz    |                                               |
 
 ### `user_roles`
 
@@ -35,13 +35,13 @@ Composite primary key `(user_id, role)`. `role` is the enum `app_role` (`student
 
 ### `student_records`
 
-| Column       | Type                  | Notes                                                              |
-| ------------ | --------------------- | ------------------------------------------------------------------ |
-| `id`         | text, PK              | Student identifier, e.g. `BIB-2026-001`, or `ACC-XXXXXXXX` for placeholders created on assignment |
-| `owner_id`   | uuid → `users`        | The student account the record belongs to. `ON DELETE SET NULL`    |
-| `faculty_id` | uuid → `users`        | The assigned teacher. `ON DELETE SET NULL`                         |
-| `record`     | jsonb                 | The full student profile (see below)                               |
-| `updated_at` | timestamptz           |                                                                    |
+| Column       | Type           | Notes                                                                                             |
+| ------------ | -------------- | ------------------------------------------------------------------------------------------------- |
+| `id`         | text, PK       | Student identifier, e.g. `BIB-2026-001`, or `ACC-XXXXXXXX` for placeholders created on assignment |
+| `owner_id`   | uuid → `users` | The student account the record belongs to. `ON DELETE SET NULL`                                   |
+| `faculty_id` | uuid → `users` | The assigned teacher. `ON DELETE SET NULL`                                                        |
+| `record`     | jsonb          | The full student profile (see below)                                                              |
+| `updated_at` | timestamptz    |                                                                                                   |
 
 Indexed on `owner_id` and `faculty_id`, the two columns every access check filters on.
 
@@ -51,16 +51,16 @@ The `record` document is validated by the Zod `studentSchema` in `src/lib/studen
 
 A mentor's recorded support action for one student.
 
-| Column           | Notes                                                       |
-| ---------------- | ----------------------------------------------------------- |
-| `student_id`     | → `student_records(id)`, `ON DELETE CASCADE`                |
-| `created_by`     | → `users(id)`                                               |
-| `reason`, `action` | Free text (5 to 1000 characters, enforced by Zod)         |
-| `priority`       | `low` \| `medium` \| `high` (CHECK), default `medium`       |
-| `owner`          | Name of the responsible person                              |
-| `follow_up_date` | date                                                        |
-| `status`         | `open` \| `in-progress` \| `resolved` (CHECK), default `open` |
-| `outcome`        | Text, default `''`                                          |
+| Column             | Notes                                                         |
+| ------------------ | ------------------------------------------------------------- |
+| `student_id`       | → `student_records(id)`, `ON DELETE CASCADE`                  |
+| `created_by`       | → `users(id)`                                                 |
+| `reason`, `action` | Free text (5 to 1000 characters, enforced by Zod)             |
+| `priority`         | `low` \| `medium` \| `high` (CHECK), default `medium`         |
+| `owner`            | Name of the responsible person                                |
+| `follow_up_date`   | date                                                          |
+| `status`           | `open` \| `in-progress` \| `resolved` (CHECK), default `open` |
+| `outcome`          | Text, default `''`                                            |
 
 ### `contact_messages`
 
@@ -72,22 +72,22 @@ Append-only log of changes to student records: `actor_id`, `record_id`, `operati
 
 ## Who may read or write what
 
-| Data                  | Student             | Faculty                              | Admin   |
-| --------------------- | ------------------- | ------------------------------------ | ------- |
-| Own `users` row       | read, edit profile  | read, edit profile                   | same    |
-| `student_records`     | own (`owner_id`)    | assigned (`faculty_id`), read only   | all, read and write |
-| `campus_interventions`| read for own record | create and update for assigned students | all   |
-| `contact_messages`    | create              | create                               | read all |
-| `campus_audit`        | none                | none                                 | read    |
+| Data                   | Student             | Faculty                                 | Admin               |
+| ---------------------- | ------------------- | --------------------------------------- | ------------------- |
+| Own `users` row        | read, edit profile  | read, edit profile                      | same                |
+| `student_records`      | own (`owner_id`)    | assigned (`faculty_id`), read only      | all, read and write |
+| `campus_interventions` | read for own record | create and update for assigned students | all                 |
+| `contact_messages`     | create              | create                                  | read all            |
+| `campus_audit`         | none                | none                                    | read                |
 
 Feedback notes are written into the student's record JSON by `addStudentNote`: teachers only for assigned students, students only on their own record.
 
 ## Operational scripts
 
-| Command                                 | What it does                                               |
-| --------------------------------------- | ---------------------------------------------------------- |
-| `npm run db:migrate`                    | Applies pending files from `db/migrations`                 |
-| `npm run db:check`                      | Confirms the connection and schema (prints `Schema OK`)    |
+| Command                                 | What it does                                                  |
+| --------------------------------------- | ------------------------------------------------------------- |
+| `npm run db:migrate`                    | Applies pending files from `db/migrations`                    |
+| `npm run db:check`                      | Confirms the connection and schema (prints `Schema OK`)       |
 | `npm run db:set-role -- <email> <role>` | Grants `student`, `faculty` or `admin`; `--revoke` removes it |
 
 `docker-compose.yml` starts a local PostgreSQL for development.

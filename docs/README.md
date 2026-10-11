@@ -6,33 +6,35 @@ For every student, the platform answers three questions: who needs support, why,
 
 ## Where to start
 
-| I want to…                                      | Read                                         |
-| ----------------------------------------------- | -------------------------------------------- |
-| Install, configure, run or deploy the app       | [Project README](../README.md)               |
-| Understand how the system is put together       | [Architecture](architecture.md)              |
-| Understand the database and the student record  | [Data model](data-model.md)                  |
-| Find out what the server exposes and who may call it | [Server functions](server-functions.md) |
-| Work on the code, add a feature, run the tests  | [Development guide](development.md)          |
+| I want to…                                           | Read                                        |
+| ---------------------------------------------------- | ------------------------------------------- |
+| Install, configure, run or deploy the app            | [Project README](../README.md)              |
+| Understand how the system is put together            | [Architecture](architecture.md)             |
+| Explain the score and segments (judges' note)        | [Success Score note](success-score-note.md) |
+| Present or demo the project                          | [Demo script](demo-script.md)               |
+| Understand the database and the student record       | [Data model](data-model.md)                 |
+| Find out what the server exposes and who may call it | [Server functions](server-functions.md)     |
+| Work on the code, add a feature, run the tests       | [Development guide](development.md)         |
 
 ## The product in brief
 
 The app has three separate surfaces:
 
-| Surface                  | Routes                                              | Data                                   | Authentication |
-| ------------------------ | --------------------------------------------------- | -------------------------------------- | -------------- |
-| Public website           | `/`, `/solution`, `/benefits`, `/privacy`, `/contact` | None                                 | None           |
-| Demonstration dashboards | `/demo`, `/student`, `/faculty`, `/admin`, `/data`  | Fictional seed data in the browser     | None           |
-| Role-based portal        | `/portal/*`                                         | Live records in PostgreSQL             | Required       |
+| Surface                  | Routes                                                | Data                               | Authentication |
+| ------------------------ | ----------------------------------------------------- | ---------------------------------- | -------------- |
+| Public website           | `/`, `/solution`, `/benefits`, `/privacy`, `/contact` | None                               | None           |
+| Demonstration dashboards | `/demo`, `/student`, `/faculty`, `/admin`, `/data`    | Fictional seed data in the browser | None           |
+| Role-based portal        | `/portal/*`                                           | Live records in PostgreSQL         | Required       |
 
 The website assistant ("Iq") appears on the public pages. It has no access to student records.
 
 ### Roles
 
-| Role      | Can see                                   | Can change                                                        |
-| --------- | ----------------------------------------- | ----------------------------------------------------------------- |
-| `student` | Their own record and interventions        | Their own profile fields; feedback about their own record         |
-| `faculty` | Records of students assigned to them      | Interventions for those students; feedback notes on those records |
-| `admin`   | Every record, account, message and audit entry | Student records, role grants, teacher assignments            |
+| Role      | Can see                                        | Can change                                                        |
+| --------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| `student` | Their own record and interventions             | Their own profile fields; feedback about their own record         |
+| `faculty` | Records of students assigned to them           | Interventions for those students; feedback notes on those records |
+| `admin`   | Every record, account, message and audit entry | Student records, role grants, teacher assignments                 |
 
 New accounts are always created as `student`. Staff roles are granted by an administrator (or by the `db:set-role` script for the first one).
 
