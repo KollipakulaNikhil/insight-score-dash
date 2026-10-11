@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BandBadge, EmptyState, SectionTitle, StatCard } from "@/components/widgets";
+import { CampusInsights } from "@/components/portal/CampusInsights";
 import { PageTitle } from "@/components/portal/PortalShell";
 import { pct } from "@/components/portal/StudentTable";
 import { BAND_ORDER, byAttention, isAtRisk, lowAttendance } from "@/lib/campus-derive";
@@ -310,6 +311,7 @@ function FacultyHome() {
           </Button>
         </div>
       </div>
+      <CampusInsights rows={rows} />
     </div>
   );
 }
@@ -473,6 +475,7 @@ function AdminHome() {
           )}
         </div>
       </div>
+      <CampusInsights rows={rows} />
       <div className="mt-6">
         <SectionTitle>Go to</SectionTitle>
         <QuickLinks
