@@ -1,5 +1,9 @@
 # BIB InsightIQ roadmap
 
+## Current deliverable
+
+- [ ] Create and verify a project walkthrough video with spoken narration covering the supplied challenge, features, scoring, risk patterns, requirements and technology stack.
+
 ## Done
 
 - [x] Public website, benefits, solution, privacy, contact and sign-in
