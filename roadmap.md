@@ -1,5 +1,9 @@
 # Orbit roadmap
 
+## Current deliverable
+
+- [x] Create a project walkthrough video with spoken narration covering the supplied challenge, features, scoring, risk patterns, requirements and technology stack; v2 timing, all scenes and audio levels checked. Delivered for review: voice clarity/pronunciation not verified by listening; screenshot fine print is small.
+
 ## Done
 
 - [x] Public website, benefits, solution, privacy, contact and sign-in
