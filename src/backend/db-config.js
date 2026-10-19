@@ -23,7 +23,11 @@ export function poolConfig(url = process.env["DATABASE_URL"]) {
     connectionString: url.replace(/([?&])sslmode=[^&]*&?/, "$1").replace(/[?&]$/, ""),
     ssl: useSsl ? { rejectUnauthorized: false } : false,
     max: Number(process.env["DATABASE_POOL_MAX"]) || (serverless ? 3 : 10),
-    connectionTimeoutMillis: 10_000,
-    idleTimeoutMillis: serverless ? 10_000 : 30_000,
+    // A sleeping hosted database can take 10+ seconds to wake up on the first request.
+    connectionTimeoutMillis: 30_000,
+    // Opening a connection to a remote database costs seconds, so a long-running server keeps
+    // its connections warm instead of closing them after a short pause.
+    idleTimeoutMillis: serverless ? 10_000 : 10 * 60_000,
+    keepAlive: true,
   };
 }

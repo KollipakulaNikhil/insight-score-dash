@@ -1,6 +1,6 @@
-# BIB InsightIQ Documentation
+# Orbit Documentation
 
-BIB InsightIQ is a student success intelligence platform built by TEAM BIB (Biryani Intelligence Bureau) for the HacXLerate Smart Campus Analytics challenge. It brings seven student data sources (academics, attendance, LMS activity, skills, engagement, placement readiness and feedback) under one student identifier, computes an explainable **Student Success Score**, and lets mentors record and track interventions.
+Orbit is a student success intelligence platform built by TEAM BIB (Biryani Intelligence Bureau) for the HacXLerate Smart Campus Analytics challenge. It brings seven student data sources (academics, attendance, LMS activity, skills, engagement, placement readiness and feedback) under one student identifier, computes an explainable **Student Success Score**, and lets mentors record and track interventions.
 
 For every student, the platform answers three questions: who needs support, why, and what the faculty member should do next.
 
@@ -11,7 +11,6 @@ For every student, the platform answers three questions: who needs support, why,
 | Install, configure, run or deploy the app            | [Project README](../README.md)              |
 | Understand how the system is put together            | [Architecture](architecture.md)             |
 | Explain the score and segments (judges' note)        | [Success Score note](success-score-note.md) |
-| Present or demo the project                          | [Demo script](demo-script.md)               |
 | Understand the database and the student record       | [Data model](data-model.md)                 |
 | Find out what the server exposes and who may call it | [Server functions](server-functions.md)     |
 | Work on the code, add a feature, run the tests       | [Development guide](development.md)         |
@@ -20,13 +19,12 @@ For every student, the platform answers three questions: who needs support, why,
 
 The app has three separate surfaces:
 
-| Surface                  | Routes                                                | Data                               | Authentication |
-| ------------------------ | ----------------------------------------------------- | ---------------------------------- | -------------- |
-| Public website           | `/`, `/solution`, `/benefits`, `/privacy`, `/contact` | None                               | None           |
-| Demonstration dashboards | `/demo`, `/student`, `/faculty`, `/admin`, `/data`    | Fictional seed data in the browser | None           |
-| Role-based portal        | `/portal/*`                                           | Live records in PostgreSQL         | Required       |
+| Surface           | Routes                                                | Data                       | Authentication |
+| ----------------- | ----------------------------------------------------- | -------------------------- | -------------- |
+| Public website    | `/`, `/solution`, `/benefits`, `/privacy`, `/contact` | None                       | None           |
+| Role-based portal | `/portal/*`                                           | Live records in PostgreSQL | Required       |
 
-The website assistant ("Iq") appears on the public pages. It has no access to student records.
+The website assistant ("Pluto") appears on the public pages. It has no access to student records.
 
 ### Roles
 
@@ -55,8 +53,6 @@ Bands: 80 and above **On Track**, 65 to 79 **Monitor**, 50 to 64 **Needs Attenti
 
 These come from the project's `AGENTS.md` and shape most of the code.
 
-1. **Demo and live are separate.** Browser demo state can never authorize anything.
-2. **Demo access is password-free.** Demo links use explicit routes, not hardcoded credential checks.
 3. **The server decides.** Record access is enforced in authenticated server functions with SQL that checks the caller's roles. Navigation hiding is cosmetic.
 4. **Roles come from the database.** The JWT identifies the user; roles are re-read on every request.
 5. **Writes are confirmed.** Mutations return success only after the database write, then invalidate the shared campus query so derived scores refresh.

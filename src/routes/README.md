@@ -1,21 +1,24 @@
 # Routes
 
-TanStack Start uses **file-based routing**. Every `.tsx` file in this directory
-defines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or
-`app/layout.tsx` — those are Next.js / Remix conventions. The only root layout
-is `src/routes/__root.tsx`.
+Orbit uses TanStack Start **file-based routing**. Each `.jsx` file here is a page; the file name is
+its address. `routeTree.gen.ts` is generated, so never edit it by hand.
 
-## Conventions
+| File                                                                      | Address                                                 | Who can open it                                                      |
+| ------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------- |
+| `index.jsx`, `solution.jsx`, `benefits.jsx`, `privacy.jsx`, `contact.jsx` | `/`, `/solution`, `/benefits`, `/privacy`, `/contact`   | Anyone                                                               |
+| `auth.jsx`                                                                | `/auth` (optional `?workspace=student\|faculty\|admin`) | Anyone: log in, sign up, forgot password                             |
+| `new-password.jsx`                                                        | `/new-password?token=…`                                 | Anyone holding a reset link                                          |
+| `reset-password.jsx`                                                      | `/reset-password`                                       | Signed-in people changing their password                             |
+| `_authenticated/portal.*.jsx`                                             | `/portal/…`                                             | Signed-in people; the server checks the role again for every request |
+| `api.public.chat.js`                                                      | `/api/public/chat`                                      | The Pluto assistant, with no access to student records               |
 
-| File | URL |
-| --- | --- |
-| `index.tsx` | `/` |
-| `about.tsx` | `/about` |
-| `users/index.tsx` | `/users` |
-| `users/$id.tsx` | `/users/:id` (dynamic — bare `$`, no curly braces) |
-| `posts/{-$category}.tsx` | `/posts/:category?` (optional segment) |
-| `files/$.tsx` | `/files/*` (splat — read via `_splat` param, never `*`) |
-| `_layout.tsx` | layout route (renders children via `<Outlet />`) |
-| `__root.tsx` | app shell — wraps every page; preserve `<Outlet />` |
+Workspace pages under `/portal`:
 
-`routeTree.gen.ts` is auto-generated. Don't edit it by hand.
+- Everyone: overview (`/portal`), `profile`, `updates`, `results`, `placement`
+- Students: `learning`, `attendance`, `lms`, `skills`, `engagement`, `feedback`
+- Teachers and administrators: `students`, `students/$id`, `interventions`, `monitor`
+- Administrators: `teachers`, `assign`, `people`, `records`, `messages`, `audit`
+
+Pages that differ by role (overview, results, placement) pick the right view inside one component.
+Showing or hiding a menu item is only a convenience; access is enforced by the server functions in
+`src/lib/*.functions.js`.

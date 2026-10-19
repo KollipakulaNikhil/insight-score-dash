@@ -64,7 +64,11 @@ If a change affects the shape of the `record` JSON, update `studentSchema` and `
 | `campus-derive.test.js` | Per-student and campus summaries                                                              |
 | `live-profile.test.js`  | Student workspace alerts and deadlines                                                        |
 | `dataset.test.js`       | The 300-student dataset (`fixtures/students_unified_clean.csv`) against the reference scoring |
-| `app-routing.test.jsx`  | Public, demo and guarded route behavior                                                       |
+| `app-routing.test.jsx`  | Public and guarded route behavior                                                             |
+| `destinations.test.js`  | Every menu, shortcut, search and login destination points at a real page                      |
+| `csv.test.js`           | Student CSV export (quoting, formula safety) and import checks                                |
+| `results.test.js`       | Letter grades for marks                                                                       |
+| `captcha.test.js`       | The captcha image and token, wrong answers and missing tokens                                 |
 
 The tests exercise derivation and routing. They do not run against a real database, so authorization SQL in `campus.functions.js` is verified manually: sign in as a student, a teacher and an administrator and confirm each sees only the records described in the [data model](data-model.md#who-may-read-or-write-what).
 
@@ -73,7 +77,6 @@ The tests exercise derivation and routing. They do not run against a real databa
 - Does every new server function use `requireAuth` and a Zod validator?
 - Is the access rule in the SQL, not only in the UI?
 - Are secrets (`DATABASE_URL`, `JWT_SECRET`, `LLM_API_KEY`) kept out of the repository and the client bundle?
-- Does demo code stay out of anything that decides authorization?
 - Is a new write recorded in `campus_audit` when it touches a student record?
 
 ## Known gaps

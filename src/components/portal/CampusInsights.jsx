@@ -3,6 +3,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -13,7 +14,20 @@ import {
 import { SectionTitle } from "@/components/widgets";
 import { BAND_ORDER } from "@/lib/campus-derive";
 
-const card = "rounded-xl border bg-card p-4";
+const card = "surface p-4";
+const BAND_COLOR = {
+  "On Track": "var(--success)",
+  Monitor: "var(--info)",
+  "Needs Attention": "var(--warning)",
+  "High Priority": "var(--destructive)",
+};
+const PALETTE = [
+  "var(--chart-1)",
+  "var(--chart-5)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-2)",
+];
 const tip = { background: "var(--card)", border: "1px solid var(--border)" };
 const LEVELS = ["Low", "Medium", "High"];
 const LEVEL_TONE = {
@@ -86,7 +100,11 @@ export function CampusInsights({ rows }) {
               <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
               <YAxis allowDecimals={false} stroke="var(--muted-foreground)" />
               <Tooltip contentStyle={tip} />
-              <Bar dataKey="count" name="Students" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="count" name="Students" radius={[8, 8, 0, 0]}>
+                {data.bands.map((b) => (
+                  <Cell key={b.name} fill={BAND_COLOR[b.name] ?? "var(--primary)"} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -106,6 +124,7 @@ export function CampusInsights({ rows }) {
                 <YAxis domain={[0, 10]} stroke="var(--muted-foreground)" />
                 <Tooltip contentStyle={tip} />
                 <Line
+                  isAnimationActive={false}
                   type="monotone"
                   dataKey="avgSgpa"
                   name="Avg SGPA"
@@ -189,7 +208,11 @@ export function CampusInsights({ rows }) {
                 stroke="var(--muted-foreground)"
               />
               <Tooltip contentStyle={tip} />
-              <Bar dataKey="count" name="Students" fill="var(--primary)" radius={[0, 4, 4, 0]} />
+              <Bar isAnimationActive={false} dataKey="count" name="Students" radius={[0, 8, 8, 0]}>
+                {data.segments.map((g, i) => (
+                  <Cell key={g.name} fill={PALETTE[i % PALETTE.length]} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>

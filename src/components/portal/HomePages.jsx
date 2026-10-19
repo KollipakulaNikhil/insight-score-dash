@@ -1,21 +1,30 @@
 import { useState } from "react";
-import { PLink as Link } from "@/lib/portal-base";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BandBadge, EmptyState, SectionTitle, StatCard } from "@/components/widgets";
+import { BandBadge, EmptyState, ScoreRing, SectionTitle, StatCard } from "@/components/widgets";
+import { Academics } from "@/components/student-profile/shared";
+import { OverviewHub } from "@/components/portal/OverviewHub";
+import { ScoreInsights } from "@/components/portal/ScoreInsights";
 import { CampusInsights } from "@/components/portal/CampusInsights";
-import { PageTitle } from "@/components/portal/PortalShell";
+import { Banner, BannerStat, PageTitle } from "@/components/portal/PortalShell";
 import { pct } from "@/components/portal/StudentTable";
 import { BAND_ORDER, averages, byAttention, isAtRisk, lowAttendance } from "@/lib/campus-derive";
 import { liveAssignments, liveNotifications } from "@/lib/live-profile";
 import { useCampus } from "@/lib/use-campus";
 
-const card = "rounded-xl border bg-card p-4";
+const card = "surface p-4";
 const BAND_BAR = {
   "On Track": "bg-success",
   Monitor: "bg-info",
   "Needs Attention": "bg-warning",
   "High Priority": "bg-destructive",
+};
+
+// "Prof. Iyer" should be greeted as Iyer, not "Prof."
+const firstName = (name) => {
+  const parts = (name || "there").trim().split(/\s+/);
+  return /\.$/.test(parts[0]) && parts[1] ? parts[1] : parts[0];
 };
 
 export function HomePage() {
@@ -25,7 +34,7 @@ export function HomePage() {
   return <StudentHome />;
 }
 
-/** The same academic indicators as the demonstration dashboards, for the rows in view. */
+/** Academic averages for the students in view; missing values are skipped, never counted as zero. */
 function AcademicStats({ rows }) {
   const a = averages(rows);
   const f = (v, suffix = "") => (v === null ? "—" : v.toFixed(1) + suffix);
@@ -50,34 +59,14 @@ function AcademicStats({ rows }) {
   );
 }
 
-function QuickLinks({ items }) {
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((i) => (
-        <Link
-          key={i.to}
-          to={i.to}
-          className="group rounded-xl border bg-card p-4 transition-colors hover:border-primary"
-        >
-          <p className="flex items-center justify-between font-medium">
-            {i.label}
-            <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">{i.hint}</p>
-        </Link>
-      ))}
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------- student
 function StudentHome() {
   const { profile, myRow, interventions, today } = useCampus();
-  const first = (profile.display_name || "there").split(" ")[0];
+  const first = firstName(profile.display_name);
   if (!myRow)
     return (
       <div>
-        <PageTitle title={`Welcome, ${first}`} sub="Home" />
+        <Banner title={`Welcome, ${first}`} sub="Overview" />
         <EmptyState
           title="Your account is ready"
           hint="Your student record has not been linked yet. An administrator links it to your account and assigns your teacher. You can already complete your profile."
@@ -85,9 +74,6 @@ function StudentHome() {
         <div className="mt-4 flex gap-2">
           <Button asChild>
             <Link to="/portal/profile">Complete my profile</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/demo">Explore the fictional demo</Link>
           </Button>
         </div>
       </div>
@@ -99,16 +85,22 @@ function StudentHome() {
   const next = [...mine].sort((a, b) => a.follow_up_date.localeCompare(b.follow_up_date))[0];
   return (
     <div>
-      <PageTitle
+      <Banner
         title={`Welcome back, ${first}`}
-        sub={`Home · ${s.id} · ${s.branch} · Semester ${s.semester}`}
-      />
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <StatCard
-          label="Success score"
-          value={myRow.score === null ? "—" : String(Math.round(myRow.score))}
-          sub={myRow.band ?? "No data yet"}
-        />
+        sub={`${s.id} · ${s.branch} · Semester ${s.semester}`}
+      >
+        <div className="flex items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-3 pr-5 backdrop-blur">
+          <span className="rounded-full bg-black/25 p-1 text-white">
+            <ScoreRing score={myRow.score} size={84} />
+          </span>
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-white/70">Success score</p>
+            <p className="font-display text-xl font-bold">{myRow.band ?? "No data yet"}</p>
+          </div>
+        </div>
+      </Banner>
+      <OverviewHub />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard label="CGPA" value={myRow.cgpa === null ? "—" : myRow.cgpa.toFixed(2)} />
         <StatCard
           label="Attendance"
@@ -122,7 +114,7 @@ function StudentHome() {
           tone={myRow.urgent ? "danger" : alerts.length ? "warning" : "success"}
         />
       </div>
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 gap-4 lg:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
         <div className={card}>
           <SectionTitle sub="What to look at first">Needs your attention</SectionTitle>
           {alerts.length === 0 && (
@@ -134,20 +126,20 @@ function StudentHome() {
           )}
           <div className="space-y-2">
             {alerts.slice(0, 4).map((n, i) => (
-              <p key={i} className="rounded-lg border p-3 text-sm">
-                <span className="mr-1 text-xs font-medium uppercase text-muted-foreground">
+              <div
+                key={i}
+                className={`rounded-xl border-l-4 bg-muted/40 p-3 text-sm ${
+                  n.tone === "danger" ? "border-l-destructive" : "border-l-warning"
+                }`}
+              >
+                <span className="mb-1 inline-block rounded-md bg-card px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {n.area}
                 </span>
-                {n.text}
-                <span className="block text-xs text-muted-foreground">{n.tip}</span>
-              </p>
+                <p className="font-medium">{n.text}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{n.tip}</p>
+              </div>
             ))}
           </div>
-          {alerts.length > 0 && (
-            <Button asChild variant="link" className="mt-2 px-0">
-              <Link to="/portal/dashboard">See everything in your dashboard</Link>
-            </Button>
-          )}
         </div>
         <div className="space-y-4">
           <div className={card}>
@@ -176,43 +168,33 @@ function StudentHome() {
               </p>
             )}
             {deadlines.map((a) => (
-              <p
+              <div
                 key={a.subject + a.title}
-                className="flex justify-between gap-3 border-t py-2 text-sm"
+                className="flex items-center justify-between gap-3 border-t py-2.5 text-sm"
               >
                 <span>
-                  {a.title} <span className="text-muted-foreground">· {a.subject}</span>
+                  <span className="font-medium">{a.title}</span>
+                  <span className="block text-xs text-muted-foreground">{a.subject}</span>
                 </span>
                 <span
-                  className={
-                    a.daysLeft !== null && a.daysLeft < 0
-                      ? "text-destructive"
-                      : "text-muted-foreground"
-                  }
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${
+                    a.daysLeft !== null && a.daysLeft <= 2
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
                   {a.deadline || "no date"}
                 </span>
-              </p>
+              </div>
             ))}
           </div>
         </div>
       </div>
       <div className="mt-6">
-        <SectionTitle>Go to</SectionTitle>
-        <QuickLinks
-          items={[
-            {
-              to: "/portal/dashboard",
-              label: "Dashboard",
-              hint: "Your academic status and score.",
-            },
-            { to: "/portal/learning", label: "Learning path", hint: "This semester's courses." },
-            { to: "/portal/attendance", label: "Attendance", hint: "Classes needed to stay safe." },
-            { to: "/portal/skills", label: "Skills", hint: "Your assessment scores." },
-            { to: "/portal/placement", label: "Placement", hint: "Readiness and target roles." },
-            { to: "/portal/profile", label: "Profile", hint: "Update your personal details." },
-          ]}
-        />
+        <ScoreInsights s={s} />
+      </div>
+      <div className="mt-6">
+        <Academics s={s} />
       </div>
     </div>
   );
@@ -286,11 +268,11 @@ function FollowUps({ limit = 5 }) {
 // ---------------------------------------------------------------- faculty
 function FacultyHome() {
   const { profile, rows, summary } = useCampus();
-  const first = (profile.display_name || "there").split(" ")[0];
+  const first = firstName(profile.display_name);
   if (rows.length === 0)
     return (
       <div>
-        <PageTitle title={`Welcome, ${first}`} sub="Home" />
+        <Banner title={`Welcome, ${first}`} sub="Overview" />
         <EmptyState
           title="No students assigned to you yet"
           hint="An administrator assigns students to teachers. They will appear here as soon as they are connected to you."
@@ -299,7 +281,12 @@ function FacultyHome() {
     );
   return (
     <div>
-      <PageTitle title={`Welcome, ${first}`} sub="Home · your students at a glance" />
+      <Banner title={`Welcome, ${first}`} sub="Your students at a glance">
+        <BannerStat label="Students" value={String(summary.total)} />
+        <BannerStat label="Need help" value={String(summary.atRisk)} />
+        <BannerStat label="Follow-ups" value={String(summary.openInterventions)} />
+      </Banner>
+      <OverviewHub />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <StatCard label="My students" value={String(summary.total)} />
         <StatCard
@@ -322,7 +309,7 @@ function FacultyHome() {
         <StatCard label="No data yet" value={String(summary.noData)} sub="Marks not recorded" />
       </div>
       <AcademicStats rows={rows} />
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 gap-4 lg:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
         <div className={card}>
           <SectionTitle sub="Most urgent first">Students who need attention</SectionTitle>
           <AttentionList rows={rows} empty="Everyone with data is on track." />
@@ -349,7 +336,7 @@ function AdminHome() {
   const [branch, setBranch] = useState("");
   const scopedRows = branch ? rows.filter((r) => r.branch === branch) : rows;
   const branchNames = [...new Set(rows.map((r) => r.branch))].sort();
-  const first = (profile.display_name || "there").split(" ")[0];
+  const first = firstName(profile.display_name);
   const branches = [...new Set(rows.map((r) => r.branch))].sort().map((b) => {
     const list = rows.filter((r) => r.branch === b);
     const scored = list.filter((r) => r.score !== null);
@@ -368,7 +355,15 @@ function AdminHome() {
     .sort((a, b) => b.count - a.count);
   return (
     <div>
-      <PageTitle title={`Welcome, ${first}`} sub="Home · campus overview" />
+      <Banner title={`Welcome, ${first}`} sub="Campus overview">
+        <BannerStat label="Students" value={String(summary.total)} />
+        <BannerStat
+          label="Avg score"
+          value={summary.avgScore === null ? "—" : String(Math.round(summary.avgScore))}
+        />
+        <BannerStat label="Need help" value={String(summary.atRisk)} />
+      </Banner>
+      <OverviewHub />
       {branchNames.length > 1 && (
         <div className="mb-3 flex items-center gap-2 text-sm">
           <label htmlFor="home-branch" className="text-muted-foreground">
@@ -389,15 +384,11 @@ function AdminHome() {
           </select>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatCard
           label="Students"
           value={String(summary.total)}
           sub={`${summary.withData} with data`}
-        />
-        <StatCard
-          label="Average score"
-          value={summary.avgScore === null ? "—" : String(Math.round(summary.avgScore))}
         />
         <StatCard
           label="Need help"
@@ -443,7 +434,7 @@ function AdminHome() {
         </div>
       )}
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 gap-4 lg:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
         <div className={card}>
           <SectionTitle sub={`${summary.withData} students with data`}>
             Status of students
@@ -528,31 +519,6 @@ function AdminHome() {
         </div>
       </div>
       <CampusInsights rows={scopedRows} />
-      <div className="mt-6">
-        <SectionTitle>Go to</SectionTitle>
-        <QuickLinks
-          items={[
-            {
-              to: "/portal/assign",
-              label: "Assign students",
-              hint: "Connect students to teachers.",
-            },
-            {
-              to: "/portal/people",
-              label: "People & roles",
-              hint: "Give teacher or admin access.",
-            },
-            {
-              to: "/portal/records",
-              label: "Student records",
-              hint: "Add marks, attendance, skills.",
-            },
-            { to: "/portal/monitor", label: "Attendance & risk", hint: "Who is falling behind." },
-            { to: "/portal/messages", label: "Messages", hint: "Contact messages and concerns." },
-            { to: "/portal/audit", label: "Audit log", hint: "Who changed what, and when." },
-          ]}
-        />
-      </div>
     </div>
   );
 }

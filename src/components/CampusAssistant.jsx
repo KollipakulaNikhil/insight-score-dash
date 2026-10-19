@@ -33,7 +33,7 @@ export function CampusAssistant() {
       {open && (
         <section
           className="assistant-panel flex flex-col overflow-hidden rounded-lg border bg-card shadow-xl"
-          aria-label="IQ campus assistant"
+          aria-label="Pluto campus assistant"
         >
           <header className="flex items-center justify-between gap-3 border-b p-4">
             <div className="flex items-center gap-3">
@@ -41,7 +41,7 @@ export function CampusAssistant() {
                 <Compass className="size-5" />
               </span>
               <div>
-                <h2 className="font-semibold">IQ · Campus guide</h2>
+                <h2 className="font-semibold">Pluto · Campus guide</h2>
                 <p className="text-xs text-muted-foreground">A clearer next step</p>
               </div>
             </div>
@@ -60,7 +60,7 @@ export function CampusAssistant() {
                 <div>
                   <h3 className="text-lg font-semibold">Hello! Where would you like to begin?</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Ask me about InsightIQ, student support, or your next destination.
+                    Ask me about Orbit, student support, or your next destination.
                   </p>
                   <div className="mt-4 flex flex-col items-start gap-2">
                     {[
@@ -111,11 +111,11 @@ export function CampusAssistant() {
           </Conversation>
           <div className="border-t p-3">
             <div className="mb-3 flex gap-3 text-xs">
-              <Link to="/student" onClick={() => setOpen(false)} className="text-primary">
-                Student demo
+              <Link to="/solution" onClick={() => setOpen(false)} className="text-primary">
+                Why Orbit
               </Link>
-              <Link to="/faculty" onClick={() => setOpen(false)} className="text-primary">
-                Faculty demo
+              <Link to="/privacy" onClick={() => setOpen(false)} className="text-primary">
+                Privacy
               </Link>
               <Link to="/auth" onClick={() => setOpen(false)} className="text-primary">
                 Sign in
@@ -153,11 +153,11 @@ export function CampusAssistant() {
       )}
       <Button
         className="ml-auto flex h-12 gap-2 rounded-full px-5 shadow-lg"
-        aria-label={open ? "Hide campus guide" : "Ask IQ campus guide"}
+        aria-label={open ? "Hide campus guide" : "Ask Pluto, the campus guide"}
         onClick={() => setOpen(!open)}
       >
         {open ? <X /> : <MessageCircle className="motion-icon" />}
-        <span>Ask IQ</span>
+        <span>Ask Pluto</span>
       </Button>
     </div>
   );

@@ -16,7 +16,7 @@ import {
 export const Route = createFileRoute("/solution")({
   head: () =>
     pageHead(
-      "Why InsightIQ",
+      "Why Orbit",
       "Seven connected campus data sources, explainable student success scores and timely mentor support.",
     ),
   component: Solution,
@@ -56,7 +56,7 @@ function Solution() {
             },
             {
               t: "Why are they at risk?",
-              d: "Trace each insight back to actual records, values and prototype thresholds.",
+              d: "Trace each insight back to actual records, values and published thresholds.",
             },
             {
               t: "What should faculty do next?",
@@ -94,8 +94,8 @@ function Solution() {
               missing data is disclosed, never silently counted as zero.
             </p>
             <Button asChild className="mt-6">
-              <Link to="/demo">
-                See the score in action <ArrowRight />
+              <Link to="/auth">
+                See your own score <ArrowRight />
               </Link>
             </Button>
           </div>
@@ -117,8 +117,8 @@ function Solution() {
               </div>
             ))}
             <p className="text-xs text-muted-foreground">
-              Proposed prototype weights — not official university policy. Feedback is integrated
-              for support, not a punitive score component.
+              Default weights — not official university policy. Feedback is integrated for support,
+              not a punitive score component.
             </p>
           </div>
         </div>

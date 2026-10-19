@@ -8,7 +8,7 @@ import {
   checkEligibility,
 } from "@/lib/scoring";
 import { riskBand } from "@/lib/types";
-import { SEED_STUDENTS, SEED_DRIVES } from "@/lib/seed";
+import { SEED_STUDENTS, SEED_DRIVES } from "./fixtures/seed";
 import { parseStudentCsv } from "@/lib/csv";
 describe("attendance bands", () => {
   it("boundaries", () => {

@@ -11,26 +11,18 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BenefitsRouteImport } from './routes/benefits'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as DataRouteImport } from './routes/data'
-import { Route as DemoRouteImport } from './routes/demo'
-import { Route as FacultyRouteImport } from './routes/faculty'
+import { Route as NewPasswordRouteImport } from './routes/new-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SolutionRouteImport } from './routes/solution'
-import { Route as StudentRouteImport } from './routes/student'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
-import { Route as DemoPortalSplatRouteImport } from './routes/demo-portal.$'
-import { Route as StudentIndexRouteImport } from './routes/student.index'
-import { Route as StudentIdRouteImport } from './routes/student.$id'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalAssignRouteImport } from './routes/_authenticated/portal.assign'
 import { Route as AuthenticatedPortalAttendanceRouteImport } from './routes/_authenticated/portal.attendance'
 import { Route as AuthenticatedPortalAuditRouteImport } from './routes/_authenticated/portal.audit'
-import { Route as AuthenticatedPortalDashboardRouteImport } from './routes/_authenticated/portal.dashboard'
 import { Route as AuthenticatedPortalEngagementRouteImport } from './routes/_authenticated/portal.engagement'
 import { Route as AuthenticatedPortalFeedbackRouteImport } from './routes/_authenticated/portal.feedback'
 import { Route as AuthenticatedPortalInterventionsRouteImport } from './routes/_authenticated/portal.interventions'
@@ -42,8 +34,10 @@ import { Route as AuthenticatedPortalPeopleRouteImport } from './routes/_authent
 import { Route as AuthenticatedPortalPlacementRouteImport } from './routes/_authenticated/portal.placement'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalRecordsRouteImport } from './routes/_authenticated/portal.records'
+import { Route as AuthenticatedPortalResultsRouteImport } from './routes/_authenticated/portal.results'
 import { Route as AuthenticatedPortalSkillsRouteImport } from './routes/_authenticated/portal.skills'
 import { Route as AuthenticatedPortalTeachersRouteImport } from './routes/_authenticated/portal.teachers'
+import { Route as AuthenticatedPortalUpdatesRouteImport } from './routes/_authenticated/portal.updates'
 import { Route as ApiPublicChatRouteImport } from './routes/api.public.chat'
 import { Route as AuthenticatedPortalStudentsIndexRouteImport } from './routes/_authenticated/portal.students.index'
 import { Route as AuthenticatedPortalStudentsIdRouteImport } from './routes/_authenticated/portal.students.$id'
@@ -55,11 +49,6 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -77,19 +66,9 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DataRoute = DataRouteImport.update({
-  id: '/data',
-  path: '/data',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoRoute = DemoRouteImport.update({
-  id: '/demo',
-  path: '/demo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FacultyRoute = FacultyRouteImport.update({
-  id: '/faculty',
-  path: '/faculty',
+const NewPasswordRoute = NewPasswordRouteImport.update({
+  id: '/new-password',
+  path: '/new-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -107,30 +86,10 @@ const SolutionRoute = SolutionRouteImport.update({
   path: '/solution',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudentRoute = StudentRouteImport.update({
-  id: '/student',
-  path: '/student',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
   id: '/portal',
   path: '/portal',
   getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const DemoPortalSplatRoute = DemoPortalSplatRouteImport.update({
-  id: '/demo-portal/$',
-  path: '/demo-portal/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StudentIndexRoute = StudentIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => StudentRoute,
-} as any)
-const StudentIdRoute = StudentIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => StudentRoute,
 } as any)
 const AuthenticatedPortalIndexRoute =
   AuthenticatedPortalIndexRouteImport.update({
@@ -154,12 +113,6 @@ const AuthenticatedPortalAuditRoute =
   AuthenticatedPortalAuditRouteImport.update({
     id: '/audit',
     path: '/audit',
-    getParentRoute: () => AuthenticatedPortalRoute,
-  } as any)
-const AuthenticatedPortalDashboardRoute =
-  AuthenticatedPortalDashboardRouteImport.update({
-    id: '/dashboard',
-    path: '/dashboard',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const AuthenticatedPortalEngagementRoute =
@@ -227,6 +180,12 @@ const AuthenticatedPortalRecordsRoute =
     path: '/records',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalResultsRoute =
+  AuthenticatedPortalResultsRouteImport.update({
+    id: '/results',
+    path: '/results',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalSkillsRoute =
   AuthenticatedPortalSkillsRouteImport.update({
     id: '/skills',
@@ -237,6 +196,12 @@ const AuthenticatedPortalTeachersRoute =
   AuthenticatedPortalTeachersRouteImport.update({
     id: '/teachers',
     path: '/teachers',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalUpdatesRoute =
+  AuthenticatedPortalUpdatesRouteImport.update({
+    id: '/updates',
+    path: '/updates',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const ApiPublicChatRoute = ApiPublicChatRouteImport.update({
@@ -259,25 +224,17 @@ const AuthenticatedPortalStudentsIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/benefits': typeof BenefitsRoute
   '/contact': typeof ContactRoute
-  '/data': typeof DataRoute
-  '/demo': typeof DemoRoute
-  '/faculty': typeof FacultyRoute
+  '/new-password': typeof NewPasswordRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
-  '/student': typeof StudentRouteWithChildren
   '/portal': typeof AuthenticatedPortalRouteWithChildren
-  '/demo-portal/$': typeof DemoPortalSplatRoute
-  '/student/$id': typeof StudentIdRoute
-  '/student/': typeof StudentIndexRoute
   '/portal/assign': typeof AuthenticatedPortalAssignRoute
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/audit': typeof AuthenticatedPortalAuditRoute
-  '/portal/dashboard': typeof AuthenticatedPortalDashboardRoute
   '/portal/engagement': typeof AuthenticatedPortalEngagementRoute
   '/portal/feedback': typeof AuthenticatedPortalFeedbackRoute
   '/portal/interventions': typeof AuthenticatedPortalInterventionsRoute
@@ -289,8 +246,10 @@ export interface FileRoutesByFullPath {
   '/portal/placement': typeof AuthenticatedPortalPlacementRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/records': typeof AuthenticatedPortalRecordsRoute
+  '/portal/results': typeof AuthenticatedPortalResultsRoute
   '/portal/skills': typeof AuthenticatedPortalSkillsRoute
   '/portal/teachers': typeof AuthenticatedPortalTeachersRoute
+  '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/api/public/chat': typeof ApiPublicChatRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/students/$id': typeof AuthenticatedPortalStudentsIdRoute
@@ -298,23 +257,16 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/benefits': typeof BenefitsRoute
   '/contact': typeof ContactRoute
-  '/data': typeof DataRoute
-  '/demo': typeof DemoRoute
-  '/faculty': typeof FacultyRoute
+  '/new-password': typeof NewPasswordRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
-  '/demo-portal/$': typeof DemoPortalSplatRoute
-  '/student/$id': typeof StudentIdRoute
-  '/student': typeof StudentIndexRoute
   '/portal/assign': typeof AuthenticatedPortalAssignRoute
   '/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/portal/audit': typeof AuthenticatedPortalAuditRoute
-  '/portal/dashboard': typeof AuthenticatedPortalDashboardRoute
   '/portal/engagement': typeof AuthenticatedPortalEngagementRoute
   '/portal/feedback': typeof AuthenticatedPortalFeedbackRoute
   '/portal/interventions': typeof AuthenticatedPortalInterventionsRoute
@@ -326,8 +278,10 @@ export interface FileRoutesByTo {
   '/portal/placement': typeof AuthenticatedPortalPlacementRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/records': typeof AuthenticatedPortalRecordsRoute
+  '/portal/results': typeof AuthenticatedPortalResultsRoute
   '/portal/skills': typeof AuthenticatedPortalSkillsRoute
   '/portal/teachers': typeof AuthenticatedPortalTeachersRoute
+  '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/api/public/chat': typeof ApiPublicChatRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/students/$id': typeof AuthenticatedPortalStudentsIdRoute
@@ -337,25 +291,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/benefits': typeof BenefitsRoute
   '/contact': typeof ContactRoute
-  '/data': typeof DataRoute
-  '/demo': typeof DemoRoute
-  '/faculty': typeof FacultyRoute
+  '/new-password': typeof NewPasswordRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solution': typeof SolutionRoute
-  '/student': typeof StudentRouteWithChildren
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
-  '/demo-portal/$': typeof DemoPortalSplatRoute
-  '/student/$id': typeof StudentIdRoute
-  '/student/': typeof StudentIndexRoute
   '/_authenticated/portal/assign': typeof AuthenticatedPortalAssignRoute
   '/_authenticated/portal/attendance': typeof AuthenticatedPortalAttendanceRoute
   '/_authenticated/portal/audit': typeof AuthenticatedPortalAuditRoute
-  '/_authenticated/portal/dashboard': typeof AuthenticatedPortalDashboardRoute
   '/_authenticated/portal/engagement': typeof AuthenticatedPortalEngagementRoute
   '/_authenticated/portal/feedback': typeof AuthenticatedPortalFeedbackRoute
   '/_authenticated/portal/interventions': typeof AuthenticatedPortalInterventionsRoute
@@ -367,8 +313,10 @@ export interface FileRoutesById {
   '/_authenticated/portal/placement': typeof AuthenticatedPortalPlacementRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/records': typeof AuthenticatedPortalRecordsRoute
+  '/_authenticated/portal/results': typeof AuthenticatedPortalResultsRoute
   '/_authenticated/portal/skills': typeof AuthenticatedPortalSkillsRoute
   '/_authenticated/portal/teachers': typeof AuthenticatedPortalTeachersRoute
+  '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/api/public/chat': typeof ApiPublicChatRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/students/$id': typeof AuthenticatedPortalStudentsIdRoute
@@ -378,25 +326,17 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auth'
     | '/benefits'
     | '/contact'
-    | '/data'
-    | '/demo'
-    | '/faculty'
+    | '/new-password'
     | '/privacy'
     | '/reset-password'
     | '/solution'
-    | '/student'
     | '/portal'
-    | '/demo-portal/$'
-    | '/student/$id'
-    | '/student/'
     | '/portal/assign'
     | '/portal/attendance'
     | '/portal/audit'
-    | '/portal/dashboard'
     | '/portal/engagement'
     | '/portal/feedback'
     | '/portal/interventions'
@@ -408,8 +348,10 @@ export interface FileRouteTypes {
     | '/portal/placement'
     | '/portal/profile'
     | '/portal/records'
+    | '/portal/results'
     | '/portal/skills'
     | '/portal/teachers'
+    | '/portal/updates'
     | '/api/public/chat'
     | '/portal/'
     | '/portal/students/$id'
@@ -417,23 +359,16 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auth'
     | '/benefits'
     | '/contact'
-    | '/data'
-    | '/demo'
-    | '/faculty'
+    | '/new-password'
     | '/privacy'
     | '/reset-password'
     | '/solution'
-    | '/demo-portal/$'
-    | '/student/$id'
-    | '/student'
     | '/portal/assign'
     | '/portal/attendance'
     | '/portal/audit'
-    | '/portal/dashboard'
     | '/portal/engagement'
     | '/portal/feedback'
     | '/portal/interventions'
@@ -445,8 +380,10 @@ export interface FileRouteTypes {
     | '/portal/placement'
     | '/portal/profile'
     | '/portal/records'
+    | '/portal/results'
     | '/portal/skills'
     | '/portal/teachers'
+    | '/portal/updates'
     | '/api/public/chat'
     | '/portal'
     | '/portal/students/$id'
@@ -455,25 +392,17 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/admin'
     | '/auth'
     | '/benefits'
     | '/contact'
-    | '/data'
-    | '/demo'
-    | '/faculty'
+    | '/new-password'
     | '/privacy'
     | '/reset-password'
     | '/solution'
-    | '/student'
     | '/_authenticated/portal'
-    | '/demo-portal/$'
-    | '/student/$id'
-    | '/student/'
     | '/_authenticated/portal/assign'
     | '/_authenticated/portal/attendance'
     | '/_authenticated/portal/audit'
-    | '/_authenticated/portal/dashboard'
     | '/_authenticated/portal/engagement'
     | '/_authenticated/portal/feedback'
     | '/_authenticated/portal/interventions'
@@ -485,8 +414,10 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/placement'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/records'
+    | '/_authenticated/portal/results'
     | '/_authenticated/portal/skills'
     | '/_authenticated/portal/teachers'
+    | '/_authenticated/portal/updates'
     | '/api/public/chat'
     | '/_authenticated/portal/'
     | '/_authenticated/portal/students/$id'
@@ -496,18 +427,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   BenefitsRoute: typeof BenefitsRoute
   ContactRoute: typeof ContactRoute
-  DataRoute: typeof DataRoute
-  DemoRoute: typeof DemoRoute
-  FacultyRoute: typeof FacultyRoute
+  NewPasswordRoute: typeof NewPasswordRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SolutionRoute: typeof SolutionRoute
-  StudentRoute: typeof StudentRouteWithChildren
-  DemoPortalSplatRoute: typeof DemoPortalSplatRoute
   ApiPublicChatRoute: typeof ApiPublicChatRoute
 }
 
@@ -525,13 +451,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -555,25 +474,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/data': {
-      id: '/data'
-      path: '/data'
-      fullPath: '/data'
-      preLoaderRoute: typeof DataRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo': {
-      id: '/demo'
-      path: '/demo'
-      fullPath: '/demo'
-      preLoaderRoute: typeof DemoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faculty': {
-      id: '/faculty'
-      path: '/faculty'
-      fullPath: '/faculty'
-      preLoaderRoute: typeof FacultyRouteImport
+    '/new-password': {
+      id: '/new-password'
+      path: '/new-password'
+      fullPath: '/new-password'
+      preLoaderRoute: typeof NewPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -597,40 +502,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolutionRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student': {
-      id: '/student'
-      path: '/student'
-      fullPath: '/student'
-      preLoaderRoute: typeof StudentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/portal': {
       id: '/_authenticated/portal'
       path: '/portal'
       fullPath: '/portal'
       preLoaderRoute: typeof AuthenticatedPortalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/demo-portal/$': {
-      id: '/demo-portal/$'
-      path: '/demo-portal/$'
-      fullPath: '/demo-portal/$'
-      preLoaderRoute: typeof DemoPortalSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/student/': {
-      id: '/student/'
-      path: '/'
-      fullPath: '/student/'
-      preLoaderRoute: typeof StudentIndexRouteImport
-      parentRoute: typeof StudentRoute
-    }
-    '/student/$id': {
-      id: '/student/$id'
-      path: '/$id'
-      fullPath: '/student/$id'
-      preLoaderRoute: typeof StudentIdRouteImport
-      parentRoute: typeof StudentRoute
     }
     '/_authenticated/portal/': {
       id: '/_authenticated/portal/'
@@ -658,13 +535,6 @@ declare module '@tanstack/react-router' {
       path: '/audit'
       fullPath: '/portal/audit'
       preLoaderRoute: typeof AuthenticatedPortalAuditRouteImport
-      parentRoute: typeof AuthenticatedPortalRoute
-    }
-    '/_authenticated/portal/dashboard': {
-      id: '/_authenticated/portal/dashboard'
-      path: '/dashboard'
-      fullPath: '/portal/dashboard'
-      preLoaderRoute: typeof AuthenticatedPortalDashboardRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/portal/engagement': {
@@ -744,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalRecordsRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/results': {
+      id: '/_authenticated/portal/results'
+      path: '/results'
+      fullPath: '/portal/results'
+      preLoaderRoute: typeof AuthenticatedPortalResultsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/skills': {
       id: '/_authenticated/portal/skills'
       path: '/skills'
@@ -756,6 +633,13 @@ declare module '@tanstack/react-router' {
       path: '/teachers'
       fullPath: '/portal/teachers'
       preLoaderRoute: typeof AuthenticatedPortalTeachersRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/updates': {
+      id: '/_authenticated/portal/updates'
+      path: '/updates'
+      fullPath: '/portal/updates'
+      preLoaderRoute: typeof AuthenticatedPortalUpdatesRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/api/public/chat': {
@@ -786,7 +670,6 @@ interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalAssignRoute: typeof AuthenticatedPortalAssignRoute
   AuthenticatedPortalAttendanceRoute: typeof AuthenticatedPortalAttendanceRoute
   AuthenticatedPortalAuditRoute: typeof AuthenticatedPortalAuditRoute
-  AuthenticatedPortalDashboardRoute: typeof AuthenticatedPortalDashboardRoute
   AuthenticatedPortalEngagementRoute: typeof AuthenticatedPortalEngagementRoute
   AuthenticatedPortalFeedbackRoute: typeof AuthenticatedPortalFeedbackRoute
   AuthenticatedPortalInterventionsRoute: typeof AuthenticatedPortalInterventionsRoute
@@ -798,8 +681,10 @@ interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalPlacementRoute: typeof AuthenticatedPortalPlacementRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalRecordsRoute: typeof AuthenticatedPortalRecordsRoute
+  AuthenticatedPortalResultsRoute: typeof AuthenticatedPortalResultsRoute
   AuthenticatedPortalSkillsRoute: typeof AuthenticatedPortalSkillsRoute
   AuthenticatedPortalTeachersRoute: typeof AuthenticatedPortalTeachersRoute
+  AuthenticatedPortalUpdatesRoute: typeof AuthenticatedPortalUpdatesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalStudentsIdRoute: typeof AuthenticatedPortalStudentsIdRoute
   AuthenticatedPortalStudentsIndexRoute: typeof AuthenticatedPortalStudentsIndexRoute
@@ -809,7 +694,6 @@ const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalAssignRoute: AuthenticatedPortalAssignRoute,
   AuthenticatedPortalAttendanceRoute: AuthenticatedPortalAttendanceRoute,
   AuthenticatedPortalAuditRoute: AuthenticatedPortalAuditRoute,
-  AuthenticatedPortalDashboardRoute: AuthenticatedPortalDashboardRoute,
   AuthenticatedPortalEngagementRoute: AuthenticatedPortalEngagementRoute,
   AuthenticatedPortalFeedbackRoute: AuthenticatedPortalFeedbackRoute,
   AuthenticatedPortalInterventionsRoute: AuthenticatedPortalInterventionsRoute,
@@ -821,8 +705,10 @@ const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalPlacementRoute: AuthenticatedPortalPlacementRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalRecordsRoute: AuthenticatedPortalRecordsRoute,
+  AuthenticatedPortalResultsRoute: AuthenticatedPortalResultsRoute,
   AuthenticatedPortalSkillsRoute: AuthenticatedPortalSkillsRoute,
   AuthenticatedPortalTeachersRoute: AuthenticatedPortalTeachersRoute,
+  AuthenticatedPortalUpdatesRoute: AuthenticatedPortalUpdatesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalStudentsIdRoute: AuthenticatedPortalStudentsIdRoute,
   AuthenticatedPortalStudentsIndexRoute: AuthenticatedPortalStudentsIndexRoute,
@@ -842,34 +728,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface StudentRouteChildren {
-  StudentIdRoute: typeof StudentIdRoute
-  StudentIndexRoute: typeof StudentIndexRoute
-}
-
-const StudentRouteChildren: StudentRouteChildren = {
-  StudentIdRoute: StudentIdRoute,
-  StudentIndexRoute: StudentIndexRoute,
-}
-
-const StudentRouteWithChildren =
-  StudentRoute._addFileChildren(StudentRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   BenefitsRoute: BenefitsRoute,
   ContactRoute: ContactRoute,
-  DataRoute: DataRoute,
-  DemoRoute: DemoRoute,
-  FacultyRoute: FacultyRoute,
+  NewPasswordRoute: NewPasswordRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SolutionRoute: SolutionRoute,
-  StudentRoute: StudentRouteWithChildren,
-  DemoPortalSplatRoute: DemoPortalSplatRoute,
   ApiPublicChatRoute: ApiPublicChatRoute,
 }
 export const routeTree = rootRouteImport

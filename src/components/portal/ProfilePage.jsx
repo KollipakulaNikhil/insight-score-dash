@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { PLink as Link, useAction } from "@/lib/portal-base";
+import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Pencil, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { updateMyProfile } from "@/lib/campus.functions";
 import { useAccount } from "@/lib/account";
 import { useCampus } from "@/lib/use-campus";
 
-const card = "rounded-xl border bg-card p-5";
+const card = "surface p-5";
 const ROLE_LABEL = { student: "Student", faculty: "Teacher", admin: "Administrator" };
 
 function Field({ label, children, hint }) {
@@ -35,7 +36,7 @@ function Fact({ label, value }) {
 export function ProfilePage() {
   const { profile, role, isAdmin, isFaculty, myRow, refresh } = useCampus();
   const account = useAccount();
-  const save = useAction(updateMyProfile);
+  const save = useServerFn(updateMyProfile);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");

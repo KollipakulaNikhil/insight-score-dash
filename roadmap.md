@@ -1,19 +1,16 @@
-# BIB InsightIQ roadmap
+# Orbit roadmap
 
 ## Done
 
 - [x] Public website, benefits, solution, privacy, contact and sign-in
-- [x] Password-free fictional demo dashboards (student, faculty, campus, data import), separate from the live portal
-- [x] Role-isolated demo sessions and a detailed student dashboard
 - [x] 300-student BIB dataset as the seed; score, risk flags and bands verified against the reference answer key (`src/test/dataset.test.js`)
 - [x] Dual Academic and Placement Risk flags with sorted drivers; a High flag blocks On Track
 - [x] Student segmentation with suggested actions, shown on student profiles and in the portal (home chart, table column and filter)
-- [x] Demonstration workspaces are the real portal pages with fictional read-only data (`/demo-portal`), with a Student, Teacher and Administrator switch
 - [x] Guided website assistant (server-side prompt and provider calls)
 - [x] Move to JavaScript, PostgreSQL, bcrypt and JWT auth with role-based portal workspaces
 - [x] Live student records, teacher assignment, feedback notes and persisted interventions with outcomes and audit log
 - [x] Publish to Vercel
-- [x] Documentation: `README.md` and `docs/` (architecture, data model, server functions, development guide, score note, demo script)
+- [x] Documentation: `README.md` and `docs/` (architecture, data model, server functions, development guide, score note)
 
 ## Planned
 
@@ -26,3 +23,8 @@
 - [ ] Database-backed tests for the authorization SQL
 
 Do not claim every item in the original challenge brief is complete; track follow-on work explicitly.
+
+- [x] Role-aware login with captcha, landing choice, role sign-up with approval, and password reset by email
+- [x] Space and Dust themes, announcement strip, drop-down menus, icon rail and full-screen search
+- [x] Results and Placement dashboards, campus updates, CSV import and export
+- [x] Teachers update marks and attendance for their own students; administrators can delete accounts

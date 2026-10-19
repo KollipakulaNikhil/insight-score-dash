@@ -1,7 +1,10 @@
 import { useMemo, useState } from "react";
-import { PLink as Link } from "@/lib/portal-base";
+import { Link } from "@tanstack/react-router";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BandBadge, SectionTitle } from "@/components/widgets";
+import { studentsToCsv } from "@/lib/csv";
 import { BAND_ORDER, byAttention, lowAttendance } from "@/lib/campus-derive";
 
 const selectClass = "rounded-md border bg-background p-2 text-sm";
@@ -178,9 +181,28 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
         <span className="text-sm text-muted-foreground">
           {shown.length} of {rows.length}
         </span>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="ml-auto"
+          disabled={shown.length === 0}
+          onClick={() => {
+            const url = URL.createObjectURL(
+              new Blob(["\ufeff" + studentsToCsv(shown)], { type: "text/csv;charset=utf-8" }),
+            );
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `students-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+        >
+          <Download /> Export CSV
+        </Button>
       </div>
-      <div className="overflow-x-auto rounded-xl border bg-card">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto surface">
+        <table className="w-full whitespace-nowrap text-sm">
           <thead className="border-b text-left text-xs text-muted-foreground">
             <tr>
               <th className="p-3" aria-label="Compare"></th>
@@ -276,12 +298,12 @@ export function StudentTable({ rows, showMentor = false, initialFilter = "" }) {
         </table>
       </div>
       {compared.length >= 2 && (
-        <div className="mt-4 rounded-xl border bg-card p-4">
+        <div className="mt-4 surface p-4">
           <SectionTitle sub="Select up to 3 students in the table to compare">
             Student comparison
           </SectionTitle>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full whitespace-nowrap text-sm">
               <thead>
                 <tr className="text-left text-muted-foreground">
                   <th className="py-1">Metric</th>

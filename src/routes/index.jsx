@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
   head: () =>
     pageHead(
       "Student Success Intelligence Platform",
-      "Turning campus data into student success. Discover seven connected data sources, explainable risk insights and timely mentor support with BIB InsightIQ.",
+      "Turning campus data into student success. Discover seven connected data sources, explainable risk insights and timely mentor support with Orbit.",
     ),
   component: Home,
 });
@@ -40,7 +40,7 @@ function Home() {
               <span className="size-2 rounded-full bg-primary" />
               SMART CAMPUS. STRONGER FUTURES.
             </p>
-            <h1 className="hero-heading max-w-3xl text-hero-foreground">BIB InsightIQ</h1>
+            <h1 className="hero-heading max-w-3xl text-hero-foreground">Orbit</h1>
             <p className="mt-5 max-w-xl font-display text-2xl leading-snug text-hero-foreground sm:text-3xl">
               Turning campus data
               <br />
@@ -52,20 +52,20 @@ function Home() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link to="/demo">
+                <Link to="/auth">
                   <Play className="size-4" />
-                  Explore the demo
+                  Log in to your workspace
                 </Link>
               </Button>
               <Button asChild size="lg" variant="secondary">
-                <Link to="/auth">
-                  Access your workspace <ArrowUpRight />
+                <Link to="/solution">
+                  How it works <ArrowUpRight />
                 </Link>
               </Button>
             </div>
             <p className="mt-6 flex items-center gap-2 text-xs text-hero-muted">
               <ShieldCheck className="size-4" />
-              Explainable insights. Human-led support. Fictional demo data.
+              Explainable insights. Human-led support. Private by design.
             </p>
           </div>
         </section>
@@ -96,7 +96,7 @@ function Home() {
             </div>
             <Button asChild variant="link">
               <Link to="/solution">
-                Why InsightIQ <ArrowRight />
+                Why Orbit <ArrowRight />
               </Link>
             </Button>
           </div>
@@ -134,9 +134,9 @@ function Home() {
         </section>
         <section className="overflow-hidden border-y bg-muted/50 py-10">
           <p className="eyebrow mb-7 text-center">THE WHOLE STORY, NOT ANOTHER SILO</p>
-          <div className="source-ticker overflow-hidden">
-            <div className="flex w-max gap-12 px-6">
-              {[...SOURCES, ...SOURCES].map((s, i) => (
+          <div>
+            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-12 gap-y-5 px-6">
+              {SOURCES.map((s, i) => (
                 <div key={`${s.name}-${i}`} className="flex shrink-0 items-center gap-3">
                   <s.icon className="size-6 text-primary" />
                   <span className="font-display text-lg font-medium">{s.name}</span>
@@ -154,13 +154,13 @@ function Home() {
               always tell the whole story.
             </h2>
             <p className="mt-5 text-muted-foreground">
-              A fictional student with a strong CGPA but low attendance needs a different plan from
-              a strong coder with weak aptitude. InsightIQ connects the evidence so support is
-              specific, not generic.
+              A student with a strong CGPA but low attendance needs a different plan from a strong
+              coder with weak aptitude. Orbit connects the evidence so support is specific, not
+              generic.
             </p>
             <Button asChild variant="outline" className="mt-6">
-              <Link to="/faculty">
-                Explore faculty demo <ArrowRight />
+              <Link to="/auth">
+                Sign in as faculty <ArrowRight />
               </Link>
             </Button>
           </div>
@@ -199,7 +199,7 @@ function Home() {
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-8 px-5 py-12 lg:px-8">
             <div>
               <p className="eyebrow">A BETTER PICTURE. A BETTER CONVERSATION.</p>
-              <h2 className="mt-3 text-3xl font-semibold">See your campus through InsightIQ.</h2>
+              <h2 className="mt-3 text-3xl font-semibold">See your campus through Orbit.</h2>
               <p className="mt-3 text-muted-foreground">
                 Explore the experience, or connect with the people behind it.
               </p>

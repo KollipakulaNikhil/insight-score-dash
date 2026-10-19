@@ -1,7 +1,10 @@
-import { PLink as Link } from "@/lib/portal-base";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/widgets";
 import { PageTitle, RoleGate } from "@/components/portal/PortalShell";
+import { UpdatesFeed } from "@/components/portal/CampusUpdates";
+import { SectionTitle } from "@/components/widgets";
+import { PlacementOverview } from "@/components/portal/PlacementOverview";
 import { LearningPath } from "@/components/portal/LearningPath";
 import {
   LiveEngagement,
@@ -11,8 +14,7 @@ import {
   LiveSkills,
   StudentHeader,
 } from "@/components/student-profile/LiveStudentProfile";
-import { Academics, Attendance, Overview } from "@/components/student-profile/shared";
-import { liveNotifications } from "@/lib/live-profile";
+import { Attendance } from "@/components/student-profile/shared";
 import { useCampus } from "@/lib/use-campus";
 
 /** Frame for the student-only pages: handles "no record linked yet" in one place. */
@@ -38,20 +40,6 @@ function StudentFrame({ title, sub, header = false, children }) {
         </>
       )}
     </RoleGate>
-  );
-}
-
-export function DashboardPage() {
-  const { today } = useCampus();
-  return (
-    <StudentFrame title="Dashboard" sub="Your academic status" header>
-      {(s) => (
-        <div className="space-y-4">
-          <Overview s={s} notes={liveNotifications(s, today)} />
-          <Academics s={s} />
-        </div>
-      )}
-    </StudentFrame>
   );
 }
 
@@ -88,9 +76,27 @@ export function SkillsPage() {
 }
 
 export function PlacementPage() {
+  const { role } = useCampus();
+  if (role !== "student") return <PlacementOverview />;
   return (
     <StudentFrame title="Placement" sub="Readiness and the roles you are aiming for">
-      {(s) => <LivePlacement s={s} />}
+      {(s) => (
+        <>
+          <section className="mb-8">
+            <SectionTitle sub="Companies visiting campus and openings posted by your placement cell">
+              Current placements
+            </SectionTitle>
+            <UpdatesFeed
+              categories={["placement"]}
+              empty="No placement drives have been posted yet. Check back soon."
+            />
+          </section>
+          <SectionTitle sub="Where you stand against what employers ask for">
+            Your readiness
+          </SectionTitle>
+          <LivePlacement s={s} />
+        </>
+      )}
     </StudentFrame>
   );
 }

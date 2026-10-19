@@ -10,7 +10,9 @@ users 1───* user_roles
   ├──* student_records (owner_id)      a student account owns its record
   ├──* student_records (faculty_id)    a teacher account is assigned to many records
   ├──* campus_interventions (created_by)
-  └──* contact_messages (user_id)
+  ├──* contact_messages (user_id, optional)
+  ├──* campus_updates (created_by)
+  └──* password_resets (user_id)
 
 student_records 1───* campus_interventions (student_id)
 campus_audit  → loose reference (record_id, actor_id), no foreign keys
@@ -64,21 +66,39 @@ A mentor's recorded support action for one student.
 
 ### `contact_messages`
 
-Messages from the contact form: `user_id`, `name`, `email`, `message`, `created_at`. Visible to administrators in the Messages page.
+Messages from the contact form: `user_id`, `name`, `email`, `message`, `created_at`. `user_id` is empty when the sender was not logged in (the form is open to visitors, behind a captcha). Teacher-access requests and password-reset requests are also left here for the administrators. Visible to administrators on the Messages page.
+
+### `campus_updates`
+
+University announcements shown on the Campus updates page, the overview and the Placement page.
+
+| Column                  | Notes                                                    |
+| ----------------------- | -------------------------------------------------------- |
+| `category`              | `placement` \| `event` \| `notice` \| `poster` (CHECK)   |
+| `title`, `body`         | Required title (3 to 150), optional details (up to 2000) |
+| `company`               | For placement drives                                     |
+| `event_date`            | Optional date of the drive or event                      |
+| `image_url`, `link_url` | Optional, `https://` only (checked by Zod)               |
+| `created_by`            | → `users(id)`, `ON DELETE SET NULL`                      |
+
+### `password_resets`
+
+One-time links for "Forgot your password?". `token_hash` (primary key) is the SHA-256 of the token, so a copy of the table cannot be used to reset anyone; `user_id`, `expires_at` (30 minutes), `used_at`. Rows are removed when the password changes.
 
 ### `campus_audit`
 
-Append-only log of changes to student records: `actor_id`, `record_id`, `operation`, `created_at`. Operations written by the code are `INSERT`, `UPDATE` and `LINK`. It has no foreign keys on purpose, so history survives deletion of a user or record.
+Append-only log of changes to student records: `actor_id`, `record_id`, `operation`, `created_at`. Operations written by the code are `INSERT`, `UPDATE`, `LINK`, `NOTE`, `PASSWORD` and `DELETE`. It has no foreign keys on purpose, so history survives deletion of a user or record.
 
 ## Who may read or write what
 
-| Data                   | Student             | Faculty                                 | Admin               |
-| ---------------------- | ------------------- | --------------------------------------- | ------------------- |
-| Own `users` row        | read, edit profile  | read, edit profile                      | same                |
-| `student_records`      | own (`owner_id`)    | assigned (`faculty_id`), read only      | all, read and write |
-| `campus_interventions` | read for own record | create and update for assigned students | all                 |
-| `contact_messages`     | create              | create                                  | read all            |
-| `campus_audit`         | none                | none                                    | read                |
+| Data                   | Student             | Faculty                                                          | Admin                  |
+| ---------------------- | ------------------- | ---------------------------------------------------------------- | ---------------------- |
+| Own `users` row        | read, edit profile  | read, edit profile                                               | same                   |
+| `student_records`      | own (`owner_id`)    | assigned (`faculty_id`); may update marks, attendance and skills | all, read and write    |
+| `campus_interventions` | read for own record | create and update for assigned students                          | all                    |
+| `contact_messages`     | create              | create                                                           | read all               |
+| `campus_updates`       | read                | read, post, delete own                                           | read, post, delete any |
+| `campus_audit`         | none                | none                                                             | read                   |
 
 Feedback notes are written into the student's record JSON by `addStudentNote`: teachers only for assigned students, students only on their own record.
 

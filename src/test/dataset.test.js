@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { SEED_STUDENTS } from "@/lib/seed-students";
+import { SEED_STUDENTS } from "./fixtures/seed-students";
 import { successScore } from "@/lib/scoring";
 import { academicRisk, placementRisk, effectiveBand } from "@/lib/risk-flags";
 import { riskBand } from "@/lib/types";

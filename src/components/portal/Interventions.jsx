@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { PLink as Link, useAction } from "@/lib/portal-base";
+import { Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,7 @@ const PRIORITY_CLASS = {
 
 export function InterventionCard({ item, studentName, canManage }) {
   const { refresh, today } = useCampus();
-  const change = useAction(changeCampusIntervention);
+  const change = useServerFn(changeCampusIntervention);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const overdue = item.status !== "resolved" && item.follow_up_date < today;
@@ -44,7 +45,7 @@ export function InterventionCard({ item, studentName, canManage }) {
     }
   }
   return (
-    <article className="rounded-xl border bg-card p-4">
+    <article className="surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           {studentName && (
@@ -107,7 +108,7 @@ export function InterventionCard({ item, studentName, canManage }) {
 /** Creates a support action. Pass `fixedStudentId` to lock it to one student, or `choices` to pick. */
 export function InterventionForm({ fixedStudentId, choices = [] }) {
   const { refresh, profile } = useCampus();
-  const create = useAction(saveCampusIntervention);
+  const create = useServerFn(saveCampusIntervention);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   async function submit(e) {
@@ -137,7 +138,7 @@ export function InterventionForm({ fixedStudentId, choices = [] }) {
     }
   }
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-xl border bg-card p-4">
+    <form onSubmit={submit} className="space-y-3 surface p-4">
       <h3 className="font-semibold">Create an intervention</h3>
       {!fixedStudentId && (
         <select name="student" required aria-label="Student" className={`${selectClass} w-full`}>

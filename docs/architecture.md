@@ -29,15 +29,6 @@ Files named `*.server.js` and everything under `src/backend` run only on the ser
 
 ## The two data systems
 
-### Demo (browser)
-
-- `src/lib/seed-students.js` holds the fictional 300-student BIB dataset.
-- `src/lib/demo-campus.js` shapes that data exactly like the signed-in campus query (`loadCampus`): the same `records` and `interventions` fields, scoped per role (a student gets one record, a teacher and an administrator get all 300).
-- `src/routes/demo-portal.$.jsx` renders the **same page components** as `/portal` (home, students, interventions, records and so on) inside the same `PortalShell`, under `/demo-portal/*`. A role switch (`?role=student|faculty|admin`) changes the data and the navigation.
-- `src/lib/portal-base.jsx` supplies a mode context. In the walkthrough, `PLink` keeps every link inside `/demo-portal`, `useCampus` reads the demo data, and `useAction` refuses every change with a read-only message. In the real portal the same components call the server as before.
-- `/student`, `/faculty` and `/admin` redirect to the matching role view. `/data` remains a separate import demonstration.
-- The walkthrough never calls an authenticated server function and is never an authorization source.
-
 ### Live (server)
 
 - Student records, interventions, contact messages and the audit log are in PostgreSQL.
@@ -67,7 +58,7 @@ Access rules are written into the SQL itself. For reads, `loadCampus` filters `s
 
 1. **Sign-up** (`signUp`): validates input, hashes the password with bcrypt (cost 12), inserts the user and a `student` role in one transaction, then starts a session.
 2. **Sign-in** (`signIn`): looks up the hash and verifies it. The same message is returned for an unknown email and a wrong password.
-3. **Session**: a signed JWT (HS256, seven days) in an httpOnly, SameSite=Lax cookie, Secure in production. No token is kept in browser storage.
+3. **Session**: a signed JWT (HS256, 12 hours) in an httpOnly browser-session, SameSite=Lax cookie, Secure in production. No token is kept in browser storage.
 4. **Every request**: `currentUser()` verifies the token and loads the user's roles from `user_roles`. Roles in the token are never trusted, so a role change applies immediately.
 5. **Route guard**: `src/routes/_authenticated/route.jsx` calls `getSession` and redirects to `/auth` when there is no user. This is a convenience; the server functions are the real gate.
 
@@ -88,3 +79,7 @@ A single `AccountProvider` (`src/lib/account.jsx`) holds account state for the w
 ## Database connection
 
 `src/backend/db.server.js` creates one `pg` pool per server instance. `src/backend/db-config.js` enables TLS automatically for non-local hosts (override with `DATABASE_SSL=false`) and defaults the pool to 3 connections on Vercel, 10 elsewhere (`DATABASE_POOL_MAX`). On serverless hosting, use the provider's pooled connection string. `withTransaction` wraps multi-statement writes.
+
+A sign-in also ends when the page is loaded or reloaded: a freshly loaded page first clears the session cookie (`freshLoad` in `src/lib/account.jsx`), and every session check waits for that. Moving between pages inside the app does not reload, so it keeps the session.
+
+"Forgot your password?" sends a single-use link by email (only a SHA-256 hash of the token is stored, valid for 30 minutes, cleared once used). The reply is identical for unknown emails. Without `SMTP_URL` and `APP_URL`, the request becomes a note in the administrators' Messages instead, and an administrator can issue a temporary password under People & roles.

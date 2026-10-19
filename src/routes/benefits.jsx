@@ -35,7 +35,7 @@ function Benefits() {
                 "Plan attendance recovery with exact class counts",
                 "Track lessons, assignments and placement gaps",
               ],
-              to: "/student",
+              workspace: "student",
             },
             {
               icon: Users,
@@ -46,7 +46,7 @@ function Benefits() {
                 "Understand risk reasons, not just a label",
                 "Create and follow up on mentor interventions",
               ],
-              to: "/faculty",
+              workspace: "faculty",
             },
             {
               icon: Building2,
@@ -57,7 +57,7 @@ function Benefits() {
                 "Monitor integrated-source coverage and data quality",
                 "Oversee support and accountable record changes",
               ],
-              to: "/admin",
+              workspace: "admin",
             },
           ].map((x) => (
             <article key={x.role} className="flex flex-col rounded-lg border bg-card p-7">
@@ -73,8 +73,8 @@ function Benefits() {
                 ))}
               </ul>
               <Button asChild variant="outline" className="mt-auto">
-                <Link to={x.to}>
-                  Preview fictional dashboard <ArrowUpRight />
+                <Link to="/auth" search={{ workspace: x.workspace }}>
+                  Log in as {x.role.split(" ")[0].toLowerCase()} <ArrowUpRight />
                 </Link>
               </Button>
             </article>

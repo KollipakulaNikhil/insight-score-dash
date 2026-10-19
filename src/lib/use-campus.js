@@ -3,9 +3,7 @@ import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-
 
 import { buildRows, summarize } from "@/lib/campus-derive";
 import { loadCampus } from "@/lib/campus.functions";
-import { demoCampusOptions } from "@/lib/demo-campus";
 import { todayIso } from "@/lib/live-profile";
-import { usePortalMode } from "@/lib/portal-base";
 
 export const campusOptions = queryOptions({
   queryKey: ["private-campus"],
@@ -17,8 +15,7 @@ export const campusOptions = queryOptions({
  * worked out. The server decides what is visible; this only shapes it for the pages.
  */
 export function useCampus() {
-  const mode = usePortalMode();
-  const { data } = useSuspenseQuery(mode.demo ? demoCampusOptions(mode.role) : campusOptions);
+  const { data } = useSuspenseQuery(campusOptions);
   const qc = useQueryClient();
   const today = todayIso();
   const roleNames = data.roles.map((r) => r.role);
@@ -35,11 +32,8 @@ export function useCampus() {
     [rows, data.profile.id],
   );
   const refresh = useCallback(
-    () =>
-      qc.invalidateQueries({
-        queryKey: mode.demo ? ["demo-campus", mode.role] : campusOptions.queryKey,
-      }),
-    [qc, mode.demo, mode.role],
+    () => qc.invalidateQueries({ queryKey: campusOptions.queryKey }),
+    [qc],
   );
   return {
     profile: data.profile,
