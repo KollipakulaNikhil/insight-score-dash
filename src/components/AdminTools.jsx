@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Link2, Plus, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,11 +9,15 @@ import {
   linkStudentsToTeacher,
   listAccounts,
   listContactMessages,
+  resetAccountPassword,
+  deleteAccount,
   saveCampusStudent,
   setAccountRole,
 } from "@/lib/campus.functions";
+import { useServerFn } from "@tanstack/react-start";
 import { studentSchema } from "@/lib/student-validation";
 import { emptyStudent } from "@/lib/student-defaults";
+import { CSV_TEMPLATE, parseStudentCsv } from "@/lib/csv";
 
 const selectClass = "mt-2 w-full rounded-md border bg-background p-2 text-sm";
 const SKILLS = ["coding", "aptitude", "analytical", "verbal", "communication"];
@@ -30,12 +33,17 @@ function explain(error) {
     .join(" · ");
 }
 
-const ALL_TABS = ["connect", "people", "student", "json", "messages"];
+const ALL_TABS = ["connect", "people", "student", "csv", "json", "messages"];
 
 export function AdminTools({ students, records, selectedId = "", onSaved, tabs = ALL_TABS }) {
   const qc = useQueryClient();
-  const accounts = useQuery({ queryKey: ["accounts"], queryFn: () => listAccounts() });
+  const accounts = useQuery({
+    queryKey: ["accounts"],
+    queryFn: () => listAccounts(),
+  });
   const grant = useServerFn(setAccountRole);
+  const resetPassword = useServerFn(resetAccountPassword);
+  const removeAccount = useServerFn(deleteAccount);
   const save = useServerFn(saveCampusStudent);
   const link = useServerFn(linkStudentsToTeacher);
   const [open, setOpen] = useState(tabs[0]);
@@ -132,6 +140,41 @@ export function AdminTools({ students, records, selectedId = "", onSaved, tabs =
       setMsg(`Role ${on ? "granted" : "removed"}.`);
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Could not change the role.");
+    }
+  }
+
+  async function deleteFor(person) {
+    if (
+      !window.confirm(
+        `Delete the account of ${person.name || person.email}? Their login is removed for good. Their student record, if any, stays but is no longer linked to a login.`,
+      )
+    )
+      return;
+    setMsg("");
+    try {
+      await removeAccount({ data: { userId: person.id } });
+      await refresh();
+      setMsg(`Deleted ${person.email}.`);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "Could not delete the account.");
+    }
+  }
+
+  async function resetFor(person) {
+    if (
+      !window.confirm(
+        `Reset the password for ${person.name || person.email}? Their current password will stop working.`,
+      )
+    )
+      return;
+    setMsg("");
+    try {
+      const { password } = await resetPassword({ data: { userId: person.id } });
+      setMsg(
+        `Temporary password for ${person.email}: ${password}. Give it to them privately. It is not shown again, and they should change it after signing in.`,
+      );
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "Could not reset the password.");
     }
   }
 
@@ -249,6 +292,38 @@ export function AdminTools({ students, records, selectedId = "", onSaved, tabs =
     }
   }
 
+  // ---------- CSV import ----------
+  const [csvText, setCsvText] = useState("");
+  const [csvPreview, setCsvPreview] = useState(null);
+  const [csvTeacher, setCsvTeacher] = useState("");
+  function previewCsv() {
+    setMsg("");
+    if (!csvText.trim()) return setMsg("Choose a CSV file or paste its contents first.");
+    setCsvPreview(parseStudentCsv(csvText, new Set(records.map((r) => r.id))).results);
+  }
+  async function importCsv() {
+    const good = (csvPreview ?? []).filter((r) => r.student);
+    setBusy(true);
+    setMsg("");
+    let done = 0;
+    try {
+      for (const r of good) {
+        await persist(r.student, null, csvTeacher || null);
+        done += 1;
+      }
+      await onSaved("");
+      await refresh();
+      setMsg(`Imported ${done} student record(s).`);
+      setCsvPreview(null);
+      setCsvText("");
+    } catch (err) {
+      await refresh();
+      setMsg(`${done ? `Imported ${done} before stopping. ` : ""}${explain(err)}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const tab = (key, text) => (
     <Button
       type="button"
@@ -285,7 +360,8 @@ export function AdminTools({ students, records, selectedId = "", onSaved, tabs =
         {tab("connect", "Connect students to a teacher")}
         {tab("people", "People & roles")}
         {tab("student", "Add student details (optional)")}
-        {tab("json", "Bulk import (optional)")}
+        {tab("csv", "Import CSV")}
+        {tab("json", "Bulk import (JSON)")}
         {tab("messages", "Messages")}
       </div>
       {msg && (
@@ -441,6 +517,18 @@ export function AdminTools({ students, records, selectedId = "", onSaved, tabs =
                       </Button>
                     );
                   })}
+                  <Button type="button" size="sm" variant="ghost" onClick={() => resetFor(p)}>
+                    Reset password
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => deleteFor(p)}
+                  >
+                    Delete
+                  </Button>
                 </div>
               </div>
             ))}
@@ -655,6 +743,94 @@ export function AdminTools({ students, records, selectedId = "", onSaved, tabs =
             <Save /> Save student details
           </Button>
         </form>
+      )}
+
+      {open === "csv" && (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Add many students from a spreadsheet saved as CSV. Required columns: student_id, name,
+            branch, semester, grad_year, cgpa. Existing student IDs are skipped, never overwritten.
+            Students can be linked to their login afterwards under Connect.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const url = URL.createObjectURL(new Blob([CSV_TEMPLATE], { type: "text/csv" }));
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "students-template.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Download template
+            </Button>
+            <Input
+              type="file"
+              accept=".csv,text/csv"
+              aria-label="CSV file"
+              className="max-w-xs"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setCsvText(await file.text());
+                  setCsvPreview(null);
+                }
+              }}
+            />
+          </div>
+          {accountSelect(
+            "csvTeacher",
+            "Teacher for all of these (optional)",
+            facultyPeople,
+            csvTeacher,
+            setCsvTeacher,
+            "No teacher",
+          )}
+          <Textarea
+            value={csvText}
+            onChange={(e) => {
+              setCsvText(e.target.value);
+              setCsvPreview(null);
+            }}
+            rows={8}
+            aria-label="CSV contents"
+            placeholder="…or paste CSV here"
+            className="font-mono text-xs"
+          />
+          <Button type="button" variant="outline" onClick={previewCsv}>
+            Check file
+          </Button>
+          {csvPreview && (
+            <div className="rounded-md border p-3 text-sm">
+              <p>
+                <strong>{csvPreview.filter((r) => r.student).length}</strong> ready to import ·{" "}
+                <strong>{csvPreview.filter((r) => !r.student).length}</strong> with problems
+              </p>
+              <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-xs text-destructive">
+                {csvPreview
+                  .filter((r) => !r.student)
+                  .map((r) => (
+                    <li key={r.row}>
+                      Row {r.row}:{" "}
+                      {[...r.errors, ...r.missing.map((m) => `missing ${m}`)].join(", ")}
+                    </li>
+                  ))}
+              </ul>
+              <Button
+                type="button"
+                className="mt-3"
+                disabled={busy || !csvPreview.some((r) => r.student)}
+                onClick={importCsv}
+              >
+                <Save /> Import valid rows
+              </Button>
+            </div>
+          )}
+        </div>
       )}
 
       {open === "json" && (

@@ -6,7 +6,7 @@ export const Route = createFileRoute("/privacy")({
   head: () =>
     pageHead(
       "Trust & Privacy",
-      "How BIB InsightIQ protects private records, distinguishes demo data and supports responsible human review.",
+      "How Orbit protects private records, supports responsible human review.",
     ),
   component: Privacy,
 });
@@ -29,8 +29,8 @@ function Privacy() {
             },
             {
               icon: ShieldCheck,
-              t: "Demo stays separate",
-              d: "Public dashboard previews contain fictional students only. Demo changes are saved in this browser, not to private institutional records. No live LPU, LMS or university integration is claimed.",
+              t: "Your data stays yours",
+              d: "Records live in the campus database and are only returned to the people allowed to see them. Passwords are hashed, sessions are signed, and every permission is re-checked on the server for every request. No live LPU, LMS or university integration is claimed.",
             },
             {
               icon: UserCheck,

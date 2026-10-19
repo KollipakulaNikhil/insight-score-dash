@@ -7,40 +7,53 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useAccount } from "@/lib/account";
 import { sendContactMessage } from "@/lib/auth.functions";
+import { CaptchaField, useCaptcha } from "@/components/CaptchaField";
 import { Send, MessagesSquare, ArrowUpRight } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () =>
     pageHead(
       "Connect With Us",
-      "Contact TEAM BIB about campus analytics, collaboration and BIB InsightIQ.",
+      "Contact TEAM BIB about campus analytics, collaboration and Orbit.",
     ),
   component: Contact,
 });
 function Contact() {
   const { user } = useAccount();
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState({ ok: true, text: "" });
+  const { captcha, reload } = useCaptcha((text) => setMsg({ ok: false, text }));
   async function submit(e) {
     e.preventDefault();
-    if (!user) return;
     setBusy(true);
     const f = new FormData(e.currentTarget);
     const form = e.currentTarget;
-    let failure = "";
     try {
       await sendContactMessage({
         data: {
           name: String(f.get("name")),
           email: String(f.get("email")),
           message: String(f.get("message")),
+          captchaToken: captcha?.token ?? "",
+          captchaAnswer: String(f.get("captcha") ?? ""),
         },
       });
+      form.reset();
+      setMsg({
+        ok: true,
+        text: "Your message has been saved for TEAM BIB. Thank you for connecting.",
+      });
     } catch (err) {
-      failure = err instanceof Error ? err.message : "Your message could not be saved.";
+      const text = err instanceof Error ? err.message : "";
+      setMsg({
+        ok: false,
+        text: text.startsWith("[")
+          ? "Check your details and the verification letters, then try again."
+          : text || "Your message could not be saved.",
+      });
+    } finally {
+      void reload();
+      setBusy(false);
     }
-    setMsg(failure || "Your message has been saved for TEAM BIB. Thank you for connecting.");
-    if (!failure) form.reset();
-    setBusy(false);
   }
   return (
     <PublicLayout>
@@ -53,8 +66,8 @@ function Contact() {
             with a conversation.
           </h1>
           <p className="mt-6 text-lg text-muted-foreground">
-            Have a campus challenge, a collaboration idea, or feedback on the demo? We would love to
-            hear from you.
+            Have a campus challenge, a collaboration idea, or feedback on the platform? We would
+            love to hear from you.
           </p>
           <div className="mt-10 border-t pt-6">
             <MessagesSquare className="size-7 text-primary" />
@@ -65,66 +78,63 @@ function Contact() {
               HacXLerate · Smart Campus Analytics
             </p>
             <Button asChild variant="outline" className="mt-6">
-              <Link to="/demo">
-                Explore our demonstration <ArrowUpRight />
+              <Link to="/solution">
+                Why Orbit <ArrowUpRight />
               </Link>
             </Button>
           </div>
         </div>
         <div className="rounded-lg border bg-card p-7">
           <h2 className="text-2xl font-semibold">Send us a message</h2>
-          {user ? (
-            <form className="mt-6 space-y-5" onSubmit={submit}>
-              <label className="block text-sm">
-                Your name
-                <Input name="name" required maxLength={100} className="mt-2" />
-              </label>
-              <label className="block text-sm">
-                Email
-                <Input
-                  name="email"
-                  type="email"
-                  required
-                  defaultValue={user.email}
-                  className="mt-2"
-                />
-              </label>
-              <label className="block text-sm">
-                Your message
-                <Textarea
-                  name="message"
-                  required
-                  minLength={10}
-                  maxLength={3000}
-                  rows={5}
-                  className="mt-2"
-                />
-              </label>
-              <p className="text-xs text-muted-foreground">
-                Please do not send confidential student records or complaints here.
+          <form className="mt-6 space-y-5" onSubmit={submit}>
+            <label className="block text-sm">
+              Your name
+              <Input
+                name="name"
+                required
+                maxLength={100}
+                defaultValue={user?.displayName ?? ""}
+                className="mt-2"
+              />
+            </label>
+            <label className="block text-sm">
+              Email
+              <Input
+                name="email"
+                type="email"
+                required
+                defaultValue={user?.email ?? ""}
+                className="mt-2"
+              />
+            </label>
+            <label className="block text-sm">
+              Your message
+              <Textarea
+                name="message"
+                required
+                minLength={10}
+                maxLength={3000}
+                rows={5}
+                className="mt-2"
+              />
+            </label>
+            <CaptchaField captcha={captcha} reload={reload} />
+            <p className="text-xs text-muted-foreground">
+              Please do not send confidential student records or complaints here.
+            </p>
+            <Button type="submit" disabled={busy || !captcha}>
+              <Send />
+              {busy ? "Saving…" : "Send message"}
+            </Button>
+            {msg.text && (
+              <p
+                role="status"
+                className={`text-sm ${msg.ok ? "text-success" : "text-destructive"}`}
+              >
+                {msg.text}
               </p>
-              <Button type="submit" disabled={busy}>
-                <Send />
-                {busy ? "Saving…" : "Send message"}
-              </Button>
-              {msg && (
-                <p role="status" className="text-sm">
-                  {msg}
-                </p>
-              )}
-            </form>
-          ) : (
-            <div className="mt-6">
-              <p className="text-muted-foreground">
-                Sign in to send a message securely to the team.
-              </p>
-              <Button asChild className="mt-5">
-                <Link to="/auth">
-                  Sign in to connect <ArrowUpRight />
-                </Link>
-              </Button>
-            </div>
-          )}
+            )}
+          </form>
         </div>
       </main>
     </PublicLayout>

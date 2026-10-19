@@ -4,7 +4,8 @@ import { deleteCookie, getCookie, getRequest, setCookie } from "@tanstack/react-
 import { query } from "./db.server";
 import { clientIp, rateLimit } from "./rate-limit.server";
 const COOKIE = "bib_session";
-const SESSION_SECONDS = 60 * 60 * 24 * 7;
+// The cookie itself is a browser-session cookie (see below); the token is also short-lived.
+const SESSION_SECONDS = 60 * 60 * 12;
 const BCRYPT_COST = 12;
 // Compared against when the email is unknown, so response time does not reveal which emails exist.
 const DUMMY_HASH = bcrypt.hashSync("not-a-real-password", BCRYPT_COST);
@@ -33,7 +34,7 @@ export async function startSession(userId) {
     sameSite: "lax",
     secure: process.env["NODE_ENV"] === "production",
     path: "/",
-    maxAge: SESSION_SECONDS,
+    // No maxAge: the browser drops the cookie when it is closed.
   });
 }
 export const endSession = () => deleteCookie(COOKIE, { path: "/" });

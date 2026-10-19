@@ -1,5 +1,4 @@
-# BIB InsightIQ — Student Success Intelligence Platform
-
+# Orbit — Student Success Intelligence Platform
 
 Developed by **TEAM BIB (Biryani Intelligence Bureau)** for the **HacXLerate Smart Campus Analytics** challenge.
 
@@ -29,7 +28,7 @@ Further documentation is in [`docs/`](docs/README.md): architecture, data model,
 
 ## Overview
 
-BIB InsightIQ consolidates seven student data sources — academics, attendance, learning management system (LMS) activity, skills, engagement, placement readiness and feedback — under a single student identifier. From these sources it computes an explainable **Student Success Score**, identifies students who may require support together with the reasons, and enables mentors to record and track interventions.
+Orbit consolidates seven student data sources — academics, attendance, learning management system (LMS) activity, skills, engagement, placement readiness and feedback — under a single student identifier. From these sources it computes an explainable **Student Success Score**, identifies students who may require support together with the reasons, and enables mentors to record and track interventions.
 
 The platform addresses three questions for every student:
 
@@ -41,6 +40,8 @@ The platform addresses three questions for every student:
 
 ## The challenge
 
+orbit
+Further documentation is in [`docs/`](docs/README.md): architecture, data model, server functions and the Success Score note.
 Student data lives in silos — grades in one system, attendance in another, LMS activity, skill assessments, and placement records scattered everywhere. By the time anyone connects the dots, a struggling student has already fallen behind.
 
 **BIB InsightIQ** unifies **seven campus data sources** under a single student identity and answers three questions instantly:
@@ -88,18 +89,22 @@ CSV import with validation and a cleaning report, so messy real-world exports (d
 
 ![Data import](docs/screenshots/data.png)
 
----
+
+main
 
 ## Features
 
-| Area                     | Description                                                                                                                                        | Route                                              |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Public website           | Introduction, solution, benefits, privacy statement, contact and sign-in pages.                                                                    | `/`                                                |
-| Demonstration dashboards | Student, faculty, campus and data-import dashboards populated with fictional data held in the browser. A reset control restores the original data. | `/demo`, `/student`, `/faculty`, `/admin`, `/data` |
-| Role-based workspaces    | Separate student, teacher and administrator workspaces backed by a PostgreSQL database.                                                            | `/portal`                                          |
-| Website assistant        | A conversational guide to the platform. It has no access to private student records.                                                               | All public pages                                   |
-
-The demonstration dashboards and the role-based workspaces are fully separate. Selecting a demonstration role never grants access to real data.
+| Area                  | Description                                                                                                                                                                                                              | Route                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| Public website        | Introduction, solution, benefits, privacy statement, contact and sign-in pages.                                                                                                                                          | `/`                                   |
+| Role-based workspaces | Separate student, teacher and administrator workspaces, each with its own colours, menus and overview, backed by a PostgreSQL database.                                                                                  | `/portal`                             |
+| Login and sign-up     | One login page for all three workspaces with a captcha, a choice of where to land, sign-up for each role (teachers and administrators need approval or a listed email), and a working "Forgot your password?".           | `/auth`                               |
+| Results               | Students see CGPA, SGPA, marks, letter grades and backlogs (printable); teachers and administrators see class results, toppers and who needs support.                                                                    | `/portal/results`                     |
+| Placement             | Students see current drives and their readiness; teachers and administrators see readiness across students, risk levels and students to watch, and can post drives.                                                      | `/portal/placement`                   |
+| Campus updates        | Placements, events, notices and posters posted by teachers and administrators, shown on a spotlight carousel, a "Happening" panel, the announcement strip and the updates page.                                          | `/portal/updates`                     |
+| Search                | A full-screen search (Ctrl or Cmd + K) that lists every section of the workspace and finds students by name or ID.                                                                                                       | Top bar                               |
+| Student records       | Teachers keep marks, attendance and skills of their students up to date; administrators also import students from CSV, assign teachers, manage roles and passwords, and read the audit log. Student lists export to CSV. | `/portal/students`, `/portal/records` |
+| Website assistant     | A conversational guide that answers only questions about Orbit. It has no access to private student records.                                                                                                             | All public pages                      |
 
 ---
 
@@ -176,11 +181,11 @@ If either risk flag is **High**, the overall band cannot be **On Track**.
 | Layer                 | Technology                                                                                                              |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Application framework | TanStack Start (React 19, file-based routing), Vite 8                                                                   |
-| User interface        | Tailwind CSS, shadcn/ui components, Recharts                                                                            |
+| User interface        | Tailwind CSS, a small set of shadcn/ui components, Recharts                                                             |
 | Language              | JavaScript                                                                                                              |
 | Database              | PostgreSQL through `node-postgres`; versioned SQL migrations in `db/migrations`                                         |
 | Authentication        | Email and password; passwords hashed with bcrypt; sessions issued as signed JSON Web Tokens (JWT) in an httpOnly cookie |
-| Assistant             | Vercel AI SDK with any OpenAI-compatible provider (Google Gemini by default)                                            |
+| Assistant             | Vercel AI SDK with any OpenAI-compatible provider (Google Gemini by default), limited to Orbit topics                   |
 | Build and hosting     | Nitro; deployable to Vercel without additional configuration, or runnable as a Node.js server                           |
 
 Authorization is enforced on the server for every request. Navigation shown in the interface is a convenience only and is never relied upon for access control.
@@ -239,15 +244,18 @@ On the next page load, the administrator workspace is available. Teacher access 
 
 Environment variables are read from `.env` for local use. The file is excluded from version control and must not be committed. On a hosting platform, define the same variables in its environment settings.
 
-| Variable            | Required          | Description                                                                                                   |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`      | Yes               | PostgreSQL connection string. For Neon, use the pooled connection string (the host name contains `-pooler`).  |
-| `JWT_SECRET`        | Yes               | Secret used to sign sessions. A random value of at least 32 characters. Changing it ends all active sessions. |
-| `LLM_API_KEY`       | For the assistant | API key for the language-model provider. The default provider is Google AI Studio.                            |
-| `LLM_MODEL`         | No                | Model identifier. Default: `gemini-2.5-flash`.                                                                |
-| `LLM_BASE_URL`      | No                | OpenAI-compatible endpoint. Default: `https://generativelanguage.googleapis.com/v1beta/openai/`.              |
-| `DATABASE_SSL`      | No                | TLS is enabled automatically for non-local hosts. Set to `false` to disable.                                  |
-| `DATABASE_POOL_MAX` | No                | Maximum connections per server instance. Default: 3 on Vercel, 10 elsewhere.                                  |
+| Variable                           | Required          | Description                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                     | Yes               | PostgreSQL connection string. For Neon, use the pooled connection string (the host name contains `-pooler`).                                                                                                                                                                                                      |
+| `JWT_SECRET`                       | Yes               | Secret used to sign sessions. A random value of at least 32 characters. Changing it ends all active sessions.                                                                                                                                                                                                     |
+| `ADMIN_EMAILS`                     | Recommended       | Comma-separated emails that become administrators when they sign up in the Administrator workspace. If the site has no administrator yet, the first Administrator sign-up is also accepted.                                                                                                                       |
+| `TEACHER_EMAILS`                   | Optional          | Comma-separated emails that become teachers as soon as they sign up in the Teacher workspace. Other teacher sign-ups wait for an administrator to approve them.                                                                                                                                                   |
+| `SMTP_URL`, `APP_URL`, `MAIL_FROM` | Optional          | Turn on password-reset emails. `SMTP_URL` is your mail server (for Gmail: `smtps://you%40gmail.com:app-password@smtp.gmail.com`), `APP_URL` is this site's public address. Without them, "Forgot your password?" sends a note to the administrators' Messages, who give a temporary password from People & roles. |
+| `LLM_API_KEY`                      | For the assistant | API key for the language-model provider. The default provider is Google AI Studio.                                                                                                                                                                                                                                |
+| `LLM_MODEL`                        | No                | Model identifier. Default: `gemini-2.5-flash`.                                                                                                                                                                                                                                                                    |
+| `LLM_BASE_URL`                     | No                | OpenAI-compatible endpoint. Default: `https://generativelanguage.googleapis.com/v1beta/openai/`.                                                                                                                                                                                                                  |
+| `DATABASE_SSL`                     | No                | TLS is enabled automatically for non-local hosts. Set to `false` to disable.                                                                                                                                                                                                                                      |
+| `DATABASE_POOL_MAX`                | No                | Maximum connections per server instance. Default: 3 on Vercel, 10 elsewhere.                                                                                                                                                                                                                                      |
 
 A suitable `JWT_SECRET` can be generated with:
 
@@ -319,7 +327,7 @@ Select **Deploy**, or push a commit to the production branch. When the build com
 
 **8. Verify the deployment**
 
-1. The home page and `/demo` load without signing in.
+1. The home page loads without signing in.
 2. An account can be registered at `/auth`, after which the student **Home** page is displayed.
 3. The assistant answers a question such as "What are the score bands?".
 
@@ -426,7 +434,6 @@ Planned enhancements:
 - Notification delivery to students and mentors
 - Evidence review and approval workflows for engagement activities
 - Peer comparison with fairness safeguards
-
----
-
+orbit
 *Explainable insights. Human-led support. Fictional demo data.*
+main

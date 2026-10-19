@@ -1,22 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { GraduationCap, ArrowUpRight, Menu, X } from "lucide-react";
+import { Menu, Orbit, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAccount } from "@/lib/account";
 const links = [
-  { to: "/solution", text: "Why InsightIQ" },
+  { to: "/solution", text: "Why Orbit" },
   { to: "/benefits", text: "For your campus" },
   { to: "/privacy", text: "Trust & privacy" },
   { to: "/contact", text: "Connect with us" },
 ];
+import { ThemeToggle } from "@/components/ThemeToggle";
 export function Brand() {
   return (
     <Link to="/" className="flex shrink-0 items-center gap-2.5">
       <span className="brand-mark">
-        <GraduationCap className="size-6" />
+        <Orbit className="size-6" />
       </span>
       <span className="font-display text-xl font-bold">
-        BIB <span className="text-primary">InsightIQ</span>
+        <span className="text-primary">Orbit</span>
       </span>
     </Link>
   );
@@ -42,11 +43,7 @@ export function PublicLayout({ children }) {
             ))}
           </nav>
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline" className="hidden sm:inline-flex">
-              <Link to="/demo">
-                Explore demo <ArrowUpRight />
-              </Link>
-            </Button>
+            <ThemeToggle />
             <Button asChild>
               <Link to={user ? "/portal" : "/auth"}>{user ? "My account" : "Log in"}</Link>
             </Button>
@@ -71,9 +68,6 @@ export function PublicLayout({ children }) {
                 {l.text}
               </Link>
             ))}
-            <Link to="/demo" onClick={() => setOpen(false)}>
-              Explore demo
-            </Link>
           </nav>
         )}
       </header>
@@ -94,13 +88,10 @@ export function PublicLayout({ children }) {
           <div className="space-y-3 text-sm">
             <p className="font-semibold">Discover</p>
             <Link to="/solution" className="block text-muted-foreground">
-              Why InsightIQ
+              Why Orbit
             </Link>
             <Link to="/benefits" className="block text-muted-foreground">
               Campus benefits
-            </Link>
-            <Link to="/demo" className="block text-muted-foreground">
-              Interactive demo
             </Link>
           </div>
           <div className="space-y-3 text-sm">
@@ -118,7 +109,7 @@ export function PublicLayout({ children }) {
         </div>
         <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-2 border-t px-5 py-5 text-xs text-muted-foreground">
           <span>© 2026 TEAM BIB. Built for better student outcomes.</span>
-          <span>Prototype · Fictional demo data · No live university integration</span>
+          <span>Not connected to a live university system</span>
         </div>
       </footer>
     </div>

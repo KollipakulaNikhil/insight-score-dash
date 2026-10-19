@@ -1,8 +1,8 @@
 import { pendingAssignments } from "./scoring";
 import { attendancePlan, integrityFlags } from "./student-extras";
 
-// Helpers for the real portal. Unlike the demo helpers in student-extras.js they invent nothing:
-// every value comes from the student's own record, and "today" is the real date.
+// Helpers for the workspace pages. They invent nothing: every value comes from the student's
+// own record, and "today" is the real date.
 
 export const todayIso = () => new Date().toISOString().slice(0, 10);
 

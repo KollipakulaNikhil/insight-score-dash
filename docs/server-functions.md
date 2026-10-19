@@ -6,14 +6,17 @@ All server-side behavior is exposed as TanStack Start server functions, plus one
 
 ## Accounts (`src/lib/auth.functions.js`)
 
-| Function             | Auth | Input                            | Behavior                                                                                                      |
-| -------------------- | ---- | -------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `getSession`         | no   | none                             | Returns the current user and roles, or null                                                                   |
-| `signUp`             | no   | email, password (8 to 72), name  | Creates the user with the `student` role in one transaction, starts a session. Rate limited to 10/hour per IP |
-| `signIn`             | no   | email, password                  | Verifies bcrypt hash, starts a session. 20 per 15 minutes per IP                                              |
-| `signOut`            | no   | none                             | Clears the cookie                                                                                             |
-| `changePassword`     | yes  | current, next                    | Requires the current password. 10 per 15 minutes per IP                                                       |
-| `sendContactMessage` | yes  | name, email, message (5 to 4000) | Stores a row in `contact_messages`                                                                            |
+| Function                 | Auth | Input                                               | Behavior                                                                                                                                                                                                                                                                            |
+| ------------------------ | ---- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getSession`             | no   | none                                                | Returns the current user and roles, or null                                                                                                                                                                                                                                         |
+| `getCaptcha`             | no   | none                                                | A distorted image and a signed token; the answer is never sent to the browser. 60 per 15 minutes per IP                                                                                                                                                                             |
+| `signUp`                 | no   | email, password (8 to 72), name, workspace, captcha | Student: active at once. Teacher: active if the email is in `TEACHER_EMAILS`, otherwise a request for the administrators. Administrator: only for `ADMIN_EMAILS` or when no administrator exists yet. Existing accounts can ask for more access with their password. 10/hour per IP |
+| `signIn`                 | no   | email, password, workspace, captcha                 | Verifies the bcrypt hash and that the account holds the chosen role, then starts a session. 20 per 15 minutes per IP                                                                                                                                                                |
+| `requestPasswordReset`   | no   | email, captcha                                      | Emails a single-use link (valid 30 minutes) or, with no email set up, notes the request for the administrators. Same answer for unknown emails. 8/hour per IP                                                                                                                       |
+| `resetPasswordWithToken` | no   | token, password                                     | Marks the token used, then sets the password. 20 per 15 minutes per IP                                                                                                                                                                                                              |
+| `signOut`                | no   | none                                                | Clears the cookie                                                                                                                                                                                                                                                                   |
+| `changePassword`         | yes  | current, next                                       | Requires the current password. 10 per 15 minutes per IP                                                                                                                                                                                                                             |
+| `sendContactMessage`     | no   | name, email, message (5 to 4000), captcha           | Stores a row in `contact_messages`, linked to the sender when signed in. 10/hour per IP                                                                                                                                                                                             |
 
 ## Campus data (`src/lib/campus.functions.js`)
 
@@ -28,6 +31,9 @@ All server-side behavior is exposed as TanStack Start server functions, plus one
 | `linkStudentsToTeacher`    | admin                                                                         | Assigns up to 500 student accounts to a teacher (or unassigns with `facultyId: null`). Skips teachers and admins, requires the target to hold the faculty role, creates an `ACC-…` placeholder record for students without one, and writes `LINK` and `INSERT` audit rows |
 | `addStudentNote`           | faculty for assigned students; student for their own record                   | Appends a note to the record's `facultyFeedback` or `studentFeedback` (5 to 1000 characters, at most 100 notes)                                                                                                                                                           |
 | `updateMyProfile`          | any signed-in user                                                            | Edits own name, phone, address, bio, links and, for students, target roles (kept in sync with their record)                                                                                                                                                               |
+| `saveStudentAcademics`     | admin, or faculty assigned to the student                                     | Updates marks, attendance, skills and assessments. ID, name, notes, account and teacher links stay as they are. Writes an `UPDATE` audit row                                                                                                                              |
+| `resetAccountPassword`     | admin                                                                         | Sets a random temporary password, returned once. Writes a `PASSWORD` audit row                                                                                                                                                                                            |
+| `deleteAccount`            | admin                                                                         | Deletes an account. Refuses your own, the last administrator, and people who recorded support actions                                                                                                                                                                     |
 | `listContactMessages`      | admin                                                                         | Contact-form inbox                                                                                                                                                                                                                                                        |
 | `listAudit`                | admin                                                                         | Record change history                                                                                                                                                                                                                                                     |
 
@@ -36,6 +42,14 @@ All server-side behavior is exposed as TanStack Start server functions, plus one
 - A mutation resolves only after the database write is confirmed (`{ saved: true }`, `{ ok: true }` or a count).
 - On success the client invalidates the shared campus query, so scores, bands and risk flags are recomputed from current data.
 - Errors are thrown as `Error` with a user-readable message and are displayed by the calling component.
+
+## Campus updates (`src/lib/updates.functions.js`)
+
+| Function       | Who may call                             | Behavior                                                                    |
+| -------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
+| `listUpdates`  | any signed-in user                       | The latest 200 announcements, with the author's name                        |
+| `saveUpdate`   | faculty or admin                         | Posts a placement drive, event, notice or poster (links must be `https://`) |
+| `deleteUpdate` | admin; faculty only for what they posted | Removes an announcement                                                     |
 
 ## HTTP endpoint
 

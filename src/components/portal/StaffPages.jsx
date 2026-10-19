@@ -8,6 +8,7 @@ import { AdminTools } from "@/components/AdminTools";
 import { InterventionCard, InterventionForm, SupportPlan } from "@/components/portal/Interventions";
 import { PageTitle, RoleGate } from "@/components/portal/PortalShell";
 import { StudentTable, pct } from "@/components/portal/StudentTable";
+import { AcademicsEditor } from "@/components/portal/AcademicsEditor";
 import { LiveStudentProfile } from "@/components/student-profile/LiveStudentProfile";
 import { byAttention, isAtRisk, lowAttendance } from "@/lib/campus-derive";
 import { listAccounts, listAudit } from "@/lib/campus.functions";
@@ -15,7 +16,7 @@ import { liveAssignments } from "@/lib/live-profile";
 import { attendancePct } from "@/lib/scoring";
 import { useCampus } from "@/lib/use-campus";
 
-const card = "rounded-xl border bg-card p-4";
+const card = "surface p-4";
 const STAFF = ["faculty", "admin"];
 
 // ---------------------------------------------------------------- students
@@ -82,6 +83,7 @@ export function StudentDetailPage({ id }) {
             isFaculty={isFaculty}
             onChanged={refresh}
           />
+          <AcademicsEditor s={row.s} onSaved={refresh} />
           <SupportPlan studentId={row.id} canManage />
         </>
       )}
@@ -259,7 +261,10 @@ export function MonitorPage() {
 // ---------------------------------------------------------------- teachers (admin)
 export function TeachersPage() {
   const { rows, interventions } = useCampus();
-  const accounts = useQuery({ queryKey: ["accounts"], queryFn: () => listAccounts() });
+  const accounts = useQuery({
+    queryKey: ["accounts"],
+    queryFn: () => listAccounts(),
+  });
   const teachers = (accounts.data ?? []).filter((p) => p.roles.includes("faculty"));
   return (
     <RoleGate allow={["admin"]}>
@@ -276,7 +281,7 @@ export function TeachersPage() {
         />
       )}
       {teachers.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border bg-card">
+        <div className="overflow-x-auto surface">
           <table className="w-full text-sm">
             <thead className="border-b text-left text-xs text-muted-foreground">
               <tr>
@@ -349,7 +354,7 @@ export const RecordsPage = () => (
   <AdminPage
     title="Student records"
     sub="Add marks, attendance and skills, one student or many"
-    tabs={["student", "json"]}
+    tabs={["student", "csv", "json"]}
   />
 );
 export const MessagesPage = () => (
@@ -362,10 +367,15 @@ const OPERATION = {
   UPDATE: "Record updated",
   LINK: "Teacher link changed",
   NOTE: "Feedback added",
+  PASSWORD: "Password reset",
+  DELETE: "Account deleted",
 };
 
 export function AuditPage() {
-  const audit = useQuery({ queryKey: ["audit"], queryFn: () => listAudit() });
+  const audit = useQuery({
+    queryKey: ["audit"],
+    queryFn: () => listAudit(),
+  });
   return (
     <RoleGate allow={["admin"]}>
       <PageTitle title="Audit log" sub="The latest 200 changes to student records" />
@@ -373,7 +383,7 @@ export function AuditPage() {
       {audit.isError && <p className="text-sm text-destructive">The log could not be loaded.</p>}
       {audit.data?.length === 0 && <EmptyState title="Nothing has changed yet" />}
       {audit.data?.length > 0 && (
-        <div className="overflow-x-auto rounded-xl border bg-card">
+        <div className="overflow-x-auto surface">
           <table className="w-full text-sm">
             <thead className="border-b text-left text-xs text-muted-foreground">
               <tr>

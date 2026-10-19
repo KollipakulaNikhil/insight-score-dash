@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAuth } from "@/backend/auth-middleware";
-import { limitByIp } from "@/backend/auth.server";
+import { hashPassword, limitByIp } from "@/backend/auth.server";
+import { randomBytes } from "node:crypto";
 import { query, withTransaction } from "@/backend/db.server";
 import { studentSchema } from "@/lib/student-validation";
 import { emptyStudent } from "@/lib/student-defaults";
@@ -188,6 +189,27 @@ export const setAccountRole = createServerFn({ method: "POST" })
     return { saved: true };
   });
 
+// "Forgot your password?": an administrator sets a temporary password and hands it over privately.
+// It is shown once here and never stored in readable form. The person changes it after signing in.
+export const resetAccountPassword = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator(z.object({ userId: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    requireAdmin(context.user);
+    limitByIp("reset", 30, 60 * 60 * 1000);
+    const temporary = randomBytes(9).toString("base64url");
+    const result = await query("UPDATE users SET password_hash = $1 WHERE id = $2", [
+      await hashPassword(temporary),
+      data.userId,
+    ]);
+    if (!result.rowCount) throw new Error("That account no longer exists.");
+    await query(
+      "INSERT INTO campus_audit(actor_id, record_id, operation) VALUES($1,$2,'PASSWORD')",
+      [context.user.id, data.userId],
+    );
+    return { password: temporary };
+  });
+
 // Connects student accounts to a teacher account using only their identities.
 // Students without a record get an empty placeholder (details can be added later), so the
 // teacher sees them straight away. facultyId = null disconnects them instead. The teacher must
@@ -263,6 +285,77 @@ export const linkStudentsToTeacher = createServerFn({ method: "POST" })
       }
       return { linked: updated.rowCount + created, created };
     });
+  });
+
+// Teachers keep the marks, attendance and skills of the students assigned to them up to date.
+// Administrators can do this for anyone. Identity (ID, name), the account link, the teacher link and
+// the notes stay as they are; those have their own, stricter paths.
+export const saveStudentAcademics = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator(z.object({ student: studentSchema }))
+  .handler(async ({ data, context }) => {
+    const { user } = context;
+    const [isFaculty, isAdmin] = flags(user.roles);
+    if (!isFaculty && !isAdmin) throw new Error("Only teachers and administrators can do this.");
+    limitByIp("academics", 120, 60 * 60 * 1000);
+    await withTransaction(async (db) => {
+      const current = await db.query(
+        `SELECT sr.record FROM student_records sr
+          WHERE sr.id = $1 AND ($3::boolean OR ($2::boolean AND sr.faculty_id = $4)) FOR UPDATE`,
+        [data.student.id, isFaculty, isAdmin, user.id],
+      );
+      if (!current.rowCount) throw new Error("You can only update students assigned to you.");
+      const old = current.rows[0].record;
+      const next = studentSchema.parse({
+        ...data.student,
+        id: old.id,
+        name: old.name,
+        facultyFeedback: old.facultyFeedback ?? [],
+        studentFeedback: old.studentFeedback ?? [],
+        targetRoles: old.targetRoles ?? [],
+      });
+      await db.query("UPDATE student_records SET record = $2, updated_at = now() WHERE id = $1", [
+        old.id,
+        JSON.stringify(next),
+      ]);
+      await db.query(
+        "INSERT INTO campus_audit(actor_id, record_id, operation) VALUES($1,$2,'UPDATE')",
+        [user.id, old.id],
+      );
+    });
+    return { saved: true };
+  });
+
+// Removes an account. Never your own, and never the last administrator.
+export const deleteAccount = createServerFn({ method: "POST" })
+  .middleware([requireAuth])
+  .validator(z.object({ userId: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    requireAdmin(context.user);
+    if (data.userId === context.user.id) throw new Error("You cannot delete your own account.");
+    const target = await query(
+      `SELECT EXISTS (SELECT 1 FROM user_roles WHERE user_id = $1 AND role = 'admin') AS is_admin,
+              (SELECT count(*)::int FROM user_roles WHERE role = 'admin') AS admins`,
+      [data.userId],
+    );
+    if (target.rows[0].is_admin && target.rows[0].admins <= 1)
+      throw new Error("That is the last administrator, so it cannot be deleted.");
+    try {
+      const result = await query("DELETE FROM users WHERE id = $1", [data.userId]);
+      if (!result.rowCount) throw new Error("That account no longer exists.");
+    } catch (error) {
+      // 23503: the person recorded support actions, which must stay on file.
+      if (error?.code === "23503")
+        throw new Error(
+          "This person has recorded support actions, so the account is kept. Remove their teacher or administrator access instead.",
+        );
+      throw error;
+    }
+    await query("INSERT INTO campus_audit(actor_id, record_id, operation) VALUES($1,$2,'DELETE')", [
+      context.user.id,
+      data.userId,
+    ]);
+    return { saved: true };
   });
 
 const MAX_NOTES = 100;

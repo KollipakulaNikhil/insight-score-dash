@@ -3,7 +3,7 @@ import { EmptyState, ProgressBar, SectionTitle } from "@/components/widgets";
 import { pct } from "@/components/portal/StudentTable";
 import { attendancePct } from "@/lib/scoring";
 
-const card = "rounded-xl border bg-card p-4";
+const card = "surface p-4";
 
 const unitDone = (u) => {
   const lessonsDone = u.lessons.every((l) => l.completed);

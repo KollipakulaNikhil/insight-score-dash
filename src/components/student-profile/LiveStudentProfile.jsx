@@ -36,8 +36,8 @@ import { academicRisk, placementRisk, effectiveBand } from "@/lib/risk-flags";
 import { lmsCompletion, lmsParts, studentAttendancePct, successScore } from "@/lib/scoring";
 import { engagementScore, integrityFlags, segmentOf } from "@/lib/student-extras";
 
-// The real portal's student dashboard. It has the same layout as the fictional demo, but shows
-// only what is recorded for this student. Anything not recorded says so instead of being invented.
+// A student's profile in the workspace. It shows only what is recorded for the student;
+// anything not recorded says so instead of being invented.
 const TABS = [
   { k: "Overview", icon: LayoutGrid },
   { k: "Academics", icon: GraduationCap },

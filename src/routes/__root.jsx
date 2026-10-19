@@ -8,8 +8,26 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import appCss from "../styles.css?url";
+import { THEME_SCRIPT } from "@/components/ThemeToggle";
 import { AccountProvider } from "@/lib/account";
-import { CampusAssistant } from "@/components/CampusAssistant";
+import { lazy, Suspense, useEffect, useState } from "react";
+
+// The chat assistant pulls in a large markdown/code renderer, so it loads after the page is usable.
+const CampusAssistant = lazy(() =>
+  import("@/components/CampusAssistant").then((m) => ({ default: m.CampusAssistant })),
+);
+function LateAssistant() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setReady(true), 1500);
+    return () => clearTimeout(t);
+  }, []);
+  return ready ? (
+    <Suspense fallback={null}>
+      <CampusAssistant />
+    </Suspense>
+  ) : null;
+}
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -69,18 +87,19 @@ export const Route = createRootRouteWithContext()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BIB InsightIQ — Campus Intelligence" },
+      { title: "Orbit — Campus Intelligence" },
       {
         name: "description",
         content:
           "Turning campus data into student success. A TEAM BIB campus intelligence platform.",
       },
       { name: "author", content: "TEAM BIB" },
-      { property: "og:title", content: "BIB InsightIQ — Campus Intelligence" },
+      { property: "og:title", content: "Orbit — Campus Intelligence" },
       { property: "og:description", content: "Turning campus data into student success." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    scripts: [{ children: THEME_SCRIPT }],
     links: [
       {
         rel: "stylesheet",
@@ -100,7 +119,7 @@ export const Route = createRootRouteWithContext()({
 });
 function RootShell({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -117,7 +136,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AccountProvider>
         <Outlet />
-        <CampusAssistant />
+        <LateAssistant />
       </AccountProvider>
     </QueryClientProvider>
   );

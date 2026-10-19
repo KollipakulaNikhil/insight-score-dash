@@ -14,8 +14,8 @@ import { academicRisk, placementRisk } from "@/lib/risk-flags";
 import { DEFAULT_WEIGHTS } from "@/lib/types";
 import { attendancePlan, REMAINING_CLASSES_PER_SUBJECT, segmentOf } from "@/lib/student-extras";
 
-// Tabs that read only the student's own data. They are used by both the fictional demo
-// (/student/$id) and the real portal, so the two always look the same.
+// Profile sections that read only the student's own data, shared by the student's own pages
+// and the staff view of a student.
 export const LABELS = {
   academics: "Academics",
   attendance: "Attendance",
@@ -24,7 +24,7 @@ export const LABELS = {
   skills: "Skills",
   placement: "Placement readiness",
 };
-export const card = "rounded-xl border bg-card p-4";
+export const card = "surface p-4";
 export function FlagBadge({ label, flag }) {
   const cls =
     flag.level === "High"
@@ -197,8 +197,7 @@ export function Academics({ s }) {
   const trend = s.semesterGrades.map((g, i) => ({ sem: `Sem ${i + 1}`, sgpa: g }));
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <div className="grid grid-cols-3 gap-3 lg:col-span-2">
-        <StatCard label="CGPA" value={s.cgpa > 0 ? s.cgpa.toFixed(2) : "—"} sub="out of 10" />
+      <div className="grid grid-cols-2 gap-3 lg:col-span-2">
         <StatCard
           label="Backlogs"
           value={String(s.backlogs)}
@@ -222,7 +221,12 @@ export function Academics({ s }) {
               <XAxis dataKey="sem" fontSize={12} />
               <YAxis domain={[0, 10]} fontSize={12} />
               <Tooltip />
-              <Line dataKey="sgpa" stroke="var(--primary)" strokeWidth={2} />
+              <Line
+                isAnimationActive={false}
+                dataKey="sgpa"
+                stroke="var(--primary)"
+                strokeWidth={2}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>

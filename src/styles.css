@@ -94,29 +94,408 @@
     color: var(--color-foreground);
     font-family: var(--font-body);
   }
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
   }
-  * { letter-spacing: 0; }
+  * {
+    letter-spacing: 0;
+  }
 }
 
-.brand-mark { display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; background:var(--primary); color:var(--primary-foreground); }
-.eyebrow { font-size:11px; font-weight:800; color:var(--primary); }
-.page-heading { font-size:48px; line-height:1.12; font-weight:600; }
-.campus-hero { position:relative; isolation:isolate; min-height:560px; height:min(680px,78vh); }
-.campus-hero::after { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,var(--hero-scrim),var(--hero-clear)); }
-.hero-heading { font-size:72px; line-height:1.05; font-weight:600; text-shadow:0 2px 12px var(--hero-shadow); }
-.assistant-position { position:fixed; bottom:20px; right:20px; z-index:50; display:flex; flex-direction:column; gap:12px; align-items:flex-end; }
-.assistant-panel { width:390px; max-width:calc(100vw - 32px); height:570px; max-height:calc(100dvh - 100px); }
-.motion-icon { animation:icon-lift 5s ease-in-out infinite; }
-.source-ticker > div { animation:source-travel 35s linear infinite; }
-.source-ticker:hover > div { animation-play-state:paused; }
-@keyframes icon-lift { 0%,100% { transform:translateY(0) rotate(0); } 50% { transform:translateY(-4px) rotate(-4deg); } }
-@keyframes source-travel { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-@media(max-width:767px) { .hero-heading { font-size:48px; } .page-heading { font-size:36px; } .campus-hero { height:auto; min-height:570px; } .campus-hero::after { background:var(--hero-scrim); } .assistant-position { right:12px; bottom:12px; } }
-@media(prefers-reduced-motion:reduce) { .motion-icon, .source-ticker > div { animation:none; } * { scroll-behavior:auto !important; } }
-
+.brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--primary);
+}
+.page-heading {
+  font-size: 48px;
+  line-height: 1.12;
+  font-weight: 600;
+}
+.campus-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 560px;
+  height: min(680px, 78vh);
+}
+.campus-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--hero-scrim), var(--hero-clear));
+}
+.hero-heading {
+  font-size: 72px;
+  line-height: 1.05;
+  font-weight: 600;
+  text-shadow: 0 2px 12px var(--hero-shadow);
+}
+.assistant-position {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+.assistant-panel {
+  width: 390px;
+  max-width: calc(100vw - 32px);
+  height: 570px;
+  max-height: calc(100dvh - 100px);
+}
+@media (max-width: 767px) {
+  .hero-heading {
+    font-size: 48px;
+  }
+  .page-heading {
+    font-size: 36px;
+  }
+  .campus-hero {
+    height: auto;
+    min-height: 570px;
+  }
+  .campus-hero::after {
+    background: var(--hero-scrim);
+  }
+  .assistant-position {
+    right: 12px;
+    bottom: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
 @utility scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--color-muted) transparent;
+}
+
+.portal-loading-bar {
+  animation: portal-load 1s ease-in-out infinite;
+}
+@keyframes portal-load {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
+  }
+}
+
+/* ======================= Orbit: deep-space theme (calm, minimal motion) ======================= */
+:root {
+  color-scheme: dark;
+  --background: oklch(0.15 0.03 270);
+  --foreground: oklch(0.95 0.01 250);
+  --card: oklch(0.2 0.035 270);
+  --card-foreground: oklch(0.95 0.01 250);
+  --popover: oklch(0.22 0.04 270);
+  --popover-foreground: oklch(0.95 0.01 250);
+  --primary: oklch(0.78 0.13 200);
+  --primary-foreground: oklch(0.15 0.03 270);
+  --secondary: oklch(0.26 0.04 270);
+  --secondary-foreground: oklch(0.95 0.01 250);
+  --muted: oklch(0.25 0.035 270);
+  --muted-foreground: oklch(0.72 0.03 258);
+  --accent: oklch(0.29 0.05 275);
+  --accent-foreground: oklch(0.95 0.02 250);
+  --destructive: oklch(0.7 0.19 22);
+  --destructive-foreground: oklch(0.15 0.03 270);
+  --success: oklch(0.78 0.15 160);
+  --success-foreground: oklch(0.15 0.03 270);
+  --warning: oklch(0.82 0.14 80);
+  --warning-foreground: oklch(0.15 0.03 270);
+  --info: oklch(0.76 0.12 240);
+  --info-foreground: oklch(0.15 0.03 270);
+  --border: oklch(0.32 0.04 270);
+  --input: oklch(0.36 0.045 270);
+  --ring: oklch(0.78 0.13 200);
+  --chart-1: oklch(0.78 0.13 200);
+  --chart-2: oklch(0.78 0.15 160);
+  --chart-3: oklch(0.82 0.14 80);
+  --chart-4: oklch(0.7 0.19 22);
+  --chart-5: oklch(0.72 0.15 285);
+}
+body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, oklch(1 0 0 / 55%), transparent),
+    radial-gradient(1px 1px at 68% 8%, oklch(1 0 0 / 40%), transparent),
+    radial-gradient(1.5px 1.5px at 34% 62%, oklch(1 0 0 / 45%), transparent),
+    radial-gradient(1px 1px at 86% 48%, oklch(1 0 0 / 50%), transparent),
+    radial-gradient(1px 1px at 55% 84%, oklch(1 0 0 / 35%), transparent),
+    radial-gradient(60rem 30rem at 85% -10%, oklch(0.4 0.14 285 / 22%), transparent),
+    radial-gradient(50rem 28rem at -10% 110%, oklch(0.45 0.12 215 / 18%), transparent);
+  background-size:
+    340px 340px,
+    340px 340px,
+    340px 340px,
+    340px 340px,
+    340px 340px,
+    auto,
+    auto;
+  background-attachment: fixed;
+}
+.surface {
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: oklch(0.2 0.035 270 / 92%);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 4%) inset,
+    0 12px 30px -18px oklch(0 0 0 / 60%);
+}
+a.surface,
+button.surface {
+  transition: border-color 0.15s ease;
+}
+a.surface:hover,
+button.surface:hover {
+  border-color: var(--primary);
+}
+select {
+  border: 1px solid var(--input);
+  border-radius: 0.6rem;
+  background-color: oklch(0.22 0.04 270);
+  color: var(--foreground);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+select:hover {
+  border-color: var(--primary);
+}
+select:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px oklch(0.78 0.13 200 / 25%);
+}
+.surface table thead th {
+  background: oklch(0.24 0.04 270);
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  white-space: nowrap;
+}
+.surface table thead th:first-child {
+  border-top-left-radius: 1rem;
+}
+.surface table thead th:last-child {
+  border-top-right-radius: 1rem;
+}
+.surface table tbody tr:nth-child(even) {
+  background: oklch(0.22 0.035 270 / 60%);
+}
+.surface table tbody tr:hover {
+  background: oklch(0.27 0.05 270);
+}
+.surface table th,
+.surface table td {
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+}
+.surface table th:first-child,
+.surface table td:first-child {
+  padding-left: 0.9rem;
+}
+
+/* Each workspace has its own accent against the same night sky. */
+[data-role="student"] {
+  --role-from: oklch(0.32 0.09 215);
+  --role-via: oklch(0.25 0.065 240);
+  --role-to: oklch(0.19 0.045 270);
+  --role-side-from: oklch(0.18 0.04 245);
+  --role-side-to: oklch(0.13 0.03 270);
+  --primary: oklch(0.78 0.13 195);
+  --ring: oklch(0.78 0.13 195);
+}
+[data-role="faculty"] {
+  --role-from: oklch(0.34 0.12 262);
+  --role-via: oklch(0.26 0.09 270);
+  --role-to: oklch(0.19 0.05 280);
+  --role-side-from: oklch(0.19 0.05 265);
+  --role-side-to: oklch(0.13 0.03 275);
+  --primary: oklch(0.75 0.14 255);
+  --ring: oklch(0.75 0.14 255);
+}
+[data-role="admin"] {
+  --role-from: oklch(0.34 0.13 300);
+  --role-via: oklch(0.26 0.1 295);
+  --role-to: oklch(0.19 0.06 285);
+  --role-side-from: oklch(0.19 0.055 300);
+  --role-side-to: oklch(0.13 0.035 285);
+  --primary: oklch(0.76 0.15 305);
+  --ring: oklch(0.76 0.15 305);
+}
+
+/* ======================= Dust: warm sand theme ======================= */
+[data-theme="dust"] {
+  color-scheme: light;
+  --background: oklch(0.945 0.028 82);
+  --foreground: oklch(0.27 0.035 55);
+  --card: oklch(0.985 0.014 85);
+  --card-foreground: oklch(0.27 0.035 55);
+  --popover: oklch(0.99 0.012 85);
+  --popover-foreground: oklch(0.27 0.035 55);
+  --primary: oklch(0.55 0.14 45);
+  --primary-foreground: oklch(0.99 0.01 85);
+  --secondary: oklch(0.92 0.03 80);
+  --secondary-foreground: oklch(0.27 0.035 55);
+  --muted: oklch(0.92 0.028 80);
+  --muted-foreground: oklch(0.47 0.04 60);
+  --accent: oklch(0.9 0.045 75);
+  --accent-foreground: oklch(0.3 0.06 50);
+  --destructive: oklch(0.52 0.2 27);
+  --destructive-foreground: oklch(0.99 0.01 85);
+  --success: oklch(0.47 0.12 150);
+  --success-foreground: oklch(0.99 0.01 85);
+  --warning: oklch(0.52 0.13 68);
+  --warning-foreground: oklch(0.99 0.01 85);
+  --info: oklch(0.48 0.13 245);
+  --info-foreground: oklch(0.99 0.01 85);
+  --border: oklch(0.86 0.032 78);
+  --input: oklch(0.8 0.04 75);
+  --ring: oklch(0.55 0.14 45);
+  --chart-1: oklch(0.55 0.14 45);
+  --chart-2: oklch(0.5 0.1 150);
+  --chart-3: oklch(0.68 0.13 80);
+  --chart-4: oklch(0.5 0.16 25);
+  --chart-5: oklch(0.45 0.1 250);
+  --hero-scrim: oklch(0.22 0.04 55 / 70%);
+}
+[data-theme="dust"] body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(1px 1px at 18% 22%, oklch(0.5 0.06 60 / 22%), transparent),
+    radial-gradient(1px 1px at 72% 14%, oklch(0.5 0.06 60 / 18%), transparent),
+    radial-gradient(1.5px 1.5px at 40% 66%, oklch(0.5 0.06 60 / 20%), transparent),
+    radial-gradient(1px 1px at 88% 52%, oklch(0.5 0.06 60 / 22%), transparent),
+    radial-gradient(60rem 30rem at 90% -10%, oklch(0.85 0.09 70 / 45%), transparent),
+    radial-gradient(50rem 28rem at -10% 110%, oklch(0.82 0.08 45 / 32%), transparent);
+  background-size:
+    300px 300px,
+    300px 300px,
+    300px 300px,
+    300px 300px,
+    auto,
+    auto;
+  background-attachment: fixed;
+}
+[data-theme="dust"] .surface {
+  background: var(--card);
+  box-shadow:
+    0 1px 2px oklch(0.4 0.05 60 / 8%),
+    0 10px 24px -16px oklch(0.4 0.06 55 / 28%);
+}
+[data-theme="dust"] select {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+[data-theme="dust"] select:focus-visible {
+  box-shadow: 0 0 0 3px oklch(0.55 0.14 45 / 25%);
+}
+[data-theme="dust"] .surface table thead th {
+  background: oklch(0.93 0.035 80);
+  color: var(--muted-foreground);
+}
+[data-theme="dust"] .surface table tbody tr:nth-child(even) {
+  background: oklch(0.965 0.02 82);
+}
+[data-theme="dust"] .surface table tbody tr:hover {
+  background: oklch(0.93 0.04 78);
+}
+/* the pale chips used on the dark theme need deeper text on sand */
+[data-theme="dust"] .text-emerald-300 {
+  color: var(--color-emerald-700);
+}
+[data-theme="dust"] .text-indigo-300 {
+  color: var(--color-indigo-700);
+}
+[data-theme="dust"] .text-sky-300 {
+  color: var(--color-sky-700);
+}
+[data-theme="dust"] .text-violet-300 {
+  color: var(--color-violet-700);
+}
+[data-theme="dust"] .text-amber-300 {
+  color: var(--color-amber-700);
+}
+[data-theme="dust"] .text-rose-300 {
+  color: var(--color-rose-700);
+}
+[data-theme="dust"] .text-teal-300 {
+  color: var(--color-teal-700);
+}
+/* sand workspaces: earthy accent per role, with warm dark sidebar and banner */
+[data-theme="dust"] [data-role="student"],
+[data-theme="dust"][data-role="student"] {
+  --role-from: oklch(0.5 0.12 48);
+  --role-via: oklch(0.4 0.09 50);
+  --role-to: oklch(0.3 0.06 55);
+  --role-side-from: oklch(0.3 0.06 55);
+  --role-side-to: oklch(0.21 0.04 55);
+  --primary: oklch(0.55 0.14 45);
+  --ring: oklch(0.55 0.14 45);
+}
+[data-theme="dust"] [data-role="faculty"],
+[data-theme="dust"][data-role="faculty"] {
+  --role-from: oklch(0.45 0.09 150);
+  --role-via: oklch(0.37 0.07 152);
+  --role-to: oklch(0.28 0.05 155);
+  --role-side-from: oklch(0.29 0.05 152);
+  --role-side-to: oklch(0.2 0.035 155);
+  --primary: oklch(0.47 0.1 150);
+  --ring: oklch(0.47 0.1 150);
+}
+[data-theme="dust"] [data-role="admin"],
+[data-theme="dust"][data-role="admin"] {
+  --role-from: oklch(0.45 0.13 20);
+  --role-via: oklch(0.36 0.1 22);
+  --role-to: oklch(0.27 0.07 25);
+  --role-side-from: oklch(0.29 0.07 22);
+  --role-side-to: oklch(0.2 0.045 25);
+  --primary: oklch(0.5 0.15 25);
+  --ring: oklch(0.5 0.15 25);
+}
+
+@media print {
+  aside,
+  header,
+  .assistant-position,
+  .print\:hidden {
+    display: none !important;
+  }
+  [data-role] {
+    padding-left: 0 !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .surface {
+    box-shadow: none !important;
+    background: #fff !important;
+    border-color: #ccc !important;
+  }
 }

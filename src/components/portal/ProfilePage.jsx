@@ -11,7 +11,7 @@ import { updateMyProfile } from "@/lib/campus.functions";
 import { useAccount } from "@/lib/account";
 import { useCampus } from "@/lib/use-campus";
 
-const card = "rounded-xl border bg-card p-5";
+const card = "surface p-5";
 const ROLE_LABEL = { student: "Student", faculty: "Teacher", admin: "Administrator" };
 
 function Field({ label, children, hint }) {

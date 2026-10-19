@@ -1,3 +1,55 @@
+const cell = (v) => {
+  const text = v === null || v === undefined ? "" : String(v);
+  // Quote anything with a comma, quote or newline, and neutralise spreadsheet formulas.
+  const safe = /^[=+\-@]/.test(text) ? `'${text}` : text;
+  return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
+};
+
+/** Turns the student list shown on screen into CSV text a spreadsheet can open. */
+export function studentsToCsv(rows) {
+  const head = [
+    "student_id",
+    "name",
+    "branch",
+    "semester",
+    "success_score",
+    "status",
+    "cgpa",
+    "attendance_pct",
+    "lms_pct",
+    "academic_risk",
+    "placement_risk",
+    "alerts",
+    "segment",
+    "teacher",
+  ];
+  const num = (v, d = 1) => (v === null ? "" : v.toFixed(d));
+  const lines = rows.map((r) =>
+    [
+      r.id,
+      r.name,
+      r.branch,
+      r.semester,
+      num(r.score, 0),
+      r.band ?? "",
+      num(r.cgpa, 2),
+      num(r.attendance),
+      num(r.lms),
+      r.academicRisk,
+      r.placementRisk,
+      r.alerts,
+      r.segment,
+      r.mentorName,
+    ]
+      .map(cell)
+      .join(","),
+  );
+  return [head.join(","), ...lines].join("\r\n");
+}
+
+export const CSV_TEMPLATE = `student_id,name,branch,semester,grad_year,cgpa,backlogs,attendance_pct,coding,aptitude,analytical,verbal,communication,resume_completeness
+S-1001,Asha Rao,CSE,5,2027,8.2,0,88,70,65,72,68,75,80
+`;
 const REQUIRED = ["student_id", "name", "branch", "semester", "grad_year", "cgpa"];
 export function parseStudentCsv(text, existingIds) {
   const lines = text.trim().split(/\r?\n/);
@@ -39,7 +91,7 @@ export function parseStudentCsv(text, existingIds) {
         branch: rec["branch"] ?? "",
         semester: sem,
         gradYear: gy,
-        mentorId: "FAC-01",
+        mentorId: "",
         cgpa,
         semesterGrades: [cgpa],
         backlogs: parseInt(rec["backlogs"] ?? "") || 0,

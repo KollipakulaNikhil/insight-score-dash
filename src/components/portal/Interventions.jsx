@@ -45,7 +45,7 @@ export function InterventionCard({ item, studentName, canManage }) {
     }
   }
   return (
-    <article className="rounded-xl border bg-card p-4">
+    <article className="surface p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           {studentName && (
@@ -138,7 +138,7 @@ export function InterventionForm({ fixedStudentId, choices = [] }) {
     }
   }
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-xl border bg-card p-4">
+    <form onSubmit={submit} className="space-y-3 surface p-4">
       <h3 className="font-semibold">Create an intervention</h3>
       {!fixedStudentId && (
         <select name="student" required aria-label="Student" className={`${selectClass} w-full`}>

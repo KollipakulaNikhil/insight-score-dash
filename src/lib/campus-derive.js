@@ -1,6 +1,6 @@
 import { academicRisk, effectiveBand, placementRisk } from "./risk-flags";
 import { liveNotifications } from "./live-profile";
-import { lmsCompletion, studentAttendancePct, successScore } from "./scoring";
+import { componentScores, lmsCompletion, studentAttendancePct, successScore } from "./scoring";
 import { segmentOf } from "./student-extras";
 import { studentSchema } from "./student-validation";
 
@@ -32,7 +32,9 @@ export function buildRows(records, today) {
         attendance: studentAttendancePct(s),
         lms: lmsCompletion(s),
         academicRisk: acad.level,
+        academicPoints: acad.points,
         placementRisk: place.level,
+        placementPoints: place.points,
         segment: segmentOf(s).name,
         alerts: alerts.length,
         urgent: alerts.filter((n) => n.tone === "danger").length,
@@ -58,6 +60,28 @@ export function byAttention(rows) {
 
 export const isAtRisk = (row) => row.band === "High Priority" || row.band === "Needs Attention";
 export const lowAttendance = (row) => row.attendance !== null && row.attendance < 75;
+
+const mean = (values) => {
+  const v = values.filter((x) => x !== null && x !== undefined);
+  return v.length ? v.reduce((a, c) => a + c, 0) / v.length : null;
+};
+
+/** Averages across students (missing values are skipped, never counted as zero) and data coverage. */
+export function averages(rows) {
+  const comps = rows.map((r) => componentScores(r.s));
+  const cells = comps.flatMap((c) => Object.values(c));
+  const missing = cells.filter((v) => v === null).length;
+  return {
+    avgScore: mean(rows.map((r) => r.score)),
+    avgCgpa: mean(rows.map((r) => r.cgpa)),
+    avgAtt: mean(rows.map((r) => r.attendance)),
+    avgLms: mean(rows.map((r) => r.lms)),
+    avgPlace: mean(comps.map((c) => c.placement)),
+    coverage: cells.length ? ((cells.length - missing) / cells.length) * 100 : 100,
+    cells: cells.length,
+    missing,
+  };
+}
 
 export function summarize(rows, interventions, today) {
   const withData = rows.filter((r) => r.score !== null);

@@ -1,5 +1,38 @@
+import {
+  Award,
+  BarChart3,
+  BookOpen,
+  Briefcase,
+  CalendarCheck,
+  Gauge,
+  GraduationCap,
+  TriangleAlert,
+  UserCheck,
+  Users,
+} from "lucide-react";
 import { riskBand } from "@/lib/types";
 import { cn } from "@/lib/utils";
+// Each metric gets its own icon and colour so a row of stats reads at a glance.
+const HUES = {
+  emerald: "bg-emerald-400/15 text-emerald-300",
+  indigo: "bg-indigo-400/15 text-indigo-300",
+  sky: "bg-sky-400/15 text-sky-300",
+  violet: "bg-violet-400/15 text-violet-300",
+  amber: "bg-amber-400/15 text-amber-300",
+  rose: "bg-rose-400/15 text-rose-300",
+  teal: "bg-teal-400/15 text-teal-300",
+};
+const METRICS = [
+  [/score|average score/i, Gauge, "emerald"],
+  [/cgpa|sgpa|grade/i, GraduationCap, "indigo"],
+  [/attend|classes/i, CalendarCheck, "sky"],
+  [/lms|assess|learn/i, BookOpen, "violet"],
+  [/placement|aptitude|coding/i, Briefcase, "teal"],
+  [/alert|need|help|backlog|overdue/i, TriangleAlert, "rose"],
+  [/follow|teacher|mentor/i, UserCheck, "amber"],
+  [/student|branch|total/i, Users, "indigo"],
+  [/best|subject/i, Award, "amber"],
+];
 export function StatCard({ label, value, sub, tone }) {
   const tones = {
     default: "text-foreground",
@@ -7,13 +40,34 @@ export function StatCard({ label, value, sub, tone }) {
     warning: "text-warning",
     danger: "text-destructive",
   };
+  const [, Icon, hue] = METRICS.find(([re]) => re.test(label)) ?? [null, BarChart3, "teal"];
+  const chip =
+    tone === "danger"
+      ? HUES.rose
+      : tone === "warning"
+        ? HUES.amber
+        : tone === "success"
+          ? HUES.emerald
+          : HUES[hue];
   return (
-    <div className="rounded-xl border bg-card p-4">
-      <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className={cn("mt-1 font-display text-2xl font-bold", tones[tone ?? "default"])}>
+    <div className="surface group p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          {label}
+        </div>
+        <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", chip)}>
+          <Icon className="size-[18px]" />
+        </span>
+      </div>
+      <div
+        className={cn(
+          "mt-2 font-display text-3xl font-bold tabular-nums leading-none",
+          tones[tone ?? "default"],
+        )}
+      >
         {value}
       </div>
-      {sub && <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>}
+      {sub && <div className="mt-2 text-xs text-muted-foreground">{sub}</div>}
     </div>
   );
 }
